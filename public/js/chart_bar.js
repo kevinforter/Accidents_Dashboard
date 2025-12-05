@@ -56,12 +56,17 @@ function renderBarChart(data) {
         .innerRadius(radius * 0.55)
         .outerRadius(radius);
 
-    const arcs = svg.append("g")
-        .attr("transform", `translate(${centerX},${centerY})`)
-        .selectAll("path")
-        .data(pie(byGender))
+    const slices = pie(byGender);
+
+    const arcGroup = svg.append("g")
+        .attr("transform", `translate(${centerX},${centerY})`);
+
+    const arcs = arcGroup
+        .selectAll("g.slice")
+        .data(slices)
         .enter()
-        .append("g");
+        .append("g")
+        .attr("class", "slice");
 
     arcs.append("path")
         .attr("d", arc)
@@ -72,19 +77,44 @@ function renderBarChart(data) {
             return `${labelGender(d.data.geschlecht)}: ${d.data.sum.toLocaleString("de-CH")} Unfälle (${pct.toFixed(1)} %)`;
         });
 
-    // Prozent-Labels im Bogen, wenn Segment groß genug
+    // Labels ausserhalb mit Polylines
     const labelArc = d3.arc()
-        .innerRadius(radius * 0.7)
-        .outerRadius(radius * 0.7);
+        .innerRadius(radius * 0.95)
+        .outerRadius(radius * 0.95);
+
+    const outerArc = d3.arc()
+        .innerRadius(radius * 1.12)
+        .outerRadius(radius * 1.12);
+
+    const midAngle = d => (d.startAngle + d.endAngle) / 2;
+
+    arcs.append("polyline")
+        .filter(d => d.endAngle - d.startAngle > 0.04)
+        .attr("points", d => {
+            const pos = outerArc.centroid(d);
+            pos[0] = radius * 1.2 * (midAngle(d) < Math.PI ? 1 : -1);
+            return [arc.centroid(d), labelArc.centroid(d), pos];
+        })
+        .attr("fill", "none")
+        .attr("stroke", "#7a5a33")
+        .attr("stroke-width", 1)
+        .attr("opacity", 0.9);
 
     arcs.append("text")
-        .filter(d => d.endAngle - d.startAngle > 0.12)
-        .attr("transform", d => `translate(${labelArc.centroid(d)})`)
-        .attr("text-anchor", "middle")
+        .filter(d => d.endAngle - d.startAngle > 0.04)
+        .attr("transform", d => {
+            const pos = outerArc.centroid(d);
+            pos[0] = radius * 1.26 * (midAngle(d) < Math.PI ? 1 : -1);
+            return `translate(${pos})`;
+        })
+        .attr("text-anchor", d => midAngle(d) < Math.PI ? "start" : "end")
         .attr("dy", "0.35em")
-        .style("font-size", "11px")
-        .style("fill", "#fffaf3")
-        .text(d => `${((d.data.sum / total) * 100).toFixed(0)}%`);
+        .style("font-size", "12px")
+        .style("fill", "#3f3a33")
+        .text(d => {
+            const pct = (d.data.sum / total) * 100;
+            return `${labelGender(d.data.geschlecht)} – ${pct.toFixed(1)} %`;
+        });
 
     // Legend rechts oben
     const legend = svg.append("g")
