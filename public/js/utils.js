@@ -17,6 +17,7 @@ function loadAccidentData() {
 
         const zweig = (d.versicherungszweig || "").trim();
         const altersgruppe = (d.altersgruppe || "").trim();
+        const geschlecht = (d.geschlecht || "").trim().toLowerCase();
         const taetigkeit = (d.taetigkeit || "").trim();
         const anzahl = +d.anzahl_unfaelle;
 
@@ -27,6 +28,7 @@ function loadAccidentData() {
             kanton_wohnort: kantonWohnort,
             zweig,
             altersgruppe,
+            geschlecht,
             taetigkeit,
             anzahl: isNaN(anzahl) ? 0 : anzahl
         };

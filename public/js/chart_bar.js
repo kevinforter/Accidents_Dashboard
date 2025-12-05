@@ -6,21 +6,20 @@ function getContainerSize(container, defaultWidth = 600, defaultHeight = 260) {
     return { width, height };
 }
 
-// Balkendiagramm: Unfälle nach Kanton (Top 10, absolute Werte)
+// Geschlechterverteilung: relative Anteile (Donut)
 function renderBarChart(data) {
     const container = document.getElementById("bar-container");
     if (!container) return;
 
-    const byCanton = d3.rollups(
+    const byGender = d3.rollups(
         data,
         v => d3.sum(v, d => d.anzahl),
-        d => d.kanton
+        d => (d.geschlecht || "unbekannt").toLowerCase()
     )
-        .map(([kanton, sum]) => ({ kanton, sum }))
-        .sort((a, b) => d3.descending(a.sum, b.sum))
-        .slice(0, 10);
+        .map(([geschlecht, sum]) => ({ geschlecht, sum }))
+        .filter(d => d.sum > 0);
 
-    if (byCanton.length === 0) {
+    if (byGender.length === 0) {
         container.textContent = "Keine Daten vorhanden.";
         return;
     }
@@ -31,51 +30,101 @@ function renderBarChart(data) {
     container.classList.remove("chart-placeholder");
     container.classList.add("chart-surface");
 
-    const { width, height } = getContainerSize(container, 600, 260);
-    const margin = { top: 20, right: 15, bottom: 80, left: 70 };
+    const { width, height } = getContainerSize(container, 520, 280);
+    const size = Math.min(width, height);
+    const radius = Math.max(50, (size / 2) - 16);
+
+    const color = d3.scaleOrdinal()
+        .domain(byGender.map(d => d.geschlecht))
+        .range(["#c98042", "#7a5a33", "#d8c2a6"]);
+
+    const total = d3.sum(byGender, d => d.sum) || 1;
 
     const svg = d3.select(container)
         .append("svg")
         .attr("width", width)
         .attr("height", height);
 
-    const x = d3.scaleBand()
-        .domain(byCanton.map(d => d.kanton))
-        .range([margin.left, width - margin.right])
-        .padding(0.25);
+    const centerX = width / 2;
+    const centerY = height / 2;
 
-    const y = d3.scaleLinear()
-        .domain([0, d3.max(byCanton, d => d.sum)]).nice()
-        .range([height - margin.bottom, margin.top]);
+    const pie = d3.pie()
+        .value(d => d.sum)
+        .sort(null);
 
-    const xAxis = g => g
-        .attr("transform", `translate(0,${height - margin.bottom})`)
-        .call(d3.axisBottom(x))
-        .selectAll("text")
-        .attr("transform", "rotate(-50)")
-        .style("text-anchor", "end")
-        .style("font-size", "11px");
+    const arc = d3.arc()
+        .innerRadius(radius * 0.55)
+        .outerRadius(radius);
 
-    const yAxis = g => g
-        .attr("transform", `translate(${margin.left},0)`)
-        .call(d3.axisLeft(y).ticks(6))
-        .style("font-size", "11px");
-
-    svg.append("g").call(xAxis);
-    svg.append("g").call(yAxis);
-
-    svg.append("g")
-        .selectAll("rect")
-        .data(byCanton)
+    const arcs = svg.append("g")
+        .attr("transform", `translate(${centerX},${centerY})`)
+        .selectAll("path")
+        .data(pie(byGender))
         .enter()
-        .append("rect")
-        .attr("x", d => x(d.kanton))
-        .attr("y", d => y(d.sum))
-        .attr("width", x.bandwidth())
-        .attr("height", d => y(0) - y(d.sum))
-        .attr("fill", "#c98042")
+        .append("g");
+
+    arcs.append("path")
+        .attr("d", arc)
+        .attr("fill", d => color(d.data.geschlecht))
         .append("title")
-        .text(d => `${d.kanton}: ${d.sum.toLocaleString("de-CH")} Unfälle`);
+        .text(d => {
+            const pct = (d.data.sum / total) * 100;
+            return `${labelGender(d.data.geschlecht)}: ${d.data.sum.toLocaleString("de-CH")} Unfälle (${pct.toFixed(1)} %)`;
+        });
+
+    // Prozent-Labels im Bogen, wenn Segment groß genug
+    const labelArc = d3.arc()
+        .innerRadius(radius * 0.7)
+        .outerRadius(radius * 0.7);
+
+    arcs.append("text")
+        .filter(d => d.endAngle - d.startAngle > 0.12)
+        .attr("transform", d => `translate(${labelArc.centroid(d)})`)
+        .attr("text-anchor", "middle")
+        .attr("dy", "0.35em")
+        .style("font-size", "11px")
+        .style("fill", "#fffaf3")
+        .text(d => `${((d.data.sum / total) * 100).toFixed(0)}%`);
+
+    // Legend rechts oben
+    const legend = svg.append("g")
+        .attr("transform", `translate(${Math.min(width - 160, centerX + radius + 20)}, 16)`);
+
+    const legendItems = legend.selectAll("g")
+        .data(byGender)
+        .enter()
+        .append("g")
+        .attr("transform", (_, i) => `translate(0, ${i * 20})`);
+
+    legendItems.append("rect")
+        .attr("width", 12)
+        .attr("height", 12)
+        .attr("rx", 2)
+        .attr("fill", d => color(d.geschlecht));
+
+    legendItems.append("text")
+        .attr("x", 18)
+        .attr("y", 10)
+        .style("font-size", "12px")
+        .style("fill", "#3f3a33")
+        .text(d => {
+            const pct = (d.sum / total) * 100;
+            return `${labelGender(d.geschlecht)} (${pct.toFixed(1)} %)`;
+        });
+}
+
+function labelGender(code) {
+    switch (code) {
+        case "m":
+            return "Männer";
+        case "f":
+            return "Frauen";
+        case "u":
+        case "x":
+            return "Unbekannt";
+        default:
+            return code ? code.toUpperCase() : "Unbekannt";
+    }
 }
 
 // Tätigkeiten: Häufigkeit der Unfälle (Top-N) in der Schweiz
