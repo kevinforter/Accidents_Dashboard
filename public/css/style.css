@@ -605,6 +605,19 @@ body.page-viz .page-main {
     grid-column: 1 / -1;
 }
 
+.filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.filter-label {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: #7a5a33;
+    letter-spacing: 0.01em;
+}
+
 .modal-open {
     overflow: hidden;
 }

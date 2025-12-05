@@ -70,24 +70,33 @@
                     </div>
                     <div id="filter-controls" class="card-controls filter-controls">
                         <!-- Toggle für Unfallort / Wohnort -->
-                        <div class="map-mode-toggle">
-                            <label class="toggle-option">
-                                <input type="radio" name="map-mode" value="unfall" checked>
-                                <span>Unfallort</span>
-                            </label>
-                            <label class="toggle-option">
-                                <input type="radio" name="map-mode" value="wohnort">
-                                <span>Wohnort</span>
-                            </label>
+                        <div class="filter-group">
+                            <span class="filter-label">Anzeigemodus</span>
+                            <div class="map-mode-toggle">
+                                <label class="toggle-option">
+                                    <input type="radio" name="map-mode" value="unfall" checked>
+                                    <span>Unfallort</span>
+                                </label>
+                                <label class="toggle-option">
+                                    <input type="radio" name="map-mode" value="wohnort">
+                                    <span>Wohnort</span>
+                                </label>
+                            </div>
                         </div>
-                        <select class="control-select" id="filter-branch">
-                            <option value="all">Alle Versicherungszweige</option>
-                            <option value="BU">BU – Berufsunfälle</option>
-                            <option value="NBU">NBU – Nichtberufsunfälle</option>
-                        </select>
-                        <select class="control-select" id="filter-age">
-                            <option value="all">Alle Altersgruppen</option>
-                        </select>
+                        <div class="filter-group">
+                            <span class="filter-label">Versicherungszweig</span>
+                            <select class="control-select" id="filter-branch">
+                                <option value="all">Alle Versicherungszweige</option>
+                                <option value="BU">BU – Berufsunfälle</option>
+                                <option value="NBU">NBU – Nichtberufsunfälle</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <span class="filter-label">Altersgruppe</span>
+                            <select class="control-select" id="filter-age">
+                                <option value="all">Alle Altersgruppen</option>
+                            </select>
+                        </div>
                     </div>
                 </div>
             </div>
