@@ -34,10 +34,6 @@ function renderBarChart(data) {
     const size = Math.min(width, height);
     const radius = Math.max(50, (size / 2) - 16);
 
-    const color = d3.scaleOrdinal()
-        .domain(byGender.map(d => d.geschlecht))
-        .range(["#c98042", "#7a5a33", "#d8c2a6"]);
-
     const total = d3.sum(byGender, d => d.sum) || 1;
 
     const svg = d3.select(container)
@@ -70,7 +66,7 @@ function renderBarChart(data) {
 
     arcs.append("path")
         .attr("d", arc)
-        .attr("fill", d => color(d.data.geschlecht))
+        .attr("fill", d => colorGender(d.data.geschlecht))
         .append("title")
         .text(d => {
             const pct = (d.data.sum / total) * 100;
@@ -130,7 +126,7 @@ function renderBarChart(data) {
         .attr("width", 12)
         .attr("height", 12)
         .attr("rx", 2)
-        .attr("fill", d => color(d.geschlecht));
+        .attr("fill", d => colorGender(d.geschlecht));
 
     legendItems.append("text")
         .attr("x", 18)
@@ -155,6 +151,14 @@ function labelGender(code) {
         default:
             return code ? code.toUpperCase() : "Unbekannt";
     }
+}
+
+function colorGender(code) {
+    const key = (code || "").toLowerCase();
+    if (key === "m") return "#c98042";   // warm orange
+    if (key === "f") return "#7a5a33";   // dark brown
+    if (key === "u" || key === "x" || key === "unbekannt") return "#d8c2a6"; // neutral beige
+    return "#bca791"; // fallback neutral
 }
 
 // Tätigkeiten: Häufigkeit der Unfälle (Top-N) in der Schweiz
