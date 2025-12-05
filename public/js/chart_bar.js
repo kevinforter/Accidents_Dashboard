@@ -78,20 +78,22 @@ function renderBarChart(data) {
         .text(d => `${d.kanton}: ${d.sum.toLocaleString("de-CH")} Unfälle`);
 }
 
-// Liniendiagramm: Gesamt-Unfälle pro Jahr (absolute Werte)
+// Tätigkeiten: Häufigkeit der Unfälle (Top-N) in der Schweiz
 function renderTrendChart(data) {
     const container = document.getElementById("trend-container");
     if (!container) return;
 
-    const byYear = d3.rollups(
+    const byActivity = d3.rollups(
         data,
         v => d3.sum(v, d => d.anzahl),
-        d => d.jahr
+        d => d.taetigkeit || "Unbekannt"
     )
-        .map(([jahr, sum]) => ({ jahr, sum }))
-        .sort((a, b) => d3.ascending(a.jahr, b.jahr));
+        .map(([taetigkeit, sum]) => ({ taetigkeit, sum }))
+        .filter(d => d.sum > 0)
+        .sort((a, b) => d3.descending(a.sum, b.sum))
+        .slice(0, 12); // Top 12 Tätigkeiten
 
-    if (byYear.length === 0) {
+    if (byActivity.length === 0) {
         container.textContent = "Keine Daten vorhanden.";
         return;
     }
@@ -102,53 +104,55 @@ function renderTrendChart(data) {
     container.classList.remove("chart-placeholder");
     container.classList.add("chart-surface");
 
-    const { width, height } = getContainerSize(container, 600, 260);
-    const margin = { top: 20, right: 20, bottom: 50, left: 70 };
+    const { width, height } = getContainerSize(container, 600, 280);
+    const margin = { top: 16, right: 20, bottom: 16, left: 190 };
+    const computedHeight = Math.max(
+        height,
+        margin.top + margin.bottom + byActivity.length * 26
+    );
 
     const svg = d3.select(container)
         .append("svg")
         .attr("width", width)
-        .attr("height", height);
+        .attr("height", computedHeight);
 
     const x = d3.scaleLinear()
-        .domain(d3.extent(byYear, d => d.jahr))
+        .domain([0, d3.max(byActivity, d => d.sum)]).nice()
         .range([margin.left, width - margin.right]);
 
-    const y = d3.scaleLinear()
-        .domain([0, d3.max(byYear, d => d.sum)]).nice()
-        .range([height - margin.bottom, margin.top]);
+    const y = d3.scaleBand()
+        .domain(byActivity.map(d => d.taetigkeit))
+        .range([margin.top, computedHeight - margin.bottom])
+        .padding(0.18);
 
     const xAxis = g => g
-        .attr("transform", `translate(0,${height - margin.bottom})`)
-        .call(d3.axisBottom(x).tickFormat(d3.format("d")).ticks(6))
+        .attr("transform", `translate(0,${computedHeight - margin.bottom})`)
+        .call(d3.axisBottom(x).ticks(5))
         .style("font-size", "11px");
 
     const yAxis = g => g
         .attr("transform", `translate(${margin.left},0)`)
-        .call(d3.axisLeft(y).ticks(6))
-        .style("font-size", "11px");
+        .call(d3.axisLeft(y))
+        .style("font-size", "11px")
+        .selectAll("text")
+        .call(text => text.each(function() {
+            const node = d3.select(this);
+            node.attr("dy", "0.35em");
+        }));
 
     svg.append("g").call(xAxis);
     svg.append("g").call(yAxis);
 
-    const line = d3.line()
-        .x(d => x(d.jahr))
-        .y(d => y(d.sum))
-        .curve(d3.curveMonotoneX);
-
-    svg.append("path")
-        .datum(byYear)
-        .attr("fill", "none")
-        .attr("stroke", "#c98042")
-        .attr("stroke-width", 2)
-        .attr("d", line);
-
-    svg.selectAll("circle")
-        .data(byYear)
+    svg.append("g")
+        .selectAll("rect")
+        .data(byActivity)
         .enter()
-        .append("circle")
-        .attr("cx", d => x(d.jahr))
-        .attr("cy", d => y(d.sum))
-        .attr("r", 3)
-        .attr("fill", "#c98042");
+        .append("rect")
+        .attr("x", x(0))
+        .attr("y", d => y(d.taetigkeit))
+        .attr("width", d => x(d.sum) - x(0))
+        .attr("height", y.bandwidth())
+        .attr("fill", "#c98042")
+        .append("title")
+        .text(d => `${d.taetigkeit}: ${d.sum.toLocaleString("de-CH")} Unfälle`);
 }
