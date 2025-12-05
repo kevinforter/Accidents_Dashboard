@@ -1,0 +1,396 @@
+// main.js
+
+let allAccidentData = [];      // alle Unfalldaten aus faelle.dsv
+let yearRange = { min: null, max: null, from: null, to: null };
+let selectedCantons = [];      // aktuell ausgewählte Kantone (Codes)
+let mapMode = "unfall";        // "unfall" = kanton_unfall, "wohnort" = kanton_wohnort
+let availableYears = [];       // alle Jahre im Datensatz (kontinuierlich min..max)
+
+document.addEventListener("DOMContentLoaded", () => {
+    if (document.body.classList.contains("page-viz")) {
+        initVisualizationPage();
+    }
+});
+
+function initVisualizationPage() {
+    if (typeof loadAccidentData !== "function") {
+        console.error("loadAccidentData ist nicht definiert (utils.js geladen?)");
+        return;
+    }
+
+    loadAccidentData()
+        .then(data => {
+            allAccidentData = data;
+
+            // Jahr-Min/Max bestimmen
+            const years = allAccidentData
+                .map(d => d.jahr)
+                .filter(y => !isNaN(y));
+            const extent = d3.extent(years);
+            yearRange.min = extent[0];
+            yearRange.max = extent[1];
+            yearRange.from = yearRange.min;
+            yearRange.to = yearRange.max;
+            availableYears = d3.range(yearRange.min, yearRange.max + 1);
+
+            // Slider in die Karten-Controls einfügen
+            insertYearSlider(yearRange.min, yearRange.max);
+
+            // Altersgruppen-Auswahl dynamisch aus den Daten befüllen
+            populateAgeOptions(allAccidentData);
+
+            // Event-Listener für Filter & Modal setzen
+            wireFilterEvents();
+            wireFilterModal();
+
+            // Erstmalige Darstellung
+            applyFiltersAndRender();
+        })
+        .catch(err => {
+            console.error("Fehler beim Initialisieren der Visualisierung:", err);
+        });
+}
+
+/* ---------------------------------------------------------
+   Jahr-Slider in die card-controls der Karte einfügen
+--------------------------------------------------------- */
+function insertYearSlider(minYear, maxYear) {
+    const controls =
+        document.querySelector("#filter-controls") ||
+        document.querySelector("#viz-map .card-controls");
+    if (!controls) {
+        console.warn("card-controls für #viz-map nicht gefunden.");
+        return;
+    }
+
+    const wrapper = document.createElement("div");
+    wrapper.className = "year-slider-box";
+
+    const years = availableYears.length > 0
+        ? availableYears
+        : Array.from({ length: maxYear - minYear + 1 }, (_, i) => minYear + i);
+
+    const yearOptionsStart = years
+        .map(y => `<option value="${y}"${y === minYear ? " selected" : ""}>${y}</option>`)
+        .join("");
+    const yearOptionsEnd = years
+        .map(y => `<option value="${y}"${y === maxYear ? " selected" : ""}>${y}</option>`)
+        .join("");
+
+    wrapper.innerHTML = `
+      <label class="year-slider-label">
+        Jahrspanne
+        <span id="year-label">${minYear} – ${maxYear}</span>
+      </label>
+      <div class="year-range-inputs">
+        <div class="year-input">
+          <span>Von</span>
+          <select id="year-start">
+            ${yearOptionsStart}
+          </select>
+        </div>
+        <div class="year-input">
+          <span>Bis</span>
+          <select id="year-end">
+            ${yearOptionsEnd}
+          </select>
+        </div>
+      </div>
+    `;
+
+    controls.appendChild(wrapper);
+}
+
+/* ---------------------------------------------------------
+   Altersgruppen-Select befüllen
+--------------------------------------------------------- */
+function populateAgeOptions(data) {
+    const selectAge = document.getElementById("filter-age");
+    if (!selectAge) return;
+
+    const uniqueAges = Array.from(
+        new Set(
+            data
+                .map(d => d.altersgruppe)
+                .filter(Boolean)
+        )
+    );
+
+    const parseAgeStart = val => {
+        const match = /^(\d+)/.exec(val);
+        return match ? parseInt(match[1], 10) : Number.POSITIVE_INFINITY;
+    };
+
+    uniqueAges.sort((a, b) => {
+        const diff = parseAgeStart(a) - parseAgeStart(b);
+        return diff !== 0 ? diff : a.localeCompare(b);
+    });
+
+    selectAge.innerHTML = "";
+
+    const optionAll = document.createElement("option");
+    optionAll.value = "all";
+    optionAll.textContent = "Alle Altersgruppen";
+    selectAge.appendChild(optionAll);
+
+    uniqueAges.forEach(age => {
+        const opt = document.createElement("option");
+        opt.value = age;
+        opt.textContent = age;
+        selectAge.appendChild(opt);
+    });
+}
+
+/* ---------------------------------------------------------
+   Filter-Events (Reset, Dropdowns, Jahr-Slider)
+--------------------------------------------------------- */
+function wireFilterEvents() {
+    const btnReset    = document.getElementById("btn-reset");
+    const selectBranch = document.getElementById("filter-branch");
+    const selectAge   = document.getElementById("filter-age");
+    const yearStart   = document.getElementById("year-start");
+    const yearEnd     = document.getElementById("year-end");
+    const yearLabel   = document.getElementById("year-label");
+    const modeRadios  = document.querySelectorAll('input[name="map-mode"]');
+
+    // Reset-Button
+    if (btnReset) {
+        btnReset.addEventListener("click", () => {
+            // Versicherungszweig & Altersgruppe zurücksetzen
+            if (selectBranch) selectBranch.value = "all";
+            if (selectAge) selectAge.value = "all";
+
+            // Jahr-Slider zurück auf min/max
+            if (yearStart && yearEnd) {
+                yearStart.value = yearRange.min;
+                updateYearEndOptions(yearRange.min);
+                yearEnd.value   = yearRange.max;
+                yearRange.from  = yearRange.min;
+                yearRange.to    = yearRange.max;
+                if (yearLabel) {
+                    yearLabel.textContent = `${yearRange.min} – ${yearRange.max}`;
+                }
+            }
+
+            // Kantonsauswahl zurücksetzen (global und für Karte)
+            selectedCantons = [];
+            if (window.selectedCantons) {
+                window.selectedCantons.length = 0; // gleiche Array-Referenz leeren
+            }
+
+            // Kartenmodus zurücksetzen
+            const defaultMode = document.querySelector('input[name="map-mode"][value="unfall"]');
+            if (defaultMode) {
+                defaultMode.checked = true;
+                mapMode = "unfall";
+            }
+
+            applyFiltersAndRender();
+        });
+    }
+
+    // Versicherungszweig-Filter
+    if (selectBranch) {
+        selectBranch.addEventListener("change", () => {
+            applyFiltersAndRender();
+        });
+    }
+
+    // Altersgruppen-Filter (falls du Optionen ergänzt)
+    if (selectAge) {
+        selectAge.addEventListener("change", () => {
+            applyFiltersAndRender();
+        });
+    }
+
+    // Kartenmodus (Unfallort/Wohnort)
+    if (modeRadios && modeRadios.length > 0) {
+        const checked = document.querySelector('input[name="map-mode"]:checked');
+        if (checked) {
+            mapMode = checked.value;
+        }
+
+        modeRadios.forEach(radio => {
+            radio.addEventListener("change", () => {
+                mapMode = radio.value;
+                applyFiltersAndRender();
+            });
+        });
+    }
+
+    // Jahr-Slider: Start
+    if (yearStart && yearEnd && yearLabel) {
+        yearStart.addEventListener("change", () => {
+            let startVal = +yearStart.value;
+            let endVal   = +yearEnd.value;
+
+            updateYearEndOptions(startVal);
+            endVal = +yearEnd.value; // might have been adjusted
+
+            if (startVal > endVal) {
+                startVal = endVal;
+                yearStart.value = startVal;
+            }
+
+            yearRange.from = startVal;
+            yearRange.to   = endVal;
+            yearLabel.textContent = `${yearRange.from} – ${yearRange.to}`;
+
+            applyFiltersAndRender();
+        });
+
+        // Jahr-Ende
+        yearEnd.addEventListener("change", () => {
+            let startVal = +yearStart.value;
+            let endVal   = +yearEnd.value;
+
+            if (endVal < startVal) {
+                endVal = startVal;
+                yearEnd.value = endVal;
+            }
+
+            yearRange.from = startVal;
+            yearRange.to   = endVal;
+            yearLabel.textContent = `${yearRange.from} – ${yearRange.to}`;
+
+            applyFiltersAndRender();
+        });
+    }
+}
+
+/* ---------------------------------------------------------
+   Zentrale Filterlogik + Rendering
+--------------------------------------------------------- */
+function applyFiltersAndRender() {
+    if (!allAccidentData || allAccidentData.length === 0) return;
+
+    const selectBranch = document.getElementById("filter-branch");
+    const selectAge    = document.getElementById("filter-age");
+
+    let branch = "all";
+    let age    = "all";
+
+    if (selectBranch) branch = selectBranch.value || "all";
+    if (selectAge)    age    = selectAge.value || "all";
+
+    const cantonField = mapMode === "wohnort" ? "kanton_wohnort" : "kanton_unfall";
+
+    let fromYear = yearRange.from ?? yearRange.min;
+    let toYear   = yearRange.to   ?? yearRange.max;
+
+    // 1. Jahr filtern
+    let data = allAccidentData.filter(d =>
+        d.jahr >= fromYear && d.jahr <= toYear
+    );
+
+    // 2. Versicherungszweig (BU/NBU)
+    if (branch !== "all") {
+        data = data.filter(d => d.zweig === branch);
+    }
+
+    // 3. Altersgruppe
+    if (age !== "all") {
+        data = data.filter(d => d.altersgruppe === age);
+    }
+
+    // 4. Kanton-Auswahl (von der Karte)
+    if (selectedCantons.length > 0) {
+        data = data.filter(d => selectedCantons.includes(d[cantonField]));
+    }
+
+    // Für die Karten-/Chart-Berechnung den passenden Kantonscode bereitstellen
+    const mappedData = data.map(d => ({
+        ...d,
+        kanton: d[cantonField] || ""
+    }));
+
+    // Karte updaten
+    if (typeof renderMap === "function") {
+        try {
+            renderMap(mappedData);
+        } catch (e) {
+            console.error("Fehler in renderMap:", e);
+        }
+    }
+
+    // Trend-Chart updaten
+    if (typeof renderTrendChart === "function") {
+        try {
+            renderTrendChart(mappedData);
+        } catch (e) {
+            console.error("Fehler in renderTrendChart:", e);
+        }
+    }
+
+    // Balkendiagramm updaten
+    if (typeof renderBarChart === "function") {
+        try {
+            renderBarChart(mappedData);
+        } catch (e) {
+            console.error("Fehler in renderBarChart:", e);
+        }
+    }
+}
+
+/* ---------------------------------------------------------
+   Callback aus chart_map.js, wenn Kantone angeklickt wurden
+--------------------------------------------------------- */
+window.onMapSelectionChanged = function(cantons) {
+    selectedCantons = cantons.slice();  // lokale Kopie
+    applyFiltersAndRender();
+};
+
+/* ---------------------------------------------------------
+   Filter-Modal öffnen/schließen
+--------------------------------------------------------- */
+function wireFilterModal() {
+    const openBtn = document.getElementById("btn-open-filters");
+    const closeBtn = document.getElementById("filter-close");
+    const modal = document.getElementById("filter-modal");
+    const backdrop = document.getElementById("filter-backdrop");
+
+    const open = () => {
+        modal?.classList.add("open");
+        backdrop?.classList.add("open");
+        document.body.classList.add("modal-open");
+    };
+    const close = () => {
+        modal?.classList.remove("open");
+        backdrop?.classList.remove("open");
+        document.body.classList.remove("modal-open");
+    };
+
+    if (openBtn && modal && backdrop) {
+        openBtn.addEventListener("click", open);
+    }
+    if (closeBtn) {
+        closeBtn.addEventListener("click", close);
+    }
+    if (backdrop) {
+        backdrop.addEventListener("click", close);
+    }
+
+    document.addEventListener("keydown", e => {
+        if (e.key === "Escape") close();
+    });
+}
+
+/* ---------------------------------------------------------
+   Jahr-Selects synchronisieren (Ende >= Start)
+--------------------------------------------------------- */
+function updateYearEndOptions(minYearForEnd) {
+    const selectEnd = document.getElementById("year-end");
+    if (!selectEnd) return;
+
+    const options = availableYears
+        .filter(y => y >= minYearForEnd)
+        .map(y => `<option value="${y}">${y}</option>`)
+        .join("");
+
+    const previous = +selectEnd.value;
+    selectEnd.innerHTML = options;
+
+    const validValues = availableYears.filter(y => y >= minYearForEnd);
+    const newValue = validValues.includes(previous) ? previous : validValues[0];
+    selectEnd.value = newValue;
+}

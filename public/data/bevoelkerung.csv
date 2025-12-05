@@ -1,0 +1,541 @@
+kanton,jahr,bevolkerung
+Schweiz,2004,7364148
+Schweiz,2005,7415102
+Schweiz,2006,7459128
+Schweiz,2007,7508739
+Schweiz,2008,7593494
+Schweiz,2009,7701856
+Schweiz,2010,7785806
+Schweiz,2011,7870134
+Schweiz,2012,7954662
+Schweiz,2013,8039060
+Schweiz,2014,8139631
+Schweiz,2015,8237666
+Schweiz,2016,8327126
+Schweiz,2017,8419550
+Schweiz,2018,8484130
+Schweiz,2019,8544527
+Schweiz,2020,8606033
+Schweiz,2021,8670300
+Schweiz,2022,8738791
+Schweiz,2023,8815385
+Zürich,2004,1249893
+Zürich,2005,1261810
+Zürich,2006,1272590
+Zürich,2007,1284052
+Zürich,2008,1307567
+Zürich,2009,1332727
+Zürich,2010,1351297
+Zürich,2011,1373068
+Zürich,2012,1392396
+Zürich,2013,1408575
+Zürich,2014,1425538
+Zürich,2015,1446354
+Zürich,2016,1466424
+Zürich,2017,1487969
+Zürich,2018,1504346
+Zürich,2019,1520968
+Zürich,2020,1539275
+Zürich,2021,1553423
+Zürich,2022,1564662
+Zürich,2023,1579967
+Bern,2004,951957
+Bern,2005,955378
+Bern,2006,957064
+Bern,2007,958897
+Bern,2008,962982
+Bern,2009,969299
+Bern,2010,974235
+Bern,2011,979754
+Bern,2012,985000
+Bern,2013,992567
+Bern,2014,1001232
+Bern,2015,1009370
+Bern,2016,1017434
+Bern,2017,1026464
+Bern,2018,1031080
+Bern,2019,1034931
+Bern,2020,1039426
+Bern,2021,1043081
+Bern,2022,1047422
+Bern,2023,1051437
+Luzern,2004,353175
+Luzern,2005,354731
+Luzern,2006,356384
+Luzern,2007,359110
+Luzern,2008,363475
+Luzern,2009,368742
+Luzern,2010,372964
+Luzern,2011,377610
+Luzern,2012,381966
+Luzern,2013,386082
+Luzern,2014,390349
+Luzern,2015,394604
+Luzern,2016,398762
+Luzern,2017,403397
+Luzern,2018,406506
+Luzern,2019,409557
+Luzern,2020,413120
+Luzern,2021,416347
+Luzern,2022,420326
+Luzern,2023,424851
+Uri,2004,35118
+Uri,2005,35083
+Uri,2006,35087
+Uri,2007,34948
+Uri,2008,34989
+Uri,2009,35162
+Uri,2010,35335
+Uri,2011,35422
+Uri,2012,35382
+Uri,2013,35693
+Uri,2014,35865
+Uri,2015,36008
+Uri,2016,35973
+Uri,2017,36145
+Uri,2018,36299
+Uri,2019,36433
+Uri,2020,36703
+Uri,2021,36819
+Uri,2022,37047
+Uri,2023,37317
+Schwyz,2004,134903
+Schwyz,2005,135989
+Schwyz,2006,137522
+Schwyz,2007,138832
+Schwyz,2008,141024
+Schwyz,2009,143719
+Schwyz,2010,144686
+Schwyz,2011,146730
+Schwyz,2012,147904
+Schwyz,2013,149830
+Schwyz,2014,151396
+Schwyz,2015,152759
+Schwyz,2016,154093
+Schwyz,2017,155863
+Schwyz,2018,157301
+Schwyz,2019,159165
+Schwyz,2020,160480
+Schwyz,2021,162157
+Schwyz,2022,163689
+Schwyz,2023,164920
+Obwalden,2004,33142
+Obwalden,2005,33162
+Obwalden,2006,33269
+Obwalden,2007,33755
+Obwalden,2008,33997
+Obwalden,2009,34429
+Obwalden,2010,35032
+Obwalden,2011,35585
+Obwalden,2012,35885
+Obwalden,2013,36115
+Obwalden,2014,36507
+Obwalden,2015,36834
+Obwalden,2016,37076
+Obwalden,2017,37378
+Obwalden,2018,37575
+Obwalden,2019,37841
+Obwalden,2020,37930
+Obwalden,2021,38108
+Obwalden,2022,38435
+Obwalden,2023,38700
+Nidwalden,2004,39070
+Nidwalden,2005,39497
+Nidwalden,2006,39803
+Nidwalden,2007,40012
+Nidwalden,2008,40287
+Nidwalden,2009,40737
+Nidwalden,2010,40794
+Nidwalden,2011,41024
+Nidwalden,2012,41311
+Nidwalden,2013,41584
+Nidwalden,2014,41888
+Nidwalden,2015,42080
+Nidwalden,2016,42420
+Nidwalden,2017,42556
+Nidwalden,2018,42969
+Nidwalden,2019,43223
+Nidwalden,2020,43087
+Nidwalden,2021,43520
+Nidwalden,2022,43894
+Nidwalden,2023,44420
+Glarus,2004,38502
+Glarus,2005,38317
+Glarus,2006,38173
+Glarus,2007,38084
+Glarus,2008,38237
+Glarus,2009,38370
+Glarus,2010,38479
+Glarus,2011,38608
+Glarus,2012,39217
+Glarus,2013,39369
+Glarus,2014,39593
+Glarus,2015,39794
+Glarus,2016,40028
+Glarus,2017,40147
+Glarus,2018,40349
+Glarus,2019,40403
+Glarus,2020,40590
+Glarus,2021,40851
+Glarus,2022,41190
+Glarus,2023,41471
+Zug,2004,103642
+Zug,2005,105244
+Zug,2006,106496
+Zug,2007,107171
+Zug,2008,109141
+Zug,2009,110384
+Zug,2010,110890
+Zug,2011,113105
+Zug,2012,115104
+Zug,2013,116575
+Zug,2014,118118
+Zug,2015,120089
+Zug,2016,122134
+Zug,2017,123948
+Zug,2018,125421
+Zug,2019,126837
+Zug,2020,127642
+Zug,2021,128794
+Zug,2022,129787
+Zug,2023,131164
+Fribourg,2004,246656
+Fribourg,2005,250377
+Fribourg,2006,253954
+Fribourg,2007,258252
+Fribourg,2008,263241
+Fribourg,2009,268537
+Fribourg,2010,273159
+Fribourg,2011,278541
+Fribourg,2012,284714
+Fribourg,2013,291445
+Fribourg,2014,297671
+Fribourg,2015,303425
+Fribourg,2016,307510
+Fribourg,2017,311963
+Fribourg,2018,315120
+Fribourg,2019,318760
+Fribourg,2020,321831
+Fribourg,2021,325547
+Fribourg,2022,329860
+Fribourg,2023,334465
+Solothurn,2004,246807
+Solothurn,2005,247379
+Solothurn,2006,247937
+Solothurn,2007,248613
+Solothurn,2008,250240
+Solothurn,2009,251830
+Solothurn,2010,252748
+Solothurn,2011,255284
+Solothurn,2012,256990
+Solothurn,2013,259283
+Solothurn,2014,261437
+Solothurn,2015,263719
+Solothurn,2016,266418
+Solothurn,2017,269441
+Solothurn,2018,271432
+Solothurn,2019,273194
+Solothurn,2020,275247
+Solothurn,2021,277462
+Solothurn,2022,280245
+Solothurn,2023,282408
+Basel-Stadt,2004,186653
+Basel-Stadt,2005,186753
+Basel-Stadt,2006,185601
+Basel-Stadt,2007,184822
+Basel-Stadt,2008,185227
+Basel-Stadt,2009,186672
+Basel-Stadt,2010,187898
+Basel-Stadt,2011,184950
+Basel-Stadt,2012,186255
+Basel-Stadt,2013,187425
+Basel-Stadt,2014,189335
+Basel-Stadt,2015,190580
+Basel-Stadt,2016,191817
+Basel-Stadt,2017,193070
+Basel-Stadt,2018,193908
+Basel-Stadt,2019,194766
+Basel-Stadt,2020,195844
+Basel-Stadt,2021,196735
+Basel-Stadt,2022,196036
+Basel-Stadt,2023,196786
+Basel-Landschaft,2004,264402
+Basel-Landschaft,2005,265305
+Basel-Landschaft,2006,266089
+Basel-Landschaft,2007,267166
+Basel-Landschaft,2008,269145
+Basel-Landschaft,2009,271214
+Basel-Landschaft,2010,272815
+Basel-Landschaft,2011,274404
+Basel-Landschaft,2012,275360
+Basel-Landschaft,2013,276537
+Basel-Landschaft,2014,278656
+Basel-Landschaft,2015,281301
+Basel-Landschaft,2016,283231
+Basel-Landschaft,2017,285624
+Basel-Landschaft,2018,287023
+Basel-Landschaft,2019,288132
+Basel-Landschaft,2020,289468
+Basel-Landschaft,2021,290969
+Basel-Landschaft,2022,292817
+Basel-Landschaft,2023,294417
+Schaffhausen,2004,73968
+Schaffhausen,2005,73788
+Schaffhausen,2006,73764
+Schaffhausen,2007,73866
+Schaffhausen,2008,74527
+Schaffhausen,2009,75303
+Schaffhausen,2010,75657
+Schaffhausen,2011,76356
+Schaffhausen,2012,77139
+Schaffhausen,2013,77955
+Schaffhausen,2014,78783
+Schaffhausen,2015,79417
+Schaffhausen,2016,79836
+Schaffhausen,2017,80769
+Schaffhausen,2018,81351
+Schaffhausen,2019,81991
+Schaffhausen,2020,82348
+Schaffhausen,2021,83107
+Schaffhausen,2022,83995
+Schaffhausen,2023,85214
+Appenzell Ausserrhoden,2004,52976
+Appenzell Ausserrhoden,2005,52841
+Appenzell Ausserrhoden,2006,52561
+Appenzell Ausserrhoden,2007,52509
+Appenzell Ausserrhoden,2008,52654
+Appenzell Ausserrhoden,2009,53054
+Appenzell Ausserrhoden,2010,53043
+Appenzell Ausserrhoden,2011,53017
+Appenzell Ausserrhoden,2012,53313
+Appenzell Ausserrhoden,2013,53438
+Appenzell Ausserrhoden,2014,53691
+Appenzell Ausserrhoden,2015,54064
+Appenzell Ausserrhoden,2016,54543
+Appenzell Ausserrhoden,2017,54954
+Appenzell Ausserrhoden,2018,55178
+Appenzell Ausserrhoden,2019,55234
+Appenzell Ausserrhoden,2020,55445
+Appenzell Ausserrhoden,2021,55309
+Appenzell Ausserrhoden,2022,55585
+Appenzell Ausserrhoden,2023,55759
+Appenzell Innerrhoden,2004,15010
+Appenzell Innerrhoden,2005,15029
+Appenzell Innerrhoden,2006,15220
+Appenzell Innerrhoden,2007,15300
+Appenzell Innerrhoden,2008,15471
+Appenzell Innerrhoden,2009,15549
+Appenzell Innerrhoden,2010,15681
+Appenzell Innerrhoden,2011,15688
+Appenzell Innerrhoden,2012,15743
+Appenzell Innerrhoden,2013,15717
+Appenzell Innerrhoden,2014,15778
+Appenzell Innerrhoden,2015,15854
+Appenzell Innerrhoden,2016,15974
+Appenzell Innerrhoden,2017,16003
+Appenzell Innerrhoden,2018,16105
+Appenzell Innerrhoden,2019,16145
+Appenzell Innerrhoden,2020,16128
+Appenzell Innerrhoden,2021,16293
+Appenzell Innerrhoden,2022,16360
+Appenzell Innerrhoden,2023,16416
+St. Gallen,2004,457289
+St. Gallen,2005,458821
+St. Gallen,2006,459999
+St. Gallen,2007,461810
+St. Gallen,2008,465937
+St. Gallen,2009,471152
+St. Gallen,2010,474676
+St. Gallen,2011,478907
+St. Gallen,2012,483156
+St. Gallen,2013,487060
+St. Gallen,2014,491699
+St. Gallen,2015,495824
+St. Gallen,2016,499065
+St. Gallen,2017,502552
+St. Gallen,2018,504686
+St. Gallen,2019,507697
+St. Gallen,2020,510734
+St. Gallen,2021,514504
+St. Gallen,2022,519245
+St. Gallen,2023,525967
+Graubünden,2004,186943
+Graubünden,2005,187812
+Graubünden,2006,187803
+Graubünden,2007,187920
+Graubünden,2008,188762
+Graubünden,2009,190459
+Graubünden,2010,191861
+Graubünden,2011,192621
+Graubünden,2012,193388
+Graubünden,2013,193920
+Graubünden,2014,194959
+Graubünden,2015,195886
+Graubünden,2016,196610
+Graubünden,2017,197550
+Graubünden,2018,197888
+Graubünden,2019,198379
+Graubünden,2020,199021
+Graubünden,2021,200096
+Graubünden,2022,201376
+Graubünden,2023,202538
+Aargau,2004,560674
+Aargau,2005,565122
+Aargau,2006,569344
+Aargau,2007,574813
+Aargau,2008,581562
+Aargau,2009,591632
+Aargau,2010,600040
+Aargau,2011,611466
+Aargau,2012,618298
+Aargau,2013,627340
+Aargau,2014,636362
+Aargau,2015,645277
+Aargau,2016,653675
+Aargau,2017,663462
+Aargau,2018,670988
+Aargau,2019,678207
+Aargau,2020,685845
+Aargau,2021,694072
+Aargau,2022,703086
+Aargau,2023,711232
+Thurgau,2004,231836
+Thurgau,2005,232978
+Thurgau,2006,234332
+Thurgau,2007,235764
+Thurgau,2008,238316
+Thurgau,2009,241811
+Thurgau,2010,244805
+Thurgau,2011,248444
+Thurgau,2012,251973
+Thurgau,2013,256213
+Thurgau,2014,260278
+Thurgau,2015,263733
+Thurgau,2016,267429
+Thurgau,2017,270709
+Thurgau,2018,273801
+Thurgau,2019,276472
+Thurgau,2020,279547
+Thurgau,2021,282909
+Thurgau,2022,285964
+Thurgau,2023,289650
+Ticino,2004,317315
+Ticino,2005,319931
+Ticino,2006,322276
+Ticino,2007,324851
+Ticino,2008,328580
+Ticino,2009,332736
+Ticino,2010,335720
+Ticino,2011,333753
+Ticino,2012,336943
+Ticino,2013,341652
+Ticino,2014,346539
+Ticino,2015,350363
+Ticino,2016,351946
+Ticino,2017,354375
+Ticino,2018,353709
+Ticino,2019,353343
+Ticino,2020,351491
+Ticino,2021,350986
+Ticino,2022,352181
+Ticino,2023,354023
+Vaud,2004,639105
+Vaud,2005,647382
+Vaud,2006,654093
+Vaud,2007,662145
+Vaud,2008,672039
+Vaud,2009,688245
+Vaud,2010,701526
+Vaud,2011,713281
+Vaud,2012,725944
+Vaud,2013,734356
+Vaud,2014,749373
+Vaud,2015,761446
+Vaud,2016,773407
+Vaud,2017,784822
+Vaud,2018,793129
+Vaud,2019,799145
+Vaud,2020,805098
+Vaud,2021,814762
+Vaud,2022,822968
+Vaud,2023,830431
+Valais,2004,285008
+Valais,2005,287976
+Valais,2006,291575
+Valais,2007,294608
+Valais,2008,298580
+Valais,2009,303241
+Valais,2010,307392
+Valais,2011,312684
+Valais,2012,317022
+Valais,2013,321732
+Valais,2014,327011
+Valais,2015,331763
+Valais,2016,335696
+Valais,2017,339176
+Valais,2018,341463
+Valais,2019,343955
+Valais,2020,345525
+Valais,2021,348503
+Valais,2022,353209
+Valais,2023,357282
+Neuchâtel,2004,167047
+Neuchâtel,2005,167910
+Neuchâtel,2006,168444
+Neuchâtel,2007,168912
+Neuchâtel,2008,169782
+Neuchâtel,2009,170924
+Neuchâtel,2010,171647
+Neuchâtel,2011,172085
+Neuchâtel,2012,173183
+Neuchâtel,2013,174554
+Neuchâtel,2014,176402
+Neuchâtel,2015,177327
+Neuchâtel,2016,178107
+Neuchâtel,2017,178567
+Neuchâtel,2018,177964
+Neuchâtel,2019,176850
+Neuchâtel,2020,176496
+Neuchâtel,2021,175894
+Neuchâtel,2022,176166
+Neuchâtel,2023,176571
+Genève,2004,423993
+Genève,2005,427396
+Genève,2006,430638
+Genève,2007,433235
+Genève,2008,438177
+Genève,2009,446106
+Genève,2010,453292
+Genève,2011,457715
+Genève,2012,460534
+Genève,2013,463101
+Genève,2014,469433
+Genève,2015,477385
+Genève,2016,484736
+Genève,2017,489524
+Genève,2018,495249
+Genève,2019,499480
+Genève,2020,504128
+Genève,2021,506343
+Genève,2022,509448
+Genève,2023,514114
+Jura,2004,69064
+Jura,2005,69091
+Jura,2006,69110
+Jura,2007,69292
+Jura,2008,69555
+Jura,2009,69822
+Jura,2010,70134
+Jura,2011,70032
+Jura,2012,70542
+Jura,2013,70942
+Jura,2014,71738
+Jura,2015,72410
+Jura,2016,72782
+Jura,2017,73122
+Jura,2018,73290
+Jura,2019,73419
+Jura,2020,73584
+Jura,2021,73709
+Jura,2022,73798
+Jura,2023,73865

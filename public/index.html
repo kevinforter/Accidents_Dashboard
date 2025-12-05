@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <title>DAVI – Unfallvisualisierung Schweiz</title>
+    <link rel="stylesheet" href="css/style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+</head>
+<body class="page-home">
+
+<header class="site-header">
+    <div class="header-inner">
+        <div>
+            <h1>DAVI – Unfallvisualisierung Schweiz</h1>
+            <p class="header-subtitle">Interaktive Datenanalyse Schweizer Versicherungsunfälle</p>
+        </div>
+
+        <nav>
+            <ul class="nav-list">
+                <li><a href="index.html" class="active">Home</a></li>
+                <li><a href="background.html">Hintergrund</a></li>
+                <li><a href="data.html">Daten</a></li>
+                <li><a href="visualization.html">Visualisierung</a></li>
+                <li><a href="design.html">Design</a></li>
+                <li><a href="references.html">Quellen</a></li>
+                <li><a href="contact.html">Kontakt</a></li>
+            </ul>
+        </nav>
+    </div>
+</header>
+
+<main class="page-main">
+
+    <section class="card hero-card">
+        <div class="hero-text">
+            <h2>Projektübersicht</h2>
+            <p>
+                Dieses Projekt ist im Modul I.DAVI an der HSLU entstanden. Ziel ist es,
+                Schweizer Versicherungsunfälle interaktiv zu visualisieren und Unterschiede
+                zwischen Kantonen, Tätigkeiten und Versicherungszweigen sichtbar zu machen.
+            </p>
+            <p>
+                Die Visualisierung unterstützt explorative Analysen nach Region, Zeitverlauf
+                und Tätigkeit und folgt der Informationssuche-Mantra
+                „Overview first, zoom &amp; filter, details on demand“.
+            </p>
+            <button class="btn-primary" onclick="location.href='visualization.html'">
+                Zur Visualisierung
+            </button>
+        </div>
+
+        <div class="hero-side">
+            <h3>Auf einen Blick</h3>
+            <ul class="hero-list">
+                <li>Vergleich von Kantonen (normalisierte Unfallraten)</li>
+                <li>Analyse nach Versicherungszweigen (BU / NBU)</li>
+                <li>Unfälle nach Tätigkeit und über die Zeit</li>
+            </ul>
+        </div>
+    </section>
+
+    <section class="card-grid">
+        <article class="card">
+            <h3>Datenbasis</h3>
+            <p>
+                Die Unfalldaten stammen aus Schweizer Versicherungsstatistiken
+                und wurden in R bereinigt und aggregiert. Ergänzend werden kantonale
+                Strukturgrössen wie Arbeitsplätze bzw. Bevölkerung verwendet, um
+                Raten zu berechnen.
+            </p>
+        </article>
+
+        <article class="card">
+            <h3>Fragestellungen</h3>
+            <p>
+                Welche Kantone sind – relativ zur kantonalen Struktur – besonders stark
+                von Unfällen betroffen? Welche Tätigkeiten sind besonders risikoreich?
+                Wie haben sich die Unfallzahlen über die Jahre entwickelt?
+            </p>
+        </article>
+
+        <article class="card">
+            <h3>Interaktive Analyse</h3>
+            <p>
+                Karte und Diagramme sind miteinander verknüpft. Filter, Brushing und
+                Linking ermöglichen es, bestimmte Kantone, Zeiträume oder Tätigkeiten
+                zu fokussieren und deren Muster im Detail zu betrachten.
+            </p>
+        </article>
+    </section>
+
+</main>
+
+<footer class="site-footer">
+    <p>&copy; 2025 HSLU DAVI Projekt – Gruppe 04</p>
+</footer>
+
+</body>
+</html>

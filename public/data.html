@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <title>DAVI – Daten</title>
+    <link rel="stylesheet" href="css/style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+</head>
+<body class="page-data">
+
+<header class="site-header">
+    <div class="header-inner">
+        <div>
+            <h1>DAVI – Unfallvisualisierung Schweiz</h1>
+            <p class="header-subtitle">Interaktive Datenanalyse Schweizer Versicherungsunfälle</p>
+        </div>
+
+        <nav>
+            <ul class="nav-list">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="background.html">Hintergrund</a></li>
+                <li><a href="data.html" class="active">Daten</a></li>
+                <li><a href="visualization.html">Visualisierung</a></li>
+                <li><a href="design.html">Design</a></li>
+                <li><a href="references.html">Quellen</a></li>
+                <li><a href="contact.html">Kontakt</a></li>
+            </ul>
+        </nav>
+    </div>
+</header>
+
+<main class="page-main">
+
+    <section class="card">
+        <h2>Datenquellen</h2>
+        <p>
+            Für dieses Projekt wurden aggregierte Versicherungsunfalldaten sowie kantonale
+            Bevölkerungs- bzw. Strukturgrössen herangezogen. Die Datei
+            <code>faelle.dsv</code> enthält alle Unfälle nach Kanton, Alter, Tätigkeit, Jahr
+            und Versicherungszweig.
+        </p>
+    </section>
+
+    <section class="card">
+        <h2>Strukturdaten</h2>
+        <p>
+            Zusätzlich werden kantonale Strukturgrössen wie Bevölkerungszahlen oder Arbeitsplätze
+            verwendet, um die Karte später zu normalisieren. Dadurch zeigt die Karte nicht absolute
+            Unfallzahlen, sondern <strong>Unfallraten pro 1'000 Personen/Arbeitsplätze</strong>.
+        </p>
+    </section>
+
+    <section class="card">
+        <h2>Datenfelder</h2>
+        <ul>
+            <li><strong>REGISTRIERUNGSJAHR</strong></li>
+            <li><strong>KANTON_UNFALL</strong></li>
+            <li><strong>VERSICHERUNGSZWEIG</strong> (BU/NBU)</li>
+            <li><strong>ALTERSGRUPPE</strong></li>
+            <li><strong>GESCHLECHT</strong></li>
+            <li><strong>TAETIGKEIT</strong></li>
+            <li><strong>ANZAHL_UNFAELLE</strong></li>
+        </ul>
+    </section>
+
+</main>
+
+<footer class="site-footer">
+    <p>&copy; 2025 HSLU DAVI Projekt – Gruppe 04</p>
+</footer>
+
+</body>
+</html>

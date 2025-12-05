@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <title>DAVI – Visualisierung</title>
+
+    <link rel="stylesheet" href="css/style.css">
+
+    <!-- D3 von CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/topojson/3.0.2/topojson.min.js"></script>
+
+    <!-- Deine JS-Dateien (wie bisher) -->
+    <script src="js/utils.js" defer></script>
+    <script src="js/chart_bar.js" defer></script>
+    <script src="js/chart_map.js" defer></script>
+    <script src="js/main.js" defer></script>
+</head>
+<body class="page-viz">
+
+<header class="site-header">
+    <div class="header-inner">
+        <div>
+            <h1>DAVI – Unfallvisualisierung Schweiz</h1>
+            <p class="header-subtitle">Interaktives Dashboard</p>
+        </div>
+
+        <nav>
+            <ul class="nav-list">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="background.html">Hintergrund</a></li>
+                <li><a href="data.html">Daten</a></li>
+                <li><a href="visualization.html" class="active">Visualisierung</a></li>
+                <li><a href="design.html">Design</a></li>
+                <li><a href="references.html">Quellen</a></li>
+                <li><a href="contact.html">Kontakt</a></li>
+            </ul>
+        </nav>
+    </div>
+</header>
+
+<main class="page-main" id="dashboard">
+
+    <section class="viz-grid">
+
+        <!-- Oben: Unfallkarte über die ganze Breite -->
+        <section class="card viz-panel" id="viz-map">
+            <div class="card-header">
+                <div class="card-title">
+                    <h2>Unfallkarte</h2>
+                    <span class="card-hint inline">
+                        <span class="hint-text">
+                            Die Karte wird später die Kantone nach Unfallraten einfärben (normalisiert auf eine kantonale Strukturgrösse,
+                            z.&nbsp;B. Arbeitsplätze), ähnlich wie in der Karte im Projekt deines Freundes.
+                        </span>
+                    </span>
+                </div>
+                <div class="card-actions">
+                    <button class="btn-outline" id="btn-reset">Reset</button>
+                    <button class="btn-primary" id="btn-open-filters">Filter</button>
+                </div>
+            </div>
+
+            <div id="filter-backdrop" class="filter-backdrop"></div>
+            <div id="filter-modal" class="filter-modal">
+                <div class="filter-modal-inner">
+                    <div class="filter-modal-header">
+                        <h3>Filter</h3>
+                        <button id="filter-close" class="modal-close">X</button>
+                    </div>
+                    <div id="filter-controls" class="card-controls filter-controls">
+                        <!-- Toggle für Unfallort / Wohnort -->
+                        <div class="map-mode-toggle">
+                            <label class="toggle-option">
+                                <input type="radio" name="map-mode" value="unfall" checked>
+                                <span>Unfallort</span>
+                            </label>
+                            <label class="toggle-option">
+                                <input type="radio" name="map-mode" value="wohnort">
+                                <span>Wohnort</span>
+                            </label>
+                        </div>
+                        <select class="control-select" id="filter-branch">
+                            <option value="all">Alle Versicherungszweige</option>
+                            <option value="BU">BU – Berufsunfälle</option>
+                            <option value="NBU">NBU – Nichtberufsunfälle</option>
+                        </select>
+                        <select class="control-select" id="filter-age">
+                            <option value="all">Alle Altersgruppen</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div id="map-container" class="chart-placeholder">
+                <span>Karte der Schweiz – D3-Visualisierung folgt (Unfallraten pro Kanton).</span>
+            </div>
+
+        </section>
+
+        <!-- Unten links: Liniendiagramm -->
+        <section class="card viz-panel" id="viz-line">
+            <div class="card-header">
+                <div class="card-title">
+                    <h2>Unfalltrends im Laufe der Zeit</h2>
+                    <span class="card-hint inline popover">
+                        <span class="hint-text">
+                            Zeigt die Entwicklung der Unfallzahlen über die Jahre (absolute Werte), gefiltert nach Auswahl in der Karte.
+                        </span>
+                    </span>
+                </div>
+            </div>
+            <div id="trend-container" class="chart-placeholder">
+                <span>Liniendiagramm der jährlichen Unfallzahlen – D3-Visualisierung folgt.</span>
+            </div>
+        </section>
+
+        <!-- Unten rechts: Balkendiagramm -->
+        <section class="card viz-panel" id="viz-bar">
+            <div class="card-header">
+                <div class="card-title">
+                    <h2>Unfälle nach Kanton (Top 10)</h2>
+                    <span class="card-hint inline popover">
+                        <span class="hint-text">
+                            Zeigt die Kantone mit den meisten Unfällen (absolute Zahlen), ähnlich wie beim Balkendiagramm im Dashboard
+                            deines Freundes – aber hier mit Versicherungsunfalldaten.
+                        </span>
+                    </span>
+                </div>
+            </div>
+            <div id="bar-container" class="chart-placeholder">
+                <span>Top-10-Kantone nach Unfallzahl – D3-Visualisierung folgt.</span>
+            </div>
+        </section>
+
+    </section>
+
+</main>
+
+<footer class="site-footer">
+    <p>&copy; 2025 HSLU DAVI Projekt – Gruppe 04</p>
+</footer>
+
+</body>
+</html>

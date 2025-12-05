@@ -1,0 +1,610 @@
+/* ---------- Global ---------- */
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    background: #f7f1e7;              /* cremiger Hintergrund */
+    color: #3f3a33;                    /* warmes Dunkelbraun */
+    height: auto;
+}
+
+html, body {
+    height: 100%;
+}
+
+/* Alle Titel überall gleich (orange) */
+h1, h2, h3 {
+    color: #c98042;
+}
+
+/* ---------- Header & Navigation ---------- */
+
+.site-header {
+    background: #fffaf3;
+    border-bottom: 1px solid #e3d6c5;
+}
+
+.header-inner {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0.75rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 2rem;
+}
+
+.site-header h1 {
+    margin: 0;
+    font-size: 1.7rem;
+}
+
+.header-subtitle {
+    margin: 0.25rem 0 0 0;
+    font-size: 0.95rem;
+    color: #7b7164;
+}
+
+.nav-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    gap: 1rem;
+}
+
+.nav-list a {
+    text-decoration: none;
+    color: #5a5248;
+    font-size: 0.95rem;
+    padding-bottom: 0.2rem;
+    border-bottom: 2px solid transparent;
+}
+
+.nav-list a:hover {
+    border-bottom-color: #e8c8a4;
+}
+
+.nav-list a.active {
+    border-bottom-color: #c98042;
+    color: #c98042;
+}
+
+/* ---------- Seitenlayout allgemein ---------- */
+
+.page-main {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 1.5rem 2rem 2.5rem 2rem;
+}
+
+/* ---------- Cards (für alle Seiten) ---------- */
+
+.card {
+    background: #fffaf3;
+    border-radius: 0.6rem;
+    border: 1px solid #e4d6c4;
+    box-shadow: 0 6px 14px rgba(57, 38, 16, 0.06);
+    padding: 1.2rem 1.6rem 1.4rem 1.6rem;
+    margin-bottom: 1.5rem;            /* Abstand zwischen Cards */
+}
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #e4d6c4;
+    padding-bottom: 0.7rem;
+    margin-bottom: 0.9rem;
+    gap: 1rem;
+}
+
+.card-header h2 {
+    margin: 0;
+}
+
+.card-title {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    position: relative;              /* Basis für absolut platzierte Hinweise */
+}
+
+.card-actions {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.card-hint {
+    margin-top: 0.5rem;
+    font-size: 0.85rem;
+    color: #887c6d;
+    display: flex;
+    justify-content: flex-end;
+    position: relative;
+}
+
+.card-hint::before {
+    content: "i";
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: #f3e5d4;
+    color: #7a5a33;
+    font-weight: 700;
+    border: 1px solid #d3bda2;
+    cursor: default;
+    margin-right: 0.35rem;
+    flex-shrink: 0;
+}
+
+.card-hint .hint-text {
+    background: #fffaf3;
+    border: 1px solid #e4d6c4;
+    border-radius: 0.45rem;
+    padding: 0.4rem 0.6rem;
+    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.06);
+    white-space: normal;
+    max-width: 540px;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(4px);
+    transition: opacity 0.15s ease, transform 0.15s ease;
+    color: #6a5b4a;
+}
+
+.card-hint:hover .hint-text {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0);
+}
+
+.card-hint.inline {
+    margin: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: flex-start;
+}
+
+.card-hint.inline .hint-text {
+    max-width: 360px;
+    position: relative;
+    z-index: 1;
+}
+
+/* Popover-Hinweis rechts neben dem Titel (z. B. bei Linien- und Balkendiagramm) */
+.card-hint.popover {
+    position: absolute;
+    left: calc(100% + 0.75rem);
+    top: 50%;
+    transform: translateY(-50%);
+    margin: 0;
+    z-index: 2;
+}
+
+.card-hint.popover .hint-text {
+    max-width: 420px;
+}
+
+@media (max-width: 800px) {
+    .card-hint.popover {
+        position: relative;
+        left: 0;
+        top: auto;
+        transform: none;
+        margin-top: 0.35rem;
+    }
+}
+
+.card-controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    align-items: center;
+    justify-content: flex-end;
+}
+
+/* ---------- Buttons & Selects ---------- */
+
+.btn-primary,
+.btn-outline,
+.btn-secondary {
+    border-radius: 999px;
+    font-size: 0.85rem;
+    line-height: 1.1;
+    cursor: pointer;
+    padding: 0.25rem 0.85rem;
+    transition: background 0.15s ease, color 0.15s ease,
+    box-shadow 0.15s ease, border-color 0.15s ease;
+}
+
+.btn-primary {
+    border: 1px solid #c98042;
+    background: #c98042;
+    color: #fffaf3;
+    box-shadow: 0 4px 10px rgba(180, 117, 55, 0.35);
+}
+
+.btn-primary:hover {
+    background: #b66f34;
+}
+
+.btn-outline {
+    border: 1px solid #d3bda2;
+    background: transparent;
+    color: #7a5a33;
+}
+
+.btn-outline:hover {
+    background: #f3e5d4;
+}
+
+.btn-secondary {
+    border: 1px solid #d7c5ae;
+    background: #f4eadc;
+    color: #7a5a33;
+}
+
+.btn-secondary:hover {
+    background: #ecdfcf;
+}
+
+.control-select {
+    padding: 0.25rem 0.85rem;
+    border-radius: 999px;
+    border: 1px solid #d8c8b5;
+    background: #fbf5ec;
+    font-size: 0.85rem;
+    line-height: 1.1;
+    color: #5a5248;
+}
+
+/* ---------- Hero (Startseite) ---------- */
+
+.hero-card {
+    display: flex;
+    gap: 2rem;
+    margin-bottom: 1.5rem;
+}
+
+.hero-text {
+    flex: 2;
+}
+
+.hero-side {
+    flex: 1;
+    border-left: 1px dashed #e0d1bd;
+    padding-left: 1.25rem;
+}
+
+.hero-list {
+    padding-left: 1.1rem;
+}
+
+/* ---------- Card-Grid (Startseite) ---------- */
+
+.card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 1rem;
+}
+
+/* =========================================================
+   VISUALISIERUNG – Layout ähnlich wie beim Projekt deines Freundes
+   ========================================================= */
+
+body.page-viz .page-main {
+    padding-top: 1.2rem;
+}
+
+body.page-viz {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+body.page-viz .page-main {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+/* Grid:
+   Links: Karte über zwei Zeilen
+   Rechts: oben Trend, unten Balken */
+.viz-grid {
+    display: grid;
+    grid-template-columns: 1.25fr 1fr;
+    grid-template-rows: minmax(320px, 1fr) minmax(260px, 1fr);
+    grid-template-areas:
+    "map line"
+    "map bar";
+    gap: 1rem;
+    /* Versuchen, alles ohne Scrollen auf eine normale Laptop-Seite zu quetschen */
+    min-height: 0;
+    height: 100%;
+    max-height: 100%;
+}
+
+#viz-map {
+    grid-area: map;
+}
+
+#viz-line {
+    grid-area: line;
+}
+
+#viz-bar {
+    grid-area: bar;
+}
+
+/* Panels innerhalb des Grids nutzen einfach Card-Styling */
+.viz-panel {
+    display: flex;
+    flex-direction: column;
+    min-height: 0; /* allow shrinking inside 100vh layout */
+}
+
+/* Chart-Container-Größen so wählen, dass alles auf eine Seite passt */
+#map-container {
+    min-height: 480px !important;
+}
+
+#trend-container,
+#bar-container {
+    min-height: 200px;
+}
+
+#map-container,
+#trend-container,
+#bar-container {
+    flex: 1 1 auto;
+}
+
+/* Platzhalter-Styles für Charts (falls noch nicht gezeichnet) */
+.chart-placeholder {
+    background: #f5ede2;
+    border-radius: 0.5rem;
+    border: 1px dashed #decdb7;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #948777;
+    font-size: 0.9rem;
+    padding: 1.25rem;
+    min-height: 200px;
+}
+
+/* Aktiver Chart-Container ohne Padding, damit das SVG bündig sitzt */
+.chart-surface {
+    padding: 0;
+    background: transparent;
+    border: none;
+    display: flex;
+    align-items: stretch;
+}
+
+.chart-surface svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+
+/* Tooltip für die Schweizerkarte */
+
+.map-tooltip {
+    position: absolute;
+    background: #fffaf3;
+    border: 1px solid #e4d6c4;
+    border-radius: 0.4rem;
+    padding: 0.4rem 0.6rem;
+    font-size: 0.8rem;
+    color: #3f3a33;
+    pointer-events: none;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.18);
+    z-index: 999;
+}
+
+
+/* ---------- Footer ---------- */
+
+.site-footer {
+    border-top: 1px solid #e3d6c5;
+    background: #fffaf3;
+    padding: 0.9rem 2rem;
+    text-align: center;
+    font-size: 0.9rem;
+    color: #8a7d6c;
+}
+
+.year-slider-box {
+    background: #fffaf3;
+    padding: 12px 16px;
+    margin-bottom: 12px;
+    border: 1px solid #e4d6c4;
+    border-radius: 8px;
+}
+
+.year-slider-box label {
+    font-weight: 600;
+    color: #c98042;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.year-values {
+    margin-bottom: 6px;
+    color: #6a5b4a;
+    font-size: 14px;
+}
+
+.year-range-inputs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+    margin-top: 8px;
+}
+
+.year-input {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    color: #6a5b4a;
+    font-size: 0.85rem;
+}
+
+.year-slider-box select {
+    width: 120px;
+    padding: 0.25rem 0.5rem;
+    border: 1px solid #d8c8b5;
+    border-radius: 6px;
+    background: #fbf5ec;
+    font-size: 0.9rem;
+    color: #5a5248;
+}
+
+/* ---------- Map mode toggle ---------- */
+
+.map-mode-toggle {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.1rem;
+    border: 1px solid #d8c8b5;
+    border-radius: 999px;
+    background: #fbf5ec;
+}
+
+.map-mode-toggle .toggle-option {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.3rem 0.65rem;
+    border-radius: 999px;
+    color: #5a5248;
+    cursor: pointer;
+    transition: background 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.map-mode-toggle input[type="radio"] {
+    position: absolute;
+    opacity: 0;
+    width: 1px;
+    height: 1px;
+    pointer-events: none;
+}
+
+.map-mode-toggle .toggle-option span {
+    font-size: 0.85rem;
+    white-space: nowrap;
+}
+
+.map-mode-toggle .toggle-option:has(input:checked) {
+    background: #c98042;
+    color: #fffaf3;
+    box-shadow: 0 4px 10px rgba(180, 117, 55, 0.25);
+}
+
+/* ---------- Filter Modal ---------- */
+
+.filter-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.3);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease;
+    z-index: 900;
+}
+
+.filter-backdrop.open {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.filter-modal {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+    z-index: 901;
+}
+
+.filter-modal.open {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.filter-modal-inner {
+    width: min(820px, 92vw);
+    background: #fffaf3;
+    border: 1px solid #e4d6c4;
+    border-radius: 12px;
+    box-shadow: 0 14px 34px rgba(0, 0, 0, 0.2);
+    padding: 1rem 1.2rem 1.2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.9rem;
+}
+
+.filter-modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+}
+
+.filter-modal-header h3 {
+    margin: 0;
+    color: #c98042;
+}
+
+.modal-close {
+    border: 1px solid #d3bda2;
+    background: #fbf5ec;
+    color: #5a5248;
+    border-radius: 999px;
+    width: 32px;
+    height: 32px;
+    cursor: pointer;
+    font-weight: 700;
+    transition: background 0.15s ease, color 0.15s ease;
+}
+
+.modal-close:hover {
+    background: #f3e5d4;
+}
+
+.filter-controls {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 0.65rem;
+    align-items: center;
+}
+
+.filter-controls .map-mode-toggle {
+    justify-self: start;
+}
+
+.filter-controls .year-slider-box {
+    grid-column: 1 / -1;
+}
+
+.modal-open {
+    overflow: hidden;
+}
