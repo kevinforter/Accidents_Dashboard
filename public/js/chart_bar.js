@@ -166,6 +166,43 @@ function renderTrendChart(data) {
     const container = document.getElementById("trend-container");
     if (!container) return;
 
+    const wrapTickText = (selection, maxChars = 18) => {
+        selection.each(function() {
+            const textSel = d3.select(this);
+            const words = (textSel.text() || "").split(/\s+/).filter(Boolean);
+            if (words.join(" ").length <= maxChars) return;
+
+            const x = textSel.attr("x") || 0;
+            const y = textSel.attr("y") || 0;
+            const dy = parseFloat(textSel.attr("dy")) || 0;
+            const lineHeight = 0.95;
+
+            textSel.text(null);
+            let line = [];
+            let lineNumber = 0;
+            let tspan = textSel.append("tspan")
+                .attr("x", x)
+                .attr("y", y)
+                .attr("dy", dy + "em");
+
+            words.forEach(word => {
+                const candidate = [...line, word].join(" ");
+                if (candidate.length > maxChars && line.length > 0) {
+                    tspan.text(line.join(" "));
+                    line = [word];
+                    tspan = textSel.append("tspan")
+                        .attr("x", x)
+                        .attr("y", y)
+                        .attr("dy", (++lineNumber * lineHeight + dy) + "em")
+                        .text(word);
+                } else {
+                    line.push(word);
+                    tspan.text(line.join(" "));
+                }
+            });
+        });
+    };
+
     const byActivity = d3.rollups(
         data,
         v => d3.sum(v, d => d.anzahl),
@@ -188,10 +225,10 @@ function renderTrendChart(data) {
     container.classList.add("chart-surface");
 
     const { width, height } = getContainerSize(container, 600, 280);
-    const margin = { top: 16, right: 20, bottom: 16, left: 190 };
+    const margin = { top: 16, right: 20, bottom: 40, left: 190 };
     const computedHeight = Math.max(
         height,
-        margin.top + margin.bottom + byActivity.length * 26
+        margin.top + margin.bottom + byActivity.length * 40
     );
 
     const svg = d3.select(container)
@@ -218,10 +255,8 @@ function renderTrendChart(data) {
         .call(d3.axisLeft(y))
         .style("font-size", "11px")
         .selectAll("text")
-        .call(text => text.each(function() {
-            const node = d3.select(this);
-            node.attr("dy", "0.35em");
-        }));
+        .attr("dy", "0.35em")
+        .call(wrapTickText, 18);
 
     svg.append("g").call(xAxis);
     svg.append("g").call(yAxis);
