@@ -194,8 +194,10 @@ function renderMap(accidentData) {
     const container = d3.select("#map-container");
     if (container.empty()) return;
 
-    // Container leeren
-    container.html("");
+    // Container leeren - WICHTIG: Erst leeren, wenn Daten da sind (siehe unten),
+    // oder hier lassen, aber Gefahr von Race Conditions.
+    // Besser: Wir leeren ihn erst im Promise-Callback.
+    // container.html(""); // <-- Verschoben nach unten
 
     const node = container.node();
     const rect = node.getBoundingClientRect();
@@ -206,6 +208,9 @@ function renderMap(accidentData) {
 
     Promise.all([loadMapGeoData(), loadPopulationData()]).then(
         ([geo, pop]) => {
+            // Container jetzt leeren, bevor wir neu zeichnen
+            container.html("");
+
             // Unfälle pro Kanton aggregieren (absolute Zahlen im gewählten Zeitraum)
             const accidentsByCanton = d3.rollups(
                 accidentData,
@@ -374,7 +379,7 @@ function renderMap(accidentData) {
                     }
 
                     // Karte neu zeichnen (für Highlight der Auswahl)
-                    renderMap(accidentData);
+                    // renderMap(accidentData); // <--- ENTFERNT: Das macht updateChartsFromMap via main.js -> applyFiltersAndRender -> renderMap
 
                     // Charts (Trend + Balken) filtern – falls du das nutzt
                     try {

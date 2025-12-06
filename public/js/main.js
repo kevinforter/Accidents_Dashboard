@@ -6,6 +6,15 @@ let selectedCantons = [];      // aktuell ausgewählte Kantone (Codes)
 let mapMode = "unfall";        // "unfall" = kanton_unfall, "wohnort" = kanton_wohnort
 let availableYears = [];       // alle Jahre im Datensatz (kontinuierlich min..max)
 
+const cantonNames = {
+    "ZH": "Zürich", "BE": "Bern", "LU": "Luzern", "UR": "Uri", "SZ": "Schwyz",
+    "OW": "Obwalden", "NW": "Nidwalden", "GL": "Glarus", "ZG": "Zug", "FR": "Freiburg",
+    "SO": "Solothurn", "BS": "Basel-Stadt", "BL": "Basel-Landschaft", "SH": "Schaffhausen",
+    "AR": "Appenzell Ausserrhoden", "AI": "Appenzell Innerrhoden", "SG": "St. Gallen",
+    "GR": "Graubünden", "AG": "Aargau", "TG": "Thurgau", "TI": "Tessin", "VD": "Waadt",
+    "VS": "Wallis", "NE": "Neuenburg", "GE": "Genf", "JU": "Jura"
+};
+
 document.addEventListener("DOMContentLoaded", () => {
     if (document.body.classList.contains("page-viz")) {
         initVisualizationPage();
@@ -38,6 +47,11 @@ function initVisualizationPage() {
 
             // Altersgruppen-Auswahl dynamisch aus den Daten befüllen
             populateAgeOptions(allAccidentData);
+
+            // Kantons-Auswahl befüllen
+            populateCantonOptions();
+
+            // Event-Listener für Filter & Modal setzen
 
             // Event-Listener für Filter & Modal setzen
             wireFilterEvents();
@@ -101,6 +115,27 @@ function insertYearSlider(minYear, maxYear) {
     controls.appendChild(wrapper);
 }
 
+function populateCantonOptions() {
+    const select = document.getElementById("filter-canton");
+    if (!select) return;
+
+    // Bestehende Optionen (bis auf "Alle") löschen?
+    // Hier bauen wir einfach neu auf.
+    select.innerHTML = '<option value="all">Alle Kantone</option>';
+
+    // Sortiert nach Namen
+    const sortedCodes = Object.keys(cantonNames).sort((a, b) =>
+        cantonNames[a].localeCompare(cantonNames[b])
+    );
+
+    sortedCodes.forEach(code => {
+        const opt = document.createElement("option");
+        opt.value = code;
+        opt.textContent = cantonNames[code];
+        select.appendChild(opt);
+    });
+}
+
 /* ---------------------------------------------------------
    Altersgruppen-Select befüllen
 --------------------------------------------------------- */
@@ -148,6 +183,7 @@ function wireFilterEvents() {
     const btnReset    = document.getElementById("btn-reset");
     const selectBranch = document.getElementById("filter-branch");
     const selectAge   = document.getElementById("filter-age");
+    const selectCanton = document.getElementById("filter-canton");
     const yearStart   = document.getElementById("year-start");
     const yearEnd     = document.getElementById("year-end");
     const yearLabel   = document.getElementById("year-label");
@@ -159,6 +195,7 @@ function wireFilterEvents() {
             // Versicherungszweig & Altersgruppe zurücksetzen
             if (selectBranch) selectBranch.value = "all";
             if (selectAge) selectAge.value = "all";
+            if (selectCanton) selectCanton.value = "all";
 
             // Jahr-Slider zurück auf min/max
             if (yearStart && yearEnd) {
@@ -199,6 +236,21 @@ function wireFilterEvents() {
     // Altersgruppen-Filter (falls du Optionen ergänzt)
     if (selectAge) {
         selectAge.addEventListener("change", () => {
+            applyFiltersAndRender();
+        });
+    }
+
+    // Kantons-Filter (Dropdown)
+    if (selectCanton) {
+        selectCanton.addEventListener("change", () => {
+            const val = selectCanton.value;
+            if (val === "all") {
+                selectedCantons = [];
+            } else {
+                selectedCantons = [val];
+            }
+            // Sync mit globaler Variable für chart_map (falls nötig)
+            window.selectedCantons = selectedCantons;
             applyFiltersAndRender();
         });
     }
@@ -335,8 +387,24 @@ function applyFiltersAndRender() {
 /* ---------------------------------------------------------
    Callback aus chart_map.js, wenn Kantone angeklickt wurden
 --------------------------------------------------------- */
-window.onMapSelectionChanged = function(cantons) {
+window.updateChartsFromMap = function(cantons) {
     selectedCantons = cantons.slice();  // lokale Kopie
+    window.selectedCantons = selectedCantons; // Global sync
+
+    // Dropdown updaten
+    const selectCanton = document.getElementById("filter-canton");
+    if (selectCanton) {
+        if (selectedCantons.length === 0) {
+            selectCanton.value = "all";
+        } else if (selectedCantons.length === 1) {
+            selectCanton.value = selectedCantons[0];
+        } else {
+            // Bei Mehrfachauswahl: Dropdown kann das nicht nativ anzeigen -> "all" oder so lassen
+            // Optional: Man könnte eine "Multiple" Option einfügen, aber "all" ist weniger verwirrend als ein falscher Einzelwert.
+            selectCanton.value = "all";
+        }
+    }
+
     applyFiltersAndRender();
 };
 
