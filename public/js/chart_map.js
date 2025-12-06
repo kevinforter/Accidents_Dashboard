@@ -315,8 +315,11 @@ function renderMap(accidentData) {
                     const [cx, cy] = mapPath.centroid(d);
 
                     // Kanton hervorheben
+                    const currentFill = el.attr("fill");
+                    const hoverStroke = d3.color(currentFill).darker(1.5);
+
                     el.raise()
-                        .attr("stroke", "#333")
+                        .attr("stroke", hoverStroke)
                         .attr("stroke-width", 2.2)
                         .transition()
                         .duration(80)
@@ -413,14 +416,14 @@ function addMapLegend(svg, colorScale, maxRate, width, height) {
         .attr("y1", "0%")
         .attr("y2", "0%");
 
-    gradient
-        .append("stop")
-        .attr("offset", "0%")
-        .attr("stop-color", colorScale(0));
-    gradient
-        .append("stop")
-        .attr("offset", "100%")
-        .attr("stop-color", colorScale(maxRate || 1));
+    // Mehrere Stops für den Gradienten generieren, um die Farbskala korrekt abzubilden
+    const stops = d3.range(0, 1.1, 0.1); // 0, 0.1, ..., 1.0
+    stops.forEach(offset => {
+        gradient
+            .append("stop")
+            .attr("offset", `${offset * 100}%`)
+            .attr("stop-color", colorScale(offset * (maxRate || 1)));
+    });
 
     legendGroup
         .append("rect")
