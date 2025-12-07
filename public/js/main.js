@@ -51,6 +51,12 @@ function initVisualizationPage() {
             // Kantons-Auswahl befüllen
             populateCantonOptions();
 
+            // Geschlecht-Auswahl befüllen
+            populateGenderOptions(allAccidentData);
+
+            // Tätigkeit-Auswahl befüllen
+            populateActivityOptions(allAccidentData);
+
             // Event-Listener für Filter & Modal setzen
 
             // Event-Listener für Filter & Modal setzen
@@ -177,6 +183,70 @@ function populateAgeOptions(data) {
 }
 
 /* ---------------------------------------------------------
+   Geschlecht-Select befüllen
+--------------------------------------------------------- */
+function populateGenderOptions(data) {
+    const selectGender = document.getElementById("filter-gender");
+    if (!selectGender) return;
+
+    const uniqueGenders = Array.from(
+        new Set(
+            data
+                .map(d => d.geschlecht)
+                .filter(Boolean)
+        )
+    );
+    uniqueGenders.sort();
+
+    selectGender.innerHTML = "";
+    const optionAll = document.createElement("option");
+    optionAll.value = "all";
+    optionAll.textContent = "Alle Geschlechter";
+    selectGender.appendChild(optionAll);
+
+    uniqueGenders.forEach(g => {
+        const opt = document.createElement("option");
+        opt.value = g;
+        // Label etwas schöner machen
+        if (g === "m") opt.textContent = "Männlich";
+        else if (g === "f") opt.textContent = "Weiblich";
+        else opt.textContent = g;
+        selectGender.appendChild(opt);
+    });
+}
+
+/* ---------------------------------------------------------
+   Tätigkeit-Select befüllen
+--------------------------------------------------------- */
+function populateActivityOptions(data) {
+    const selectActivity = document.getElementById("filter-activity");
+    if (!selectActivity) return;
+
+    const uniqueActivities = Array.from(
+        new Set(
+            data
+                .map(d => d.taetigkeit)
+                .filter(Boolean)
+        )
+    );
+    // Alphabetisch sortieren
+    uniqueActivities.sort((a, b) => a.localeCompare(b));
+
+    selectActivity.innerHTML = "";
+    const optionAll = document.createElement("option");
+    optionAll.value = "all";
+    optionAll.textContent = "Alle Tätigkeiten";
+    selectActivity.appendChild(optionAll);
+
+    uniqueActivities.forEach(act => {
+        const opt = document.createElement("option");
+        opt.value = act;
+        opt.textContent = act;
+        selectActivity.appendChild(opt);
+    });
+}
+
+/* ---------------------------------------------------------
    Filter-Events (Reset, Dropdowns, Jahr-Slider)
 --------------------------------------------------------- */
 function wireFilterEvents() {
@@ -209,6 +279,12 @@ function wireFilterEvents() {
                 }
             }
 
+            // Neue Filter zurücksetzen
+            const selectGender = document.getElementById("filter-gender");
+            const selectActivity = document.getElementById("filter-activity");
+            if (selectGender) selectGender.value = "all";
+            if (selectActivity) selectActivity.value = "all";
+
             // Kantonsauswahl zurücksetzen (global und für Karte)
             selectedCantons = [];
             if (window.selectedCantons) {
@@ -236,6 +312,22 @@ function wireFilterEvents() {
     // Altersgruppen-Filter (falls du Optionen ergänzt)
     if (selectAge) {
         selectAge.addEventListener("change", () => {
+            applyFiltersAndRender();
+        });
+    }
+
+    // Geschlecht-Filter
+    const selectGender = document.getElementById("filter-gender");
+    if (selectGender) {
+        selectGender.addEventListener("change", () => {
+            applyFiltersAndRender();
+        });
+    }
+
+    // Tätigkeit-Filter
+    const selectActivity = document.getElementById("filter-activity");
+    if (selectActivity) {
+        selectActivity.addEventListener("change", () => {
             applyFiltersAndRender();
         });
     }
@@ -343,6 +435,18 @@ function applyFiltersAndRender() {
     // 3. Altersgruppe
     if (age !== "all") {
         data = data.filter(d => d.altersgruppe === age);
+    }
+
+    // 3b. Geschlecht
+    const selectGender = document.getElementById("filter-gender");
+    if (selectGender && selectGender.value !== "all") {
+        data = data.filter(d => d.geschlecht === selectGender.value);
+    }
+
+    // 3c. Tätigkeit
+    const selectActivity = document.getElementById("filter-activity");
+    if (selectActivity && selectActivity.value !== "all") {
+        data = data.filter(d => d.taetigkeit === selectActivity.value);
     }
 
     // 4. Kanton-Auswahl (von der Karte)

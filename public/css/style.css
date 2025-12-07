@@ -7,17 +7,22 @@
 body {
     margin: 0;
     font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-    background: #f7f1e7;              /* cremiger Hintergrund */
-    color: #3f3a33;                    /* warmes Dunkelbraun */
+    background: #f7f1e7;
+    /* cremiger Hintergrund */
+    color: #3f3a33;
+    /* warmes Dunkelbraun */
     height: auto;
 }
 
-html, body {
+html,
+body {
     height: 100%;
 }
 
 /* Alle Titel überall gleich (orange) */
-h1, h2, h3 {
+h1,
+h2,
+h3 {
     color: #c98042;
 }
 
@@ -90,7 +95,8 @@ h1, h2, h3 {
     border: 1px solid #e4d6c4;
     box-shadow: 0 6px 14px rgba(57, 38, 16, 0.06);
     padding: 1.2rem 1.6rem 1.4rem 1.6rem;
-    margin-bottom: 1.5rem;            /* Abstand zwischen Cards */
+    margin-bottom: 1.5rem;
+    /* Abstand zwischen Cards */
 }
 
 .card-header {
@@ -111,7 +117,8 @@ h1, h2, h3 {
     display: flex;
     align-items: center;
     gap: 0.4rem;
-    position: relative;              /* Basis für absolut platzierte Hinweise */
+    position: relative;
+    /* Basis für absolut platzierte Hinweise */
 }
 
 .card-actions {
@@ -223,7 +230,7 @@ h1, h2, h3 {
     cursor: pointer;
     padding: 0.25rem 0.85rem;
     transition: background 0.15s ease, color 0.15s ease,
-    box-shadow 0.15s ease, border-color 0.15s ease;
+        box-shadow 0.15s ease, border-color 0.15s ease;
 }
 
 .btn-primary {
@@ -258,11 +265,11 @@ h1, h2, h3 {
 }
 
 .control-select {
-    padding: 0.25rem 0.85rem;
-    border-radius: 999px;
+    padding: 0.25rem 0.5rem;
+    border-radius: 6px;
     border: 1px solid #d8c8b5;
     background: #fbf5ec;
-    font-size: 0.85rem;
+    font-size: 0.9rem;
     line-height: 1.1;
     color: #5a5248;
 }
@@ -327,8 +334,8 @@ body.page-viz .page-main {
     grid-template-columns: 1.25fr 1fr;
     grid-template-rows: minmax(320px, 1fr) minmax(260px, 1fr);
     grid-template-areas:
-    "map line"
-    "map bar";
+        "map line"
+        "map bar";
     gap: 1rem;
     /* Versuchen, alles ohne Scrollen auf eine normale Laptop-Seite zu quetschen */
     min-height: 0;
@@ -352,7 +359,8 @@ body.page-viz .page-main {
 .viz-panel {
     display: flex;
     flex-direction: column;
-    min-height: 0; /* allow shrinking inside 100vh layout */
+    min-height: 0;
+    /* allow shrinking inside 100vh layout */
 }
 
 /* Chart-Container-Größen so wählen, dass alles auf eine Seite passt */
@@ -484,6 +492,7 @@ body.page-viz .page-main {
     border: 1px solid #d8c8b5;
     border-radius: 999px;
     background: #fbf5ec;
+    width: fit-content;
 }
 
 .map-mode-toggle .toggle-option {
@@ -575,34 +584,48 @@ body.page-viz .page-main {
 }
 
 .modal-close {
-    border: 1px solid #d3bda2;
-    background: #fbf5ec;
+    border: none;
+    background: transparent;
     color: #5a5248;
-    border-radius: 999px;
-    width: 32px;
-    height: 32px;
+    font-size: 1.2rem;
     cursor: pointer;
     font-weight: 700;
-    transition: background 0.15s ease, color 0.15s ease;
+    transition: color 0.15s ease;
+    padding: 0 0.5rem;
+    line-height: 1;
 }
 
 .modal-close:hover {
-    background: #f3e5d4;
+    background: transparent;
+    color: #c98042;
 }
 
 .filter-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.filter-top-section {
+    display: flex;
+    gap: 2rem;
+    width: 100%;
+    align-items: flex-start;
+}
+
+.filter-selection-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    grid-template-columns: 1fr 1fr;
     gap: 0.65rem;
-    align-items: center;
+    flex: 1;
 }
 
 .filter-controls .map-mode-toggle {
-    justify-self: start;
+    align-self: flex-start;
 }
 
 .filter-controls .year-slider-box {
-    grid-column: 1 / -1;
+    width: 100%;
 }
 
 .filter-group {
