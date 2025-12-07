@@ -369,13 +369,11 @@ function renderMap(accidentData) {
                     if (!code) return;
 
                     if (selectedCantons.includes(code)) {
-                        selectedCantons = selectedCantons.filter(c => c !== code);
+                        // Falls bereits ausgewählt: abwählen (Toggle off)
+                        selectedCantons = [];
                     } else {
-                        if (selectedCantons.length < 5) {
-                            selectedCantons.push(code);
-                        } else {
-                            alert("Du kannst maximal 5 Kantone auswählen.");
-                        }
+                        // Falls nicht ausgewählt: Auswahl ersetzen (Single Select)
+                        selectedCantons = [code];
                     }
 
                     // Karte neu zeichnen (für Highlight der Auswahl)
