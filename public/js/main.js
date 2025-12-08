@@ -58,8 +58,8 @@ function initVisualizationPage() {
             // Geschlecht-Auswahl befüllen
             populateGenderOptions(allAccidentData);
 
-            // Tätigkeit-Auswahl befüllen
-            populateActivityOptions(allAccidentData);
+            // Tätigkeit-Auswahl befüllen (initial basierend auf "alle Kantone")
+            updateActivityOptionsBasedOnCanton();
 
             // Event-Listener für Filter & Modal setzen
 
@@ -302,6 +302,9 @@ function wireFilterEvents() {
                 mapMode = "unfall";
             }
 
+            // Tätigkeit-Optionen aktualisieren (wieder alle anzeigen)
+            updateActivityOptionsBasedOnCanton();
+
             applyFiltersAndRender();
         });
     }
@@ -347,6 +350,10 @@ function wireFilterEvents() {
             }
             // Sync mit globaler Variable für chart_map (falls nötig)
             window.selectedCantons = selectedCantons;
+            
+            // Tätigkeit-Optionen aktualisieren
+            updateActivityOptionsBasedOnCanton();
+
             applyFiltersAndRender();
         });
     }
@@ -361,6 +368,7 @@ function wireFilterEvents() {
         modeRadios.forEach(radio => {
             radio.addEventListener("change", () => {
                 mapMode = radio.value;
+                updateActivityOptionsBasedOnCanton();
                 applyFiltersAndRender();
             });
         });
@@ -513,8 +521,48 @@ window.updateChartsFromMap = function(cantons) {
         }
     }
 
+    // Tätigkeit-Optionen aktualisieren
+    updateActivityOptionsBasedOnCanton();
+
     applyFiltersAndRender();
 };
+
+/* ---------------------------------------------------------
+   Hilfsfunktion: Tätigkeit-Optionen basierend auf Kanton filtern
+--------------------------------------------------------- */
+function updateActivityOptionsBasedOnCanton() {
+    const selectActivity = document.getElementById("filter-activity");
+    if (!selectActivity) return;
+
+    const currentActivity = selectActivity.value;
+    const cantonField = mapMode === "wohnort" ? "kanton_wohnort" : "kanton_unfall";
+
+    let relevantData = allAccidentData;
+    if (selectedCantons.length > 0) {
+        relevantData = relevantData.filter(d => selectedCantons.includes(d[cantonField]));
+    }
+
+    populateActivityOptions(relevantData);
+
+    // Versuchen, die alte Auswahl wiederherzustellen
+    // Wenn der Wert nicht existiert, fällt der Browser oft auf den ersten zurück ("all")
+    // Sicherheitshalber prüfen wir, ob wir ihn setzen können.
+    // Da populateActivityOptions den DOM neu baut, ist der alte Value weg.
+    // Wir setzen ihn neu. Wenn er nicht in den options ist, wird er ignoriert (oder leer).
+    // Wir wollen "all" als Fallback.
+    
+    // Prüfen ob currentActivity in relevantData vorkommt (außer es ist "all")
+    let exists = true;
+    if (currentActivity !== "all") {
+        exists = relevantData.some(d => d.taetigkeit === currentActivity);
+    }
+
+    if (exists) {
+        selectActivity.value = currentActivity;
+    } else {
+        selectActivity.value = "all";
+    }
+}
 
 /* ---------------------------------------------------------
    Filter-Modal öffnen/schließen
