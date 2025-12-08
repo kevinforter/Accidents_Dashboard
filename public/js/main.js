@@ -29,8 +29,11 @@ function initVisualizationPage() {
 
     loadAccidentData()
         .then(data => {
-            // "Unbekannte oder übrige Tätigkeit" global herausfiltern
-            allAccidentData = data.filter(d => d.taetigkeit !== "Unbekannte oder übrige Tätigkeit");
+            // "Unbekannte oder übrige Tätigkeit" und "NA" (Altersgruppe) global herausfiltern
+            allAccidentData = data.filter(d => 
+                d.taetigkeit !== "Unbekannte oder übrige Tätigkeit" && 
+                d.altersgruppe !== "NA"
+            );
 
             // Jahr-Min/Max bestimmen
             const years = allAccidentData
