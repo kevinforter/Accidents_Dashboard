@@ -289,9 +289,17 @@ function renderMap(accidentData) {
                 .attr("fill", d => {
                     const code = d.properties._code;
                     const sel = window.selectedCantons || [];
-                    if (code && sel.includes(code)) {
-                        return "#ffcc00";
+                    
+                    // Wenn eine Auswahl aktiv ist:
+                    if (sel.length > 0) {
+                        if (code && sel.includes(code)) {
+                            return "rgb(201, 128, 66)"; // Ausgewählt
+                        } else {
+                            return "#5a5248"; // Nicht ausgewählt (Hintergrund)
+                        }
                     }
+
+                    // Keine Auswahl: Normaler Farbverlauf
                     const r = d.properties._rate;
                     return r != null ? colorScale(r) : "#eee";
                 })
@@ -387,7 +395,9 @@ function renderMap(accidentData) {
                     }
                 });
 
-            addMapLegend(svg, colorScale, maxRate, width, height);
+            if (!selectedCantons || selectedCantons.length === 0) {
+                addMapLegend(svg, colorScale, maxRate, width, height);
+            }
         }
     );
 }
