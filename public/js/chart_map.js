@@ -289,8 +289,16 @@ function renderMap(accidentData) {
                 .attr("fill", d => {
                     const code = d.properties._code;
                     const sel = window.selectedCantons || [];
-                    
-                    // Wenn eine Auswahl aktiv ist:
+                    const activityFilter = document.getElementById("filter-activity");
+                    const isActivityFiltered = activityFilter && activityFilter.value !== "all";
+                    const hasAccidents = d.properties._abs > 0;
+
+                    // 1. Fall: Aktivität gefiltert & Kanton hat diese Aktivität nicht -> Dunkel
+                    if (isActivityFiltered && !hasAccidents) {
+                        return "#5a5248";
+                    }
+
+                    // 2. Fall: Auswahl aktiv
                     if (sel.length > 0) {
                         if (code && sel.includes(code)) {
                             return "rgb(201, 128, 66)"; // Ausgewählt
@@ -299,7 +307,7 @@ function renderMap(accidentData) {
                         }
                     }
 
-                    // Keine Auswahl: Normaler Farbverlauf
+                    // 3. Fall: Normaler Farbverlauf
                     const r = d.properties._rate;
                     return r != null ? colorScale(r) : "#eee";
                 })
