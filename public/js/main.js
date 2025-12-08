@@ -52,8 +52,8 @@ function initVisualizationPage() {
             // Altersgruppen-Auswahl dynamisch aus den Daten befüllen
             populateAgeOptions(allAccidentData);
 
-            // Kantons-Auswahl befüllen
-            populateCantonOptions();
+            // Kantons-Auswahl befüllen (initial)
+            updateCantonOptionsBasedOnActivity();
 
             // Geschlecht-Auswahl befüllen
             populateGenderOptions(allAccidentData);
@@ -125,25 +125,65 @@ function insertYearSlider(minYear, maxYear) {
     controls.appendChild(wrapper);
 }
 
-function populateCantonOptions() {
+function populateCantonOptions(data) {
     const select = document.getElementById("filter-canton");
     if (!select) return;
 
-    // Bestehende Optionen (bis auf "Alle") löschen?
-    // Hier bauen wir einfach neu auf.
+    // Aktuellen Wert merken, um ihn nach Möglichkeit wiederherzustellen
+    const currentValue = select.value;
+
     select.innerHTML = '<option value="all">Alle Kantone</option>';
 
+    // Wenn Daten übergeben wurden, nur Kantone anzeigen, die darin vorkommen
+    let relevantCodes = Object.keys(cantonNames);
+    if (data) {
+        const cantonField = mapMode === "wohnort" ? "kanton_wohnort" : "kanton_unfall";
+        const codesInDataset = new Set(data.map(d => d[cantonField]));
+        relevantCodes = relevantCodes.filter(c => codesInDataset.has(c));
+    }
+
     // Sortiert nach Namen
-    const sortedCodes = Object.keys(cantonNames).sort((a, b) =>
+    relevantCodes.sort((a, b) =>
         cantonNames[a].localeCompare(cantonNames[b])
     );
 
-    sortedCodes.forEach(code => {
+    relevantCodes.forEach(code => {
         const opt = document.createElement("option");
         opt.value = code;
         opt.textContent = cantonNames[code];
         select.appendChild(opt);
     });
+
+    // Wert wiederherstellen, falls noch vorhanden
+    if (currentValue && (currentValue === "all" || relevantCodes.includes(currentValue))) {
+        select.value = currentValue;
+    } else {
+        select.value = "all";
+        // Falls der Wert weggefallen ist, müssen wir auch die globale Auswahl resetten
+        if (currentValue !== "all") {
+             selectedCantons = [];
+             window.selectedCantons = [];
+        }
+    }
+}
+
+/* ---------------------------------------------------------
+   Hilfsfunktion: Kanton-Optionen basierend auf Tätigkeit filtern
+--------------------------------------------------------- */
+function updateCantonOptionsBasedOnActivity() {
+    const selectActivity = document.getElementById("filter-activity");
+    if (!selectActivity) return;
+
+    const currentActivity = selectActivity.value;
+    
+    if (currentActivity === "all") {
+        // Alle Kantone anzeigen (basierend auf allen Daten)
+        populateCantonOptions(allAccidentData);
+    } else {
+        // Nur Kantone anzeigen, die diese Tätigkeit haben
+        const relevantData = allAccidentData.filter(d => d.taetigkeit === currentActivity);
+        populateCantonOptions(relevantData);
+    }
 }
 
 /* ---------------------------------------------------------
@@ -304,6 +344,8 @@ function wireFilterEvents() {
 
             // Tätigkeit-Optionen aktualisieren (wieder alle anzeigen)
             updateActivityOptionsBasedOnCanton();
+            // Kantons-Optionen aktualisieren (wieder alle anzeigen)
+            updateCantonOptionsBasedOnActivity();
 
             applyFiltersAndRender();
         });
@@ -335,6 +377,7 @@ function wireFilterEvents() {
     const selectActivity = document.getElementById("filter-activity");
     if (selectActivity) {
         selectActivity.addEventListener("change", () => {
+            updateCantonOptionsBasedOnActivity();
             applyFiltersAndRender();
         });
     }

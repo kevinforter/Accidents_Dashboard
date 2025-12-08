@@ -384,6 +384,15 @@ function renderMap(accidentData) {
                     const code = d.properties._code;
                     if (!code) return;
 
+                    // Prüfen, ob eine Aktivität gefiltert ist und der Kanton diese nicht hat
+                    const activityFilter = document.getElementById("filter-activity");
+                    const isActivityFiltered = activityFilter && activityFilter.value !== "all";
+                    const hasAccidents = d.properties._abs > 0;
+
+                    if (isActivityFiltered && !hasAccidents) {
+                        return; // Klick ignorieren
+                    }
+
                     if (selectedCantons.includes(code)) {
                         // Falls bereits ausgewählt: abwählen (Toggle off)
                         selectedCantons = [];
