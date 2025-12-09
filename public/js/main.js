@@ -602,6 +602,43 @@ function applyFiltersAndRender() {
         barData = barData.filter(d => d.taetigkeit === clickedActivity);
     }
 
+
+
+    // 6. Daten für Timeline (Alle Filter AUSSER Jahr)
+    // Wir nehmen baseData, aber OHNE den Jahresfilter.
+    // Das ist etwas tricky, da baseData oben schon gefiltert wurde.
+    // Wir müssen also neu filtern von allAccidentData.
+    
+    let timelineData = allAccidentData;
+
+    // Apply Branch Filter
+    if (branch !== "all") {
+        timelineData = timelineData.filter(d => d.zweig === branch);
+    }
+    // Apply Age Filter
+    if (age !== "all") {
+        timelineData = timelineData.filter(d => d.altersgruppe === age);
+    }
+    // Apply Canton Filter
+    if (selectedCantons.length > 0) {
+        timelineData = timelineData.filter(d => selectedCantons.includes(d[cantonField]));
+    }
+    // Apply Dropdown Filters
+    if (selectedActivity !== "all") {
+        timelineData = timelineData.filter(d => d.taetigkeit === selectedActivity);
+    }
+    if (selectedGender !== "all") {
+        timelineData = timelineData.filter(d => d.geschlecht === selectedGender);
+    }
+    // Apply Click Filters (Soft) - Timeline should reflect these too?
+    // Ja, Timeline zeigt den Kontext der aktuellen Auswahl.
+    if (clickedActivity) {
+        timelineData = timelineData.filter(d => d.taetigkeit === clickedActivity);
+    }
+    if (clickedGender) {
+        timelineData = timelineData.filter(d => d.geschlecht === clickedGender);
+    }
+
     // Helper: Kantonscode anfügen für Map
     const mapDataWithCanton = mapData.map(d => ({ ...d, kanton: d[cantonField] || "" }));
     const trendDataWithCanton = trendData.map(d => ({ ...d, kanton: d[cantonField] || "" }));
@@ -633,7 +670,49 @@ function applyFiltersAndRender() {
             console.error("Fehler in renderBarChart:", e);
         }
     }
+
+    // Timeline updaten
+    if (typeof renderTimeline === "function") {
+        try {
+            renderTimeline(timelineData, yearRange);
+        } catch (e) {
+            console.error("Fehler in renderTimeline:", e);
+        }
+    }
 }
+
+/* ---------------------------------------------------------
+   Callback aus chart_timeline.js (Brushing)
+--------------------------------------------------------- */
+window.updateYearRangeFromBrush = function(startYear, endYear) {
+    // Validierung
+    if (startYear < yearRange.min) startYear = yearRange.min;
+    if (endYear > yearRange.max) endYear = yearRange.max;
+    if (startYear > endYear) startYear = endYear;
+
+    // State update
+    yearRange.from = startYear;
+    yearRange.to = endYear;
+
+    // UI Update (Dropdowns & Label)
+    const yearStart = document.getElementById("year-start");
+    const yearEnd = document.getElementById("year-end");
+    const yearLabel = document.getElementById("year-label");
+
+    if (yearStart) yearStart.value = startYear;
+    if (yearEnd) {
+        updateYearEndOptions(startYear); // Optionen anpassen
+        yearEnd.value = endYear;
+    }
+    if (yearLabel) {
+        yearLabel.textContent = `${startYear} – ${endYear}`;
+    }
+
+    // Render (aber Timeline nicht komplett neu zeichnen, sonst flackert der Brush? 
+    // D3 Brush handles move events well, but if we re-render the whole chart, the brush might reset or jump.
+    // renderTimeline checks if selection is provided.
+    applyFiltersAndRender();
+};
 
 /* ---------------------------------------------------------
    Callback aus chart_map.js, wenn Kantone angeklickt wurden

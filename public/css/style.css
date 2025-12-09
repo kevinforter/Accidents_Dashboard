@@ -339,10 +339,11 @@ body.page-viz .page-main {
 .viz-grid {
     display: grid;
     grid-template-columns: 1.25fr 1fr;
-    grid-template-rows: minmax(320px, 1fr) minmax(260px, 1fr);
+    grid-template-rows: minmax(320px, 1fr) minmax(260px, 1fr) 180px;
     grid-template-areas:
         "map bar"
-        "map donut";
+        "map donut"
+        "timeline timeline";
     gap: 1rem;
     min-height: 0;
     height: 100%;
@@ -361,6 +362,11 @@ body.page-viz .page-main {
 
 #viz-donut {
     grid-area: donut;
+    overflow: visible;
+}
+
+#viz-timeline {
+    grid-area: timeline;
     overflow: visible;
 }
 
@@ -385,7 +391,8 @@ body.page-viz .page-main {
 
 #map-container,
 #bar-container,
-#donut-container {
+#donut-container,
+#timeline-container {
     flex: 1 1 auto;
     overflow: visible;
 }
