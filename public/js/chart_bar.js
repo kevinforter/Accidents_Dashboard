@@ -43,13 +43,15 @@ function renderBarChart(data) {
 
     const total = d3.sum(byGender, d => d.sum) || 1;
 
+    const svgWidth = width - 10;
     const svg = d3.select(container)
         .append("svg")
-        .attr("width", width)
-        .attr("height", height)
+        .attr("viewBox", `0 0 ${svgWidth} ${height}`)
+        .attr("width", "100%")
+        .attr("height", "auto")
         .style("overflow", "visible");
 
-    const centerX = width / 2;
+    const centerX = svgWidth / 2;
     const centerY = height / 2;
 
     const pie = d3.pie()
@@ -320,10 +322,12 @@ function renderTrendChart(data) {
         margin.top + margin.bottom + topData.length * 40
     );
 
+    const svgWidth = width - 10;
     const svg = d3.select(container)
         .append("svg")
-        .attr("width", width)
-        .attr("height", computedHeight);
+        .attr("viewBox", `0 0 ${svgWidth} ${computedHeight}`)
+        .attr("width", "100%")
+        .attr("height", "auto");
 
     const x = d3.scaleLinear()
         .domain([0, d3.max(topData, d => d.sum)]).nice()
