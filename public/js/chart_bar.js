@@ -8,7 +8,7 @@ function getContainerSize(container, defaultWidth = 600, defaultHeight = 260) {
 
 // Geschlechterverteilung: relative Anteile (Donut)
 function renderBarChart(data) {
-    const container = document.getElementById("bar-container");
+    const container = document.getElementById("donut-container");
     if (!container) return;
 
     const byGender = d3.rollups(
@@ -248,7 +248,7 @@ function getChartTooltip() {
 
 // Tätigkeiten: Häufigkeit der Unfälle (Top-N) in der Schweiz
 function renderTrendChart(data) {
-    const container = document.getElementById("trend-container");
+    const container = document.getElementById("bar-container");
     if (!container) return;
 
     const wrapTickText = (selection, maxChars = 18) => {
