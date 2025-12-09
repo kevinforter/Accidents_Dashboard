@@ -351,6 +351,7 @@ body.page-viz .page-main {
 
 #viz-map {
     grid-area: map;
+    overflow: visible;
 }
 
 #viz-line {
@@ -385,6 +386,7 @@ body.page-viz .page-main {
 #trend-container,
 #bar-container {
     flex: 1 1 auto;
+    overflow: visible;
 }
 
 /* Platzhalter-Styles für Charts (falls noch nicht gezeichnet) */

@@ -277,7 +277,8 @@ function renderMap(accidentData) {
                 .append("svg")
                 .attr("width", "100%")
                 .attr("height", height)
-                .attr("viewBox", `0 0 ${width} ${height}`);
+                .attr("viewBox", `0 0 ${width} ${height}`)
+                .style("overflow", "visible");
 
             mapProjection.fitSize([width, height], geo);
             mapPath.projection(mapProjection);
@@ -361,14 +362,53 @@ function renderMap(accidentData) {
              Absolut: ${absText} Unfälle<br>
              Relativ: ${rate} / 1'000 Einwohner und Jahr<br>
              Bevölkerung: ${popText} (Ø über ${yearsCount} Jahr${yearsCount > 1 ? "e" : ""})`
-                        )
-                        .style("left", event.pageX + 12 + "px")
-                        .style("top", event.pageY + 12 + "px");
+                        );
+
+                    // Smart Positioning
+                    const tooltipNode = tooltip.node();
+                    const tooltipRect = tooltipNode.getBoundingClientRect();
+                    const viewportWidth = window.innerWidth;
+                    const viewportHeight = window.innerHeight;
+
+                    let left = event.pageX + 12;
+                    let top = event.pageY + 12;
+
+                    // Flip left if too close to right edge
+                    if (left + tooltipRect.width > viewportWidth - 20) {
+                        left = event.pageX - tooltipRect.width - 12;
+                    }
+
+                    // Flip up if too close to bottom edge
+                    if (top + tooltipRect.height > viewportHeight - 20) {
+                        top = event.pageY - tooltipRect.height - 12;
+                    }
+
+                    tooltip
+                        .style("left", left + "px")
+                        .style("top", top + "px");
                 })
                 .on("mousemove", function (event) {
+                    const tooltipNode = tooltip.node();
+                    const tooltipRect = tooltipNode.getBoundingClientRect();
+                    const viewportWidth = window.innerWidth;
+                    const viewportHeight = window.innerHeight;
+
+                    let left = event.pageX + 12;
+                    let top = event.pageY + 12;
+
+                    // Flip left if too close to right edge
+                    if (left + tooltipRect.width > viewportWidth - 20) {
+                        left = event.pageX - tooltipRect.width - 12;
+                    }
+
+                    // Flip up if too close to bottom edge
+                    if (top + tooltipRect.height > viewportHeight - 20) {
+                        top = event.pageY - tooltipRect.height - 12;
+                    }
+
                     tooltip
-                        .style("left", event.pageX + 12 + "px")
-                        .style("top", event.pageY + 12 + "px");
+                        .style("left", left + "px")
+                        .style("top", top + "px");
                 })
                 .on("mouseout", function () {
                     const el = d3.select(this);
