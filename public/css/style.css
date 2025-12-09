@@ -370,6 +370,20 @@ body.page-viz .page-main {
     overflow: visible;
 }
 
+/* Spezifische Anpassungen für die unteren Charts (Bar & Donut) */
+#viz-bar .card-header,
+#viz-donut .card-header {
+    border-bottom: none;
+    padding-bottom: 0;
+    margin-bottom: 0.5rem;
+}
+
+#viz-bar .card-header h2,
+#viz-donut .card-header h2 {
+    font-size: 1.1rem;
+    font-weight: normal;
+}
+
 /* Panels innerhalb des Grids nutzen einfach Card-Styling */
 .viz-panel {
     display: flex;
