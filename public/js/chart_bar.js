@@ -131,9 +131,9 @@ function renderBarChart(data) {
             return `${labelGender(d.data.geschlecht)} – ${pct.toFixed(1)} %`;
         });
 
-    // Legend rechts oben
+    // Legend links oben
     const legend = svg.append("g")
-        .attr("transform", `translate(${Math.min(width - 160, centerX + radius + 20)}, 16)`);
+        .attr("transform", `translate(0, 0)`);
 
     const legendItems = legend.selectAll("g")
         .data(byGender)
@@ -153,8 +153,7 @@ function renderBarChart(data) {
         .style("font-size", "12px")
         .style("fill", "#3f3a33")
         .text(d => {
-            const pct = (d.sum / total) * 100;
-            return `${labelGender(d.geschlecht)} (${pct.toFixed(1)} %)`;
+            return `${labelGender(d.geschlecht)} (${d.sum.toLocaleString("de-CH")})`;
         });
 }
 
