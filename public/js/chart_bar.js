@@ -120,12 +120,43 @@ function renderBarChart(data) {
 
     const midAngle = d => (d.startAngle + d.endAngle) / 2;
 
+    // Pre-calculate positions to check for legend overlap
+    // Legend is at top-left (0,0).
+    const legendHeight = byGender.length * 20 + 20;
+    let legendCollision = false;
+
+    slices.forEach(d => {
+        const mid = midAngle(d);
+        const isRight = mid < Math.PI;
+        
+        // Default positions
+        const posLine = outerArc.centroid(d);
+        posLine[0] = radius * 1.2 * (isRight ? 1 : -1);
+        
+        const posText = outerArc.centroid(d);
+        posText[0] = radius * 1.26 * (isRight ? 1 : -1);
+
+        // Check collision with legend (Top-Left)
+        // Only relevant if label is on the left side
+        if (!isRight) {
+            // const absX = centerX + posText[0]; // Not needed if we just check Y and side
+            const absY = centerY + posText[1];
+            
+            // If the text label (approx) falls into the legend box height
+            // and is on the left side, we assume collision or near-collision.
+            if (absY < legendHeight && absY > -20) {
+                legendCollision = true;
+            }
+        }
+        
+        d.posLine = posLine;
+        d.posText = posText;
+    });
+
     arcs.append("polyline")
         .filter(d => d.endAngle - d.startAngle > 0.04)
         .attr("points", d => {
-            const pos = outerArc.centroid(d);
-            pos[0] = radius * 1.2 * (midAngle(d) < Math.PI ? 1 : -1);
-            return [arc.centroid(d), labelArc.centroid(d), pos];
+            return [arc.centroid(d), labelArc.centroid(d), d.posLine];
         })
         .attr("fill", "none")
         .attr("stroke", "#7a5a33")
@@ -134,11 +165,7 @@ function renderBarChart(data) {
 
     arcs.append("text")
         .filter(d => d.endAngle - d.startAngle > 0.04)
-        .attr("transform", d => {
-            const pos = outerArc.centroid(d);
-            pos[0] = radius * 1.26 * (midAngle(d) < Math.PI ? 1 : -1);
-            return `translate(${pos})`;
-        })
+        .attr("transform", d => `translate(${d.posText})`)
         .attr("text-anchor", d => midAngle(d) < Math.PI ? "start" : "end")
         .attr("dy", "0.35em")
         .style("font-size", "12px")
@@ -148,9 +175,13 @@ function renderBarChart(data) {
             return `${labelGender(d.data.geschlecht)} – ${pct.toFixed(1)} %`;
         });
 
-    // Legend links oben
+    // Legend positioning
+    // If collision detected, move to top-right (width - approx 100px)
+    // Otherwise top-left (0,0)
+    const legendX = legendCollision ? (width - 110) : 0;
+
     const legend = svg.append("g")
-        .attr("transform", `translate(0, 0)`);
+        .attr("transform", `translate(${legendX}, 0)`);
 
     const legendItems = legend.selectAll("g")
         .data(byGender)
