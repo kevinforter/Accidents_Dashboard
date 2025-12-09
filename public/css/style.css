@@ -84,7 +84,7 @@ h3 {
 .page-main {
     max-width: 1400px;
     margin: 0 auto;
-    padding: 1.5rem 2rem 2.5rem 2rem;
+    padding: 0 2rem 0;
 }
 
 /* ---------- Cards (für alle Seiten) ---------- */
