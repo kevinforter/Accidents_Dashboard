@@ -84,7 +84,7 @@ h3 {
 .page-main {
     max-width: 1400px;
     margin: 0 auto;
-    padding: 0 2rem 0;
+    padding: 0 2rem 1.2rem;
 }
 
 /* ---------- Cards (für alle Seiten) ---------- */
@@ -95,7 +95,6 @@ h3 {
     border: 1px solid #e4d6c4;
     box-shadow: 0 6px 14px rgba(57, 38, 16, 0.06);
     padding: 1.2rem 1.6rem 1.4rem 1.6rem;
-    margin-bottom: 1.5rem;
     /* Abstand zwischen Cards */
 }
 
@@ -320,6 +319,10 @@ h3 {
 
 body.page-viz .page-main {
     padding-top: 1.2rem;
+    max-width: none;
+    width: 100%;
+    padding-left: 5.4rem;
+    padding-right: 5.4rem;
 }
 
 body.page-viz {

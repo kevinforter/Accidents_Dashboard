@@ -199,17 +199,20 @@ function renderMap(accidentData) {
     // Besser: Wir leeren ihn erst im Promise-Callback.
     // container.html(""); // <-- Verschoben nach unten
 
-    const node = container.node();
-    const rect = node.getBoundingClientRect();
-    const width = rect.width || 900;
-    const height = rect.height || 420; // etwas höher für eine größere Karte
-
     const tooltip = getMapTooltip();
 
     Promise.all([loadMapGeoData(), loadPopulationData()]).then(
         ([geo, pop]) => {
-            // Container jetzt leeren, bevor wir neu zeichnen
+            // Container jetzt leeren und Klassen anpassen
             container.html("");
+            container.classed("chart-placeholder", false);
+            container.classed("chart-surface", true);
+
+            // Jetzt erst messen, nachdem die Klassen (Padding/Border) entfernt sind
+            const node = container.node();
+            const rect = node.getBoundingClientRect();
+            const width = rect.width || 900;
+            const height = rect.height || 420;
 
             // Unfälle pro Kanton aggregieren (absolute Zahlen im gewählten Zeitraum)
             const accidentsByCanton = d3.rollups(
