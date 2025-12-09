@@ -17,7 +17,14 @@ function renderBarChart(data) {
         d => (d.geschlecht || "unbekannt").toLowerCase()
     )
         .map(([geschlecht, sum]) => ({ geschlecht, sum }))
-        .filter(d => d.sum > 0);
+        .filter(d => d.sum > 0)
+        .sort((a, b) => {
+            // Fixed order: Mann (m), Frau (f), Others
+            const order = { "m": 1, "f": 2 };
+            const valA = order[a.geschlecht] || 99;
+            const valB = order[b.geschlecht] || 99;
+            return valA - valB;
+        });
 
     if (byGender.length === 0) {
         container.textContent = "Keine Daten vorhanden.";
