@@ -211,7 +211,7 @@ function renderTrendChart(data) {
         .map(([taetigkeit, sum]) => ({ taetigkeit, sum }))
         .filter(d => d.sum > 0)
         .sort((a, b) => d3.descending(a.sum, b.sum))
-        .slice(0, 12); // Top 12 Tätigkeiten
+        .sort((a, b) => d3.descending(a.sum, b.sum)); // Alle Tätigkeiten anzeigen
 
     if (byActivity.length === 0) {
         container.textContent = "Keine Daten vorhanden.";
@@ -226,9 +226,13 @@ function renderTrendChart(data) {
 
     const { width, height } = getContainerSize(container, 600, 280);
     const margin = { top: 16, right: 20, bottom: 40, left: 190 };
+    
+    // Daten filtern (Top 6)
+    const topData = byActivity.slice(0, 6);
+
     const computedHeight = Math.max(
         height,
-        margin.top + margin.bottom + byActivity.length * 40
+        margin.top + margin.bottom + topData.length * 40
     );
 
     const svg = d3.select(container)
@@ -237,11 +241,11 @@ function renderTrendChart(data) {
         .attr("height", computedHeight);
 
     const x = d3.scaleLinear()
-        .domain([0, d3.max(byActivity, d => d.sum)]).nice()
+        .domain([0, d3.max(topData, d => d.sum)]).nice()
         .range([margin.left, width - margin.right]);
 
     const y = d3.scaleBand()
-        .domain(byActivity.map(d => d.taetigkeit))
+        .domain(topData.map(d => d.taetigkeit))
         .range([margin.top, computedHeight - margin.bottom])
         .padding(0.18);
 
@@ -263,7 +267,7 @@ function renderTrendChart(data) {
 
     svg.append("g")
         .selectAll("rect")
-        .data(byActivity)
+        .data(topData)
         .enter()
         .append("rect")
         .attr("x", x(0))

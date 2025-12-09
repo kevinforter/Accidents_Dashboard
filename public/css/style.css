@@ -492,6 +492,17 @@ body.page-viz .page-main {
     color: #5a5248;
 }
 
+/* ---------- Scrollable Trend Chart (Reverted to static) ---------- */
+#trend-container {
+    height: auto;
+    display: block;
+    overflow: visible;
+}
+
+#trend-container svg {
+    height: auto;
+}
+
 /* ---------- Map mode toggle ---------- */
 
 .map-mode-toggle {
