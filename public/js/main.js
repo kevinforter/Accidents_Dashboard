@@ -477,48 +477,62 @@ function applyFiltersAndRender() {
     let fromYear = yearRange.from ?? yearRange.min;
     let toYear   = yearRange.to   ?? yearRange.max;
 
-    // 1. Jahr filtern
-    let data = allAccidentData.filter(d =>
+    // 1. Basis-Daten filtern (Jahr, Zweig, Alter, Kanton)
+    // Diese Filter gelten für ALLE Charts gleichermaßen.
+    let baseData = allAccidentData.filter(d =>
         d.jahr >= fromYear && d.jahr <= toYear
     );
 
-    // 2. Versicherungszweig (BU/NBU)
     if (branch !== "all") {
-        data = data.filter(d => d.zweig === branch);
+        baseData = baseData.filter(d => d.zweig === branch);
     }
 
-    // 3. Altersgruppe
     if (age !== "all") {
-        data = data.filter(d => d.altersgruppe === age);
+        baseData = baseData.filter(d => d.altersgruppe === age);
     }
 
-    // 3b. Geschlecht
-    const selectGender = document.getElementById("filter-gender");
-    if (selectGender && selectGender.value !== "all") {
-        data = data.filter(d => d.geschlecht === selectGender.value);
-    }
-
-    // 3c. Tätigkeit
-    const selectActivity = document.getElementById("filter-activity");
-    if (selectActivity && selectActivity.value !== "all") {
-        data = data.filter(d => d.taetigkeit === selectActivity.value);
-    }
-
-    // 4. Kanton-Auswahl (von der Karte)
     if (selectedCantons.length > 0) {
-        data = data.filter(d => selectedCantons.includes(d[cantonField]));
+        baseData = baseData.filter(d => selectedCantons.includes(d[cantonField]));
     }
 
-    // Für die Karten-/Chart-Berechnung den passenden Kantonscode bereitstellen
-    const mappedData = data.map(d => ({
-        ...d,
-        kanton: d[cantonField] || ""
-    }));
+    // 2. Effektive Filter bestimmen (Nur Selection, kein Hover mehr)
+    const selectedActivity = window.getSelectedActivity();
+    const selectedGender = window.getSelectedGender();
+
+    // 3. Daten für die Karte (Voll gefiltert)
+    let mapData = baseData;
+    if (selectedActivity !== "all") {
+        mapData = mapData.filter(d => d.taetigkeit === selectedActivity);
+    }
+    if (selectedGender !== "all") {
+        mapData = mapData.filter(d => d.geschlecht === selectedGender);
+    }
+
+    // 4. Daten für Trend-Chart (Activity)
+    // Zeigt ALLE Tätigkeiten, aber gefiltert nach Geschlecht
+    // Ignoriert selectedActivity (damit wir den Kontext sehen), aber wir highlighten es per CSS/JS.
+    let trendData = baseData;
+    if (selectedGender !== "all") {
+        trendData = trendData.filter(d => d.geschlecht === selectedGender);
+    }
+
+    // 5. Daten für Donut-Chart (Gender)
+    // Zeigt ALLE Geschlechter, aber gefiltert nach Tätigkeit
+    // Ignoriert selectedGender (damit wir den Kontext sehen), aber wir highlighten es per CSS/JS.
+    let barData = baseData;
+    if (selectedActivity !== "all") {
+        barData = barData.filter(d => d.taetigkeit === selectedActivity);
+    }
+
+    // Helper: Kantonscode anfügen für Map
+    const mapDataWithCanton = mapData.map(d => ({ ...d, kanton: d[cantonField] || "" }));
+    const trendDataWithCanton = trendData.map(d => ({ ...d, kanton: d[cantonField] || "" }));
+    const barDataWithCanton = barData.map(d => ({ ...d, kanton: d[cantonField] || "" }));
 
     // Karte updaten
     if (typeof renderMap === "function") {
         try {
-            renderMap(mappedData);
+            renderMap(mapDataWithCanton);
         } catch (e) {
             console.error("Fehler in renderMap:", e);
         }
@@ -527,7 +541,7 @@ function applyFiltersAndRender() {
     // Trend-Chart updaten
     if (typeof renderTrendChart === "function") {
         try {
-            renderTrendChart(mappedData);
+            renderTrendChart(trendDataWithCanton);
         } catch (e) {
             console.error("Fehler in renderTrendChart:", e);
         }
@@ -536,7 +550,7 @@ function applyFiltersAndRender() {
     // Balkendiagramm updaten
     if (typeof renderBarChart === "function") {
         try {
-            renderBarChart(mappedData);
+            renderBarChart(barDataWithCanton);
         } catch (e) {
             console.error("Fehler in renderBarChart:", e);
         }
