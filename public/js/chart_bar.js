@@ -46,7 +46,8 @@ function renderBarChart(data) {
     const svg = d3.select(container)
         .append("svg")
         .attr("width", width)
-        .attr("height", height);
+        .attr("height", height)
+        .style("overflow", "visible");
 
     const centerX = width / 2;
     const centerY = height / 2;

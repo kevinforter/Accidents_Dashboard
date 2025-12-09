@@ -359,6 +359,7 @@ body.page-viz .page-main {
 
 #viz-bar {
     grid-area: bar;
+    overflow: visible;
 }
 
 /* Panels innerhalb des Grids nutzen einfach Card-Styling */
@@ -377,6 +378,7 @@ body.page-viz .page-main {
 #trend-container,
 #bar-container {
     min-height: 200px;
+    overflow: visible;
 }
 
 #map-container,
