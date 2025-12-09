@@ -64,13 +64,32 @@ function renderBarChart(data) {
         .append("g")
         .attr("class", "slice");
 
+    const tooltip = getChartTooltip();
+
     arcs.append("path")
         .attr("d", arc)
         .attr("fill", d => colorGender(d.data.geschlecht))
-        .append("title")
-        .text(d => {
+        .on("mouseover", function(event, d) {
+            // Dim all other slices
+            arcGroup.selectAll("path").attr("opacity", 0.3);
+            // Highlight current slice
+            d3.select(this).attr("opacity", 1);
+            
             const pct = (d.data.sum / total) * 100;
-            return `${labelGender(d.data.geschlecht)}: ${d.data.sum.toLocaleString("de-CH")} Unfälle (${pct.toFixed(1)} %)`;
+            tooltip.style("opacity", 1)
+                .html(`<strong>${labelGender(d.data.geschlecht)}</strong><br>${d.data.sum.toLocaleString("de-CH")} Unfälle<br>(${pct.toFixed(1)} %)`)
+                .style("left", (event.pageX + 10) + "px")
+                .style("top", (event.pageY + 10) + "px");
+        })
+        .on("mousemove", function(event) {
+            tooltip
+                .style("left", (event.pageX + 10) + "px")
+                .style("top", (event.pageY + 10) + "px");
+        })
+        .on("mouseout", function() {
+            // Restore all slices
+            arcGroup.selectAll("path").attr("opacity", 1);
+            tooltip.style("opacity", 0);
         });
 
     // Labels ausserhalb mit Polylines
@@ -159,6 +178,17 @@ function colorGender(code) {
     if (key === "f") return "#7a5a33";   // dark brown
     if (key === "u" || key === "x" || key === "unbekannt") return "#d8c2a6"; // neutral beige
     return "#bca791"; // fallback neutral
+}
+
+let chartTooltip = null;
+function getChartTooltip() {
+    if (!chartTooltip) {
+        chartTooltip = d3.select("body")
+            .append("div")
+            .attr("class", "map-tooltip") // Reuse existing style
+            .style("opacity", 0);
+    }
+    return chartTooltip;
 }
 
 // Tätigkeiten: Häufigkeit der Unfälle (Top-N) in der Schweiz
@@ -265,6 +295,8 @@ function renderTrendChart(data) {
     svg.append("g").call(xAxis);
     svg.append("g").call(yAxis);
 
+    const tooltip = getChartTooltip();
+
     svg.append("g")
         .selectAll("rect")
         .data(topData)
@@ -275,6 +307,20 @@ function renderTrendChart(data) {
         .attr("width", d => x(d.sum) - x(0))
         .attr("height", y.bandwidth())
         .attr("fill", "#c98042")
-        .append("title")
-        .text(d => `${d.taetigkeit}: ${d.sum.toLocaleString("de-CH")} Unfälle`);
+        .on("mouseover", function(event, d) {
+            d3.select(this).attr("fill", "#b66f34");
+            tooltip.style("opacity", 1)
+                .html(`<strong>${d.taetigkeit}</strong><br>${d.sum.toLocaleString("de-CH")} Unfälle`)
+                .style("left", (event.pageX + 10) + "px")
+                .style("top", (event.pageY + 10) + "px");
+        })
+        .on("mousemove", function(event) {
+            tooltip
+                .style("left", (event.pageX + 10) + "px")
+                .style("top", (event.pageY + 10) + "px");
+        })
+        .on("mouseout", function() {
+            d3.select(this).attr("fill", "#c98042");
+            tooltip.style("opacity", 0);
+        });
 }
