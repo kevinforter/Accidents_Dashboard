@@ -144,13 +144,18 @@ h3 {
     width: 22px;
     height: 22px;
     border-radius: 50%;
-    background: #f3e5d4;
+    background: transparent;
     color: #7a5a33;
     font-weight: 700;
     border: 1px solid #d3bda2;
-    cursor: default;
+    cursor: help;
     margin-right: 0.35rem;
     flex-shrink: 0;
+    transition: background 0.15s ease;
+}
+
+.card-hint:hover::before {
+    background: rgba(243, 229, 212, 0.5);
 }
 
 .card-hint .hint-text {
@@ -179,12 +184,17 @@ h3 {
     display: inline-flex;
     align-items: center;
     justify-content: flex-start;
+    position: relative;
+    /* Context for absolute positioning */
 }
 
 .card-hint.inline .hint-text {
-    max-width: 360px;
-    position: relative;
-    z-index: 1;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    z-index: 100;
+    margin-top: 0.5rem;
+    max-width: 300px;
 }
 
 /* Popover-Hinweis rechts neben dem Titel (z. B. bei Linien- und Balkendiagramm) */
