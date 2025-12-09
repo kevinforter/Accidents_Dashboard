@@ -661,3 +661,45 @@ function updateYearEndOptions(minYearForEnd) {
     const newValue = validValues.includes(previous) ? previous : validValues[0];
     selectEnd.value = newValue;
 }
+
+/* ---------------------------------------------------------
+   Global functions for Chart Linking (Clicking on bars/slices)
+--------------------------------------------------------- */
+window.toggleActivityFilter = function(activity) {
+    const select = document.getElementById("filter-activity");
+    if (!select) return;
+
+    if (select.value === activity) {
+        select.value = "all"; // Toggle off
+    } else {
+        select.value = activity; // Select
+    }
+    
+    // Trigger update
+    updateCantonOptionsBasedOnActivity();
+    applyFiltersAndRender();
+};
+
+window.toggleGenderFilter = function(gender) {
+    const select = document.getElementById("filter-gender");
+    if (!select) return;
+
+    if (select.value === gender) {
+        select.value = "all"; // Toggle off
+    } else {
+        select.value = gender; // Select
+    }
+
+    // Trigger update
+    applyFiltersAndRender();
+};
+
+window.getSelectedActivity = function() {
+    const select = document.getElementById("filter-activity");
+    return select ? select.value : "all";
+};
+
+window.getSelectedGender = function() {
+    const select = document.getElementById("filter-gender");
+    return select ? select.value : "all";
+};

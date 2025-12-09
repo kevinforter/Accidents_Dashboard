@@ -69,6 +69,11 @@ function renderBarChart(data) {
     arcs.append("path")
         .attr("d", arc)
         .attr("fill", d => colorGender(d.data.geschlecht))
+        .on("click", function(event, d) {
+            if (window.toggleGenderFilter) {
+                window.toggleGenderFilter(d.data.geschlecht);
+            }
+        })
         .on("mouseover", function(event, d) {
             // Dim all other slices
             arcGroup.selectAll("path").attr("opacity", 0.3);
@@ -80,6 +85,9 @@ function renderBarChart(data) {
                 .html(`<strong>${labelGender(d.data.geschlecht)}</strong><br>${d.data.sum.toLocaleString("de-CH")} Unfälle<br>(${pct.toFixed(1)} %)`)
                 .style("left", (event.pageX + 10) + "px")
                 .style("top", (event.pageY + 10) + "px");
+            
+            // Cursor pointer to indicate clickable
+            d3.select(this).style("cursor", "pointer");
         })
         .on("mousemove", function(event) {
             tooltip
@@ -87,10 +95,19 @@ function renderBarChart(data) {
                 .style("top", (event.pageY + 10) + "px");
         })
         .on("mouseout", function() {
-            // Restore all slices
-            arcGroup.selectAll("path").attr("opacity", 1);
+            // Restore opacity based on selection
+            const selectedGender = window.getSelectedGender ? window.getSelectedGender() : "all";
+            arcGroup.selectAll("path").attr("opacity", d => 
+                (selectedGender === "all" || selectedGender === d.data.geschlecht) ? 1 : 0.3
+            );
             tooltip.style("opacity", 0);
         });
+
+    // Set initial opacity based on selection
+    const selectedGender = window.getSelectedGender ? window.getSelectedGender() : "all";
+    arcGroup.selectAll("path").attr("opacity", d => 
+        (selectedGender === "all" || selectedGender === d.data.geschlecht) ? 1 : 0.3
+    );
 
     // Labels ausserhalb mit Polylines
     const labelArc = d3.arc()
@@ -296,6 +313,8 @@ function renderTrendChart(data) {
 
     const tooltip = getChartTooltip();
 
+    const selectedActivity = window.getSelectedActivity ? window.getSelectedActivity() : "all";
+
     svg.append("g")
         .selectAll("rect")
         .data(topData)
@@ -306,12 +325,24 @@ function renderTrendChart(data) {
         .attr("width", d => x(d.sum) - x(0))
         .attr("height", y.bandwidth())
         .attr("fill", "#c98042")
+        .attr("opacity", d => (selectedActivity === "all" || selectedActivity === d.taetigkeit) ? 1 : 0.3)
+        .on("click", function(event, d) {
+            if (window.toggleActivityFilter) {
+                window.toggleActivityFilter(d.taetigkeit);
+            }
+        })
         .on("mouseover", function(event, d) {
-            d3.select(this).attr("fill", "#b66f34");
+            // Dim all bars
+            svg.selectAll("rect").attr("opacity", 0.3);
+            // Highlight current
+            d3.select(this).attr("fill", "#b66f34").attr("opacity", 1);
+            
             tooltip.style("opacity", 1)
                 .html(`<strong>${d.taetigkeit}</strong><br>${d.sum.toLocaleString("de-CH")} Unfälle`)
                 .style("left", (event.pageX + 10) + "px")
                 .style("top", (event.pageY + 10) + "px");
+            
+            d3.select(this).style("cursor", "pointer");
         })
         .on("mousemove", function(event) {
             tooltip
@@ -320,6 +351,11 @@ function renderTrendChart(data) {
         })
         .on("mouseout", function() {
             d3.select(this).attr("fill", "#c98042");
+            // Restore opacity based on selection
+            const currentSelected = window.getSelectedActivity ? window.getSelectedActivity() : "all";
+            svg.selectAll("rect").attr("opacity", d => 
+                (currentSelected === "all" || currentSelected === d.taetigkeit) ? 1 : 0.3
+            );
             tooltip.style("opacity", 0);
         });
 }
