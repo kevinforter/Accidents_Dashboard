@@ -280,11 +280,12 @@ function renderMap(accidentData) {
                 .attr("viewBox", `0 0 ${width} ${height}`)
                 .style("overflow", "visible");
 
-            // Karte etwas kleiner (85%) und zentriert
+            // Karte etwas kleiner (85%) und nach oben verschoben (-30px)
             const padX = width * 0.075;
             const padY = height * 0.075;
+            const shiftY = 30;
             mapProjection.fitExtent(
-                [[padX, padY], [width - padX, height - padY]], 
+                [[padX, padY - shiftY], [width - padX, height - padY - shiftY]], 
                 geo
             );
             mapPath.projection(mapProjection);
