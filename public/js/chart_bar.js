@@ -327,7 +327,8 @@ function renderTrendChart(data) {
         .append("svg")
         .attr("viewBox", `0 0 ${svgWidth} ${computedHeight}`)
         .attr("width", "100%")
-        .attr("height", "auto");
+        .attr("height", "auto")
+        .style("overflow", "visible");
 
     const x = d3.scaleLinear()
         .domain([0, d3.max(topData, d => d.sum)]).nice()

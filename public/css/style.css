@@ -358,6 +358,8 @@ body.page-viz .page-main {
 #viz-bar {
     grid-area: bar;
     overflow: visible;
+    position: relative;
+    z-index: 10;
 }
 
 #viz-donut {
