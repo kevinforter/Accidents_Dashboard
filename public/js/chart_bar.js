@@ -312,7 +312,7 @@ function renderTrendChart(data) {
     container.classList.add("chart-surface");
 
     const { width, height } = getContainerSize(container, 600, 280);
-    const margin = { top: 16, right: 20, bottom: 40, left: 100 };
+    const margin = { top: 15, right: 20, bottom: 15, left: 100 };
     
     // Daten filtern (Top 6)
     const topData = byActivity.slice(0, 6);
