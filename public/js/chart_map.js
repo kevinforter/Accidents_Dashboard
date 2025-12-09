@@ -435,7 +435,7 @@ function addMapLegend(svg, colorScale, maxRate, width, height) {
         .attr("class", "legend-group")
         .attr(
             "transform",
-            `translate(${(width - legendWidth) / 2}, ${height - 10})`
+            `translate(${(width - legendWidth) / 2}, ${height - 40})`
         );
 
     const defs = svg.append("defs");
