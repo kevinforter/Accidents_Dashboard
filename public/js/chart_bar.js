@@ -186,9 +186,8 @@ function renderBarChart(data) {
         });
 
     // Legend positioning
-    // If collision detected, move to top-right (width - approx 100px)
-    // Otherwise top-left (0,0)
-    const legendX = legendCollision ? (width - 110) : 0;
+    // Always top-right
+    const legendX = width - 110;
 
     const legend = svg.append("g")
         .attr("transform", `translate(${legendX - 20}, -30)`);
