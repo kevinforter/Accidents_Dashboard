@@ -291,6 +291,14 @@ function populateActivityOptions(data) {
 }
 
 /* ---------------------------------------------------------
+   Helper: Click-State zurücksetzen
+--------------------------------------------------------- */
+function resetClickState() {
+    clickedActivity = null;
+    clickedGender = null;
+}
+
+/* ---------------------------------------------------------
    Filter-Events (Reset, Dropdowns, Jahr-Slider)
 --------------------------------------------------------- */
 function wireFilterEvents() {
@@ -306,6 +314,9 @@ function wireFilterEvents() {
     // Reset-Button
     if (btnReset) {
         btnReset.addEventListener("click", () => {
+            // Click-State resetten
+            resetClickState();
+
             // Versicherungszweig & Altersgruppe zurücksetzen
             if (selectBranch) selectBranch.value = "all";
             if (selectAge) selectAge.value = "all";
@@ -354,6 +365,7 @@ function wireFilterEvents() {
     // Versicherungszweig-Filter
     if (selectBranch) {
         selectBranch.addEventListener("change", () => {
+            resetClickState();
             applyFiltersAndRender();
         });
     }
@@ -361,6 +373,7 @@ function wireFilterEvents() {
     // Altersgruppen-Filter (falls du Optionen ergänzt)
     if (selectAge) {
         selectAge.addEventListener("change", () => {
+            resetClickState();
             applyFiltersAndRender();
         });
     }
@@ -369,6 +382,7 @@ function wireFilterEvents() {
     const selectGender = document.getElementById("filter-gender");
     if (selectGender) {
         selectGender.addEventListener("change", () => {
+            resetClickState();
             applyFiltersAndRender();
         });
     }
@@ -377,6 +391,7 @@ function wireFilterEvents() {
     const selectActivity = document.getElementById("filter-activity");
     if (selectActivity) {
         selectActivity.addEventListener("change", () => {
+            resetClickState();
             updateCantonOptionsBasedOnActivity();
             applyFiltersAndRender();
         });
@@ -385,6 +400,7 @@ function wireFilterEvents() {
     // Kantons-Filter (Dropdown)
     if (selectCanton) {
         selectCanton.addEventListener("change", () => {
+            resetClickState();
             const val = selectCanton.value;
             if (val === "all") {
                 selectedCantons = [];
@@ -410,6 +426,7 @@ function wireFilterEvents() {
 
         modeRadios.forEach(radio => {
             radio.addEventListener("change", () => {
+                resetClickState();
                 mapMode = radio.value;
                 updateActivityOptionsBasedOnCanton();
                 applyFiltersAndRender();
@@ -420,6 +437,7 @@ function wireFilterEvents() {
     // Jahr-Slider: Start
     if (yearStart && yearEnd && yearLabel) {
         yearStart.addEventListener("change", () => {
+            resetClickState();
             let startVal = +yearStart.value;
             let endVal   = +yearEnd.value;
 
@@ -440,6 +458,7 @@ function wireFilterEvents() {
 
         // Jahr-Ende
         yearEnd.addEventListener("change", () => {
+            resetClickState();
             let startVal = +yearStart.value;
             let endVal   = +yearEnd.value;
 
@@ -456,6 +475,56 @@ function wireFilterEvents() {
         });
     }
 }
+
+/* ---------------------------------------------------------
+   Zentrale Filterlogik + Rendering
+--------------------------------------------------------- */
+// State for "Click Linking" (Soft Filter)
+let clickedActivity = null;
+let clickedGender = null;
+
+window.toggleActivityFilter = function(activity) {
+    // Toggle clicked state
+    if (clickedActivity === activity) {
+        clickedActivity = null;
+    } else {
+        clickedActivity = activity;
+    }
+    
+    // Trigger update
+    // updateCantonOptionsBasedOnActivity(); // Optional: decide if click should filter cantons
+    applyFiltersAndRender();
+};
+
+window.toggleGenderFilter = function(gender) {
+    // Toggle clicked state
+    if (clickedGender === gender) {
+        clickedGender = null;
+    } else {
+        clickedGender = gender;
+    }
+
+    // Trigger update
+    applyFiltersAndRender();
+};
+
+window.getClickedActivity = function() {
+    return clickedActivity;
+};
+
+window.getClickedGender = function() {
+    return clickedGender;
+};
+
+window.getSelectedActivity = function() {
+    const select = document.getElementById("filter-activity");
+    return select ? select.value : "all";
+};
+
+window.getSelectedGender = function() {
+    const select = document.getElementById("filter-gender");
+    return select ? select.value : "all";
+};
 
 /* ---------------------------------------------------------
    Zentrale Filterlogik + Rendering
@@ -477,8 +546,7 @@ function applyFiltersAndRender() {
     let fromYear = yearRange.from ?? yearRange.min;
     let toYear   = yearRange.to   ?? yearRange.max;
 
-    // 1. Basis-Daten filtern (Jahr, Zweig, Alter, Kanton)
-    // Diese Filter gelten für ALLE Charts gleichermaßen.
+    // 1. Basis-Daten filtern (Hard Filters: Jahr, Zweig, Alter, Kanton, Dropdowns)
     let baseData = allAccidentData.filter(d =>
         d.jahr >= fromYear && d.jahr <= toYear
     );
@@ -495,33 +563,43 @@ function applyFiltersAndRender() {
         baseData = baseData.filter(d => selectedCantons.includes(d[cantonField]));
     }
 
-    // 2. Effektive Filter bestimmen (Nur Selection, kein Hover mehr)
+    // Dropdown Filters (Hard Filters)
     const selectedActivity = window.getSelectedActivity();
     const selectedGender = window.getSelectedGender();
 
-    // 3. Daten für die Karte (Voll gefiltert)
-    let mapData = baseData;
     if (selectedActivity !== "all") {
-        mapData = mapData.filter(d => d.taetigkeit === selectedActivity);
+        baseData = baseData.filter(d => d.taetigkeit === selectedActivity);
     }
     if (selectedGender !== "all") {
-        mapData = mapData.filter(d => d.geschlecht === selectedGender);
+        baseData = baseData.filter(d => d.geschlecht === selectedGender);
+    }
+
+    // 2. Click Filters (Soft Filters)
+    // These apply on top of baseData for specific charts
+    
+    // 3. Daten für die Karte (Voll gefiltert: Hard + Soft)
+    let mapData = baseData;
+    if (clickedActivity) {
+        mapData = mapData.filter(d => d.taetigkeit === clickedActivity);
+    }
+    if (clickedGender) {
+        mapData = mapData.filter(d => d.geschlecht === clickedGender);
     }
 
     // 4. Daten für Trend-Chart (Activity)
-    // Zeigt ALLE Tätigkeiten, aber gefiltert nach Geschlecht
-    // Ignoriert selectedActivity (damit wir den Kontext sehen), aber wir highlighten es per CSS/JS.
+    // Hard Filters applied.
+    // Soft Filters: Apply Gender click, IGNORE Activity click (Context)
     let trendData = baseData;
-    if (selectedGender !== "all") {
-        trendData = trendData.filter(d => d.geschlecht === selectedGender);
+    if (clickedGender) {
+        trendData = trendData.filter(d => d.geschlecht === clickedGender);
     }
 
     // 5. Daten für Donut-Chart (Gender)
-    // Zeigt ALLE Geschlechter, aber gefiltert nach Tätigkeit
-    // Ignoriert selectedGender (damit wir den Kontext sehen), aber wir highlighten es per CSS/JS.
+    // Hard Filters applied.
+    // Soft Filters: Apply Activity click, IGNORE Gender click (Context)
     let barData = baseData;
-    if (selectedActivity !== "all") {
-        barData = barData.filter(d => d.taetigkeit === selectedActivity);
+    if (clickedActivity) {
+        barData = barData.filter(d => d.taetigkeit === clickedActivity);
     }
 
     // Helper: Kantonscode anfügen für Map
@@ -676,44 +754,4 @@ function updateYearEndOptions(minYearForEnd) {
     selectEnd.value = newValue;
 }
 
-/* ---------------------------------------------------------
-   Global functions for Chart Linking (Clicking on bars/slices)
---------------------------------------------------------- */
-window.toggleActivityFilter = function(activity) {
-    const select = document.getElementById("filter-activity");
-    if (!select) return;
 
-    if (select.value === activity) {
-        select.value = "all"; // Toggle off
-    } else {
-        select.value = activity; // Select
-    }
-    
-    // Trigger update
-    updateCantonOptionsBasedOnActivity();
-    applyFiltersAndRender();
-};
-
-window.toggleGenderFilter = function(gender) {
-    const select = document.getElementById("filter-gender");
-    if (!select) return;
-
-    if (select.value === gender) {
-        select.value = "all"; // Toggle off
-    } else {
-        select.value = gender; // Select
-    }
-
-    // Trigger update
-    applyFiltersAndRender();
-};
-
-window.getSelectedActivity = function() {
-    const select = document.getElementById("filter-activity");
-    return select ? select.value : "all";
-};
-
-window.getSelectedGender = function() {
-    const select = document.getElementById("filter-gender");
-    return select ? select.value : "all";
-};

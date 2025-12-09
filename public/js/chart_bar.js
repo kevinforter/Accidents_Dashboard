@@ -83,7 +83,7 @@ function renderBarChart(data) {
         })
         .on("mouseover", function(event, d) {
             // Dim all other slices
-            arcGroup.selectAll("path").attr("opacity", 0.3);
+            arcGroup.selectAll("path").attr("opacity", 0.6);
             // Highlight current slice
             d3.select(this).attr("opacity", 1);
             
@@ -102,18 +102,18 @@ function renderBarChart(data) {
                 .style("top", (event.pageY + 10) + "px");
         })
         .on("mouseout", function() {
-            // Restore opacity based on selection
-            const selectedGender = window.getSelectedGender ? window.getSelectedGender() : "all";
+            // Restore opacity based on CLICKED state
+            const clickedGender = window.getClickedGender ? window.getClickedGender() : null;
             arcGroup.selectAll("path").attr("opacity", d => 
-                (selectedGender === "all" || selectedGender === d.data.geschlecht) ? 1 : 0.3
+                (clickedGender === null || clickedGender === d.data.geschlecht) ? 1 : 0.6
             );
             tooltip.style("opacity", 0);
         });
 
-    // Set initial opacity based on selection
-    const selectedGender = window.getSelectedGender ? window.getSelectedGender() : "all";
+    // Set initial opacity based on CLICKED state (Soft Filter)
+    const clickedGender = window.getClickedGender ? window.getClickedGender() : null;
     arcGroup.selectAll("path").attr("opacity", d => 
-        (selectedGender === "all" || selectedGender === d.data.geschlecht) ? 1 : 0.3
+        (clickedGender === null || clickedGender === d.data.geschlecht) ? 1 : 0.6
     );
 
     // Labels ausserhalb mit Polylines
@@ -351,7 +351,7 @@ function renderTrendChart(data) {
 
     const tooltip = getChartTooltip();
 
-    const selectedActivity = window.getSelectedActivity ? window.getSelectedActivity() : "all";
+    const clickedActivity = window.getClickedActivity ? window.getClickedActivity() : null;
 
     svg.append("g")
         .selectAll("rect")
@@ -363,7 +363,7 @@ function renderTrendChart(data) {
         .attr("width", d => x(d.sum) - x(0))
         .attr("height", y.bandwidth())
         .attr("fill", "#c98042")
-        .attr("opacity", d => (selectedActivity === "all" || selectedActivity === d.taetigkeit) ? 1 : 0.3)
+        .attr("opacity", d => (clickedActivity === null || clickedActivity === d.taetigkeit) ? 1 : 0.3)
         .on("click", function(event, d) {
             if (window.toggleActivityFilter) {
                 window.toggleActivityFilter(d.taetigkeit);
@@ -389,10 +389,10 @@ function renderTrendChart(data) {
         })
         .on("mouseout", function() {
             d3.select(this).attr("fill", "#c98042");
-            // Restore opacity based on selection
-            const currentSelected = window.getSelectedActivity ? window.getSelectedActivity() : "all";
+            // Restore opacity based on CLICKED state
+            const currentClicked = window.getClickedActivity ? window.getClickedActivity() : null;
             svg.selectAll("rect").attr("opacity", d => 
-                (currentSelected === "all" || currentSelected === d.taetigkeit) ? 1 : 0.3
+                (currentClicked === null || currentClicked === d.taetigkeit) ? 1 : 0.3
             );
             tooltip.style("opacity", 0);
         });
