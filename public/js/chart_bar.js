@@ -191,7 +191,7 @@ function renderBarChart(data) {
     const legendX = legendCollision ? (width - 110) : 0;
 
     const legend = svg.append("g")
-        .attr("transform", `translate(${legendX}, 0)`);
+        .attr("transform", `translate(${legendX - 20}, -30)`);
 
     const legendItems = legend.selectAll("g")
         .data(byGender)
