@@ -130,11 +130,6 @@ function renderBarChart(data) {
 
     const midAngle = d => (d.startAngle + d.endAngle) / 2;
 
-    // Pre-calculate positions to check for legend overlap
-    // Legend is at top-left (0,0).
-    const legendHeight = byGender.length * 20 + 20;
-    let legendCollision = false;
-
     slices.forEach(d => {
         const mid = midAngle(d);
         const isRight = mid < Math.PI;
@@ -146,19 +141,6 @@ function renderBarChart(data) {
         const posText = outerArc.centroid(d);
         posText[0] = radius * 1.26 * (isRight ? 1 : -1);
 
-        // Check collision with legend (Top-Left)
-        // Only relevant if label is on the left side
-        if (!isRight) {
-            // const absX = centerX + posText[0]; // Not needed if we just check Y and side
-            const absY = centerY + posText[1];
-            
-            // If the text label (approx) falls into the legend box height
-            // and is on the left side, we assume collision or near-collision.
-            if (absY < legendHeight && absY > -20) {
-                legendCollision = true;
-            }
-        }
-        
         d.posLine = posLine;
         d.posText = posText;
     });
@@ -173,45 +155,30 @@ function renderBarChart(data) {
         .attr("stroke-width", 1)
         .attr("opacity", 0.9);
 
-    arcs.append("text")
+    const labels = arcs.append("text")
         .filter(d => d.endAngle - d.startAngle > 0.04)
         .attr("transform", d => `translate(${d.posText})`)
         .attr("text-anchor", d => midAngle(d) < Math.PI ? "start" : "end")
         .attr("dy", "0.35em")
         .style("font-size", "12px")
-        .style("fill", "#3f3a33")
+        .style("fill", "#3f3a33");
+
+    labels.append("tspan")
+        .attr("x", 0)
+        .attr("dy", "-0.6em")
+        .style("font-weight", "bold")
         .text(d => {
             const pct = (d.data.sum / total) * 100;
-            return `${labelGender(d.data.geschlecht)} – ${pct.toFixed(1)} %`;
+            return `${labelGender(d.data.geschlecht)} (${pct.toFixed(1)} %)`;
         });
 
-    // Legend positioning
-    // Always top-right
-    const legendX = width - 110;
+    labels.append("tspan")
+        .attr("x", 0)
+        .attr("dy", "1.2em")
+        .style("font-weight", "normal")
+        .text(d => `${d.data.sum.toLocaleString("de-CH")} Fälle`);
 
-    const legend = svg.append("g")
-        .attr("transform", `translate(${legendX - 20}, -30)`);
-
-    const legendItems = legend.selectAll("g")
-        .data(byGender)
-        .enter()
-        .append("g")
-        .attr("transform", (_, i) => `translate(0, ${i * 20})`);
-
-    legendItems.append("rect")
-        .attr("width", 12)
-        .attr("height", 12)
-        .attr("rx", 2)
-        .attr("fill", d => colorGender(d.geschlecht));
-
-    legendItems.append("text")
-        .attr("x", 18)
-        .attr("y", 10)
-        .style("font-size", "12px")
-        .style("fill", "#3f3a33")
-        .text(d => {
-            return `${labelGender(d.geschlecht)} (${d.sum.toLocaleString("de-CH")})`;
-        });
+    // Legend removed per request
 }
 
 function labelGender(code) {
@@ -314,7 +281,8 @@ function renderTrendChart(data) {
     const margin = { top: 15, right: 20, bottom: 15, left: 100 };
     
     // Daten filtern (Top 6)
-    const topData = byActivity.slice(0, 6);
+    // Daten filtern (Top 5)
+    const topData = byActivity.slice(0, 5);
 
     const computedHeight = Math.max(
         height,

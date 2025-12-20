@@ -46,81 +46,39 @@
 
         <!-- Oben: Unfallkarte über die ganze Breite -->
         <section class="card viz-panel" id="viz-map">
-            <div class="card-header">
+            <div class="card-header header-with-filters">
                 <div class="card-title">
                     <h2>Unfallkarte</h2>
                     <span class="card-hint inline">
                         <span class="hint-text">
-                            Die Karte wird später die Kantone nach Unfallraten einfärben (normalisiert auf eine kantonale Strukturgrösse,
-                            z.&nbsp;B. Arbeitsplätze), ähnlich wie in der Karte im Projekt deines Freundes.
+                            Die Karte wird später die Kantone nach Unfallraten einfärben.
                         </span>
                     </span>
                 </div>
-                <div class="card-actions">
-                    <button class="btn-outline" id="btn-reset">Reset</button>
-                    <button class="btn-primary" id="btn-open-filters">Filter</button>
-                </div>
-            </div>
+                
+                <div id="filter-controls-map" class="filter-inline-controls">
+                    <!-- Map Mode (Restored Design) -->
+                    <div class="map-mode-toggle">
+                        <label class="toggle-option">
+                            <input type="radio" name="map-mode" value="unfall" checked>
+                            <span>Unfallort</span>
+                        </label>
+                        <label class="toggle-option">
+                            <input type="radio" name="map-mode" value="wohnort">
+                            <span>Wohnort</span>
+                        </label>
+                    </div>
 
-            <div id="filter-backdrop" class="filter-backdrop"></div>
-            <div id="filter-modal" class="filter-modal">
-                <div class="filter-modal-inner">
-                    <div class="filter-modal-header">
-                        <h3>Filter</h3>
-                        <button id="filter-close" class="modal-close">&#x2715;</button>
-                    </div>
-                    <div id="filter-controls" class="card-controls filter-controls">
-                        <div class="filter-top-section">
-                            <!-- Toggle für Unfallort / Wohnort -->
-                            <div class="filter-group">
-                                <span class="filter-label">Anzeigemodus</span>
-                                <div class="map-mode-toggle">
-                                    <label class="toggle-option">
-                                        <input type="radio" name="map-mode" value="unfall" checked>
-                                        <span>Unfallort</span>
-                                    </label>
-                                    <label class="toggle-option">
-                                        <input type="radio" name="map-mode" value="wohnort">
-                                        <span>Wohnort</span>
-                                    </label>
-                                </div>
-                            </div>
-                            <div class="filter-selection-grid">
-                                <div class="filter-group">
-                                    <span class="filter-label">Kanton</span>
-                                    <select class="control-select" id="filter-canton">
-                                        <option value="all">Alle Kantone</option>
-                                    </select>
-                                </div>
-                                <div class="filter-group">
-                                    <span class="filter-label">Versicherungszweig</span>
-                                    <select class="control-select" id="filter-branch">
-                                        <option value="all">Alle Versicherungszweige</option>
-                                        <option value="BU">BU – Berufsunfälle</option>
-                                        <option value="NBU">NBU – Nichtberufsunfälle</option>
-                                    </select>
-                                </div>
-                                <div class="filter-group">
-                                    <span class="filter-label">Geschlecht</span>
-                                    <select class="control-select" id="filter-gender">
-                                        <option value="all">Alle Geschlechter</option>
-                                    </select>
-                                </div>
-                                <div class="filter-group">
-                                    <span class="filter-label">Tätigkeit</span>
-                                    <select class="control-select" id="filter-activity">
-                                        <option value="all">Alle Tätigkeiten</option>
-                                    </select>
-                                </div>
-                                <div class="filter-group">
-                                    <span class="filter-label">Altersgruppe</span>
-                                    <select class="control-select" id="filter-age">
-                                        <option value="all">Alle Altersgruppen</option>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                    <!-- Filters: Canton & Branch -->
+                    <select class="control-select compact" id="filter-canton" title="Kanton">
+                        <option value="all">Kanton: Alle</option>
+                    </select>
+
+                    <select class="control-select compact" id="filter-branch" title="Versicherungszweig">
+                        <option value="all">Zweig: Alle</option>
+                        <option value="BU">Beruf</option>
+                        <option value="NBU">Nichtberuf</option>
+                    </select>
                 </div>
             </div>
 
@@ -130,33 +88,46 @@
 
         </section>
 
-        <!-- Unten links: Liniendiagramm (jetzt Balkendiagramm) -->
+        <!-- Unten links: Balkendiagramm (Tätigkeiten) -->
         <section class="card viz-panel" id="viz-bar">
-            <div class="card-header">
+            <div class="card-header header-with-filters">
                 <div class="card-title">
-                    <h2>Unfalltypen nach Tätigkeit</h2>
+                    <h2>Unfalltypen</h2>
                     <span class="card-hint inline popover">
                         <span class="hint-text">
-                            Zeigt die häufigsten Tätigkeiten, bei denen Unfälle passieren (aggregiert über die aktuelle Filterung und Kantonsauswahl).
+                            Häufigste Tätigkeiten.
                         </span>
                     </span>
                 </div>
+                <div class="filter-inline-controls">
+                    <select class="control-select compact" id="filter-activity" title="Tätigkeit">
+                        <option value="all">Tätigkeit: Alle</option>
+                    </select>
+                </div>
             </div>
-            <div id="bar-container" class="chart-placeholder">
-                <span>Häufigkeit von Unfalltätigkeiten – Visualisierung folgt.</span>
+            <div id="bar-container" class="chart-surface">
+                <!-- SVG injected by JS -->
             </div>
         </section>
 
-        <!-- Unten rechts: Balkendiagramm (jetzt Donut) -->
+        <!-- Unten rechts: Donut (Geschlecht) -->
         <section class="card viz-panel" id="viz-donut">
-            <div class="card-header">
+            <div class="card-header header-with-filters">
                 <div class="card-title">
-                    <h2>Unfälle nach Geschlecht</h2>
+                    <h2>Personen</h2>
                     <span class="card-hint inline popover">
                         <span class="hint-text">
-                            Zeigt die relative Verteilung der Unfälle nach Geschlecht basierend auf den aktuellen Filtern und der Kantonsauswahl.
+                            Verteilung nach Geschlecht.
                         </span>
                     </span>
+                </div>
+                <div class="filter-inline-controls">
+                    <select class="control-select compact" id="filter-gender" title="Geschlecht">
+                        <option value="all">Geschl.: Alle</option>
+                    </select>
+                    <select class="control-select compact" id="filter-age" title="Alter">
+                        <option value="all">Alter: Alle</option>
+                    </select>
                 </div>
             </div>
             <div id="donut-container" class="chart-placeholder">

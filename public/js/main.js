@@ -1,10 +1,10 @@
 // main.js
 
 let allAccidentData = [];      // alle Unfalldaten aus faelle.dsv
-let yearRange = { min: null, max: null, from: null, to: null };
+// yearRange removed
 let selectedCantons = [];      // aktuell ausgewählte Kantone (Codes)
 let mapMode = "unfall";        // "unfall" = kanton_unfall, "wohnort" = kanton_wohnort
-let availableYears = [];       // alle Jahre im Datensatz (kontinuierlich min..max)
+// availableYears removed
 
 const cantonNames = {
     "ZH": "Zürich", "BE": "Bern", "LU": "Luzern", "UR": "Uri", "SZ": "Schwyz",
@@ -35,19 +35,7 @@ function initVisualizationPage() {
                 d.altersgruppe !== "NA"
             );
 
-            // Jahr-Min/Max bestimmen
-            const years = allAccidentData
-                .map(d => d.jahr)
-                .filter(y => !isNaN(y));
-            const extent = d3.extent(years);
-            yearRange.min = extent[0];
-            yearRange.max = extent[1];
-            yearRange.from = yearRange.min;
-            yearRange.to = yearRange.max;
-            availableYears = d3.range(yearRange.min, yearRange.max + 1);
-
-            // Slider in die Karten-Controls einfügen
-            insertYearSlider(yearRange.min, yearRange.max);
+            // Year selection removed
 
             // Altersgruppen-Auswahl dynamisch aus den Daten befüllen
             populateAgeOptions(allAccidentData);
@@ -62,10 +50,8 @@ function initVisualizationPage() {
             updateActivityOptionsBasedOnCanton();
 
             // Event-Listener für Filter & Modal setzen
-
-            // Event-Listener für Filter & Modal setzen
             wireFilterEvents();
-            wireFilterModal();
+            // wireFilterModal removed
 
             // Erstmalige Darstellung
             applyFiltersAndRender();
@@ -75,55 +61,7 @@ function initVisualizationPage() {
         });
 }
 
-/* ---------------------------------------------------------
-   Jahr-Slider in die card-controls der Karte einfügen
---------------------------------------------------------- */
-function insertYearSlider(minYear, maxYear) {
-    const controls =
-        document.querySelector("#filter-controls") ||
-        document.querySelector("#viz-map .card-controls");
-    if (!controls) {
-        console.warn("card-controls für #viz-map nicht gefunden.");
-        return;
-    }
-
-    const wrapper = document.createElement("div");
-    wrapper.className = "year-slider-box";
-
-    const years = availableYears.length > 0
-        ? availableYears
-        : Array.from({ length: maxYear - minYear + 1 }, (_, i) => minYear + i);
-
-    const yearOptionsStart = years
-        .map(y => `<option value="${y}"${y === minYear ? " selected" : ""}>${y}</option>`)
-        .join("");
-    const yearOptionsEnd = years
-        .map(y => `<option value="${y}"${y === maxYear ? " selected" : ""}>${y}</option>`)
-        .join("");
-
-    wrapper.innerHTML = `
-      <label class="year-slider-label">
-        Jahrspanne
-        <span id="year-label">${minYear} – ${maxYear}</span>
-      </label>
-      <div class="year-range-inputs">
-        <div class="year-input">
-          <span>Von</span>
-          <select id="year-start">
-            ${yearOptionsStart}
-          </select>
-        </div>
-        <div class="year-input">
-          <span>Bis</span>
-          <select id="year-end">
-            ${yearOptionsEnd}
-          </select>
-        </div>
-      </div>
-    `;
-
-    controls.appendChild(wrapper);
-}
+// insertYearSlider removed
 
 function populateCantonOptions(data) {
     const select = document.getElementById("filter-canton");
@@ -434,46 +372,8 @@ function wireFilterEvents() {
         });
     }
 
-    // Jahr-Slider: Start
-    if (yearStart && yearEnd && yearLabel) {
-        yearStart.addEventListener("change", () => {
-            resetClickState();
-            let startVal = +yearStart.value;
-            let endVal   = +yearEnd.value;
+    // Jahr-Slider: Start/End listeners removed
 
-            updateYearEndOptions(startVal);
-            endVal = +yearEnd.value; // might have been adjusted
-
-            if (startVal > endVal) {
-                startVal = endVal;
-                yearStart.value = startVal;
-            }
-
-            yearRange.from = startVal;
-            yearRange.to   = endVal;
-            yearLabel.textContent = `${yearRange.from} – ${yearRange.to}`;
-
-            applyFiltersAndRender();
-        });
-
-        // Jahr-Ende
-        yearEnd.addEventListener("change", () => {
-            resetClickState();
-            let startVal = +yearStart.value;
-            let endVal   = +yearEnd.value;
-
-            if (endVal < startVal) {
-                endVal = startVal;
-                yearEnd.value = endVal;
-            }
-
-            yearRange.from = startVal;
-            yearRange.to   = endVal;
-            yearLabel.textContent = `${yearRange.from} – ${yearRange.to}`;
-
-            applyFiltersAndRender();
-        });
-    }
 }
 
 /* ---------------------------------------------------------
@@ -543,13 +443,12 @@ function applyFiltersAndRender() {
 
     const cantonField = mapMode === "wohnort" ? "kanton_wohnort" : "kanton_unfall";
 
-    let fromYear = yearRange.from ?? yearRange.min;
-    let toYear   = yearRange.to   ?? yearRange.max;
+    let fromYear = 2011; // Default min
+    let toYear   = 2023; // Default max (Hardcoded or potentially derived if needed, but year filter is gone)
+    // Ideally we just don't filter by year range anymore unless we want to keep the full range "implicit"
 
-    // 1. Basis-Daten filtern (Hard Filters: Jahr, Zweig, Alter, Kanton, Dropdowns)
-    let baseData = allAccidentData.filter(d =>
-        d.jahr >= fromYear && d.jahr <= toYear
-    );
+    // 1. Basis-Daten filtern (Hard Filters: Zweig, Alter, Kanton, Dropdowns)
+    let baseData = allAccidentData; // No year filter
 
     if (branch !== "all") {
         baseData = baseData.filter(d => d.zweig === branch);
@@ -604,10 +503,10 @@ function applyFiltersAndRender() {
 
 
 
-    // 6. Daten für Timeline (Alle Filter AUSSER Jahr)
-    // Wir nehmen baseData, aber OHNE den Jahresfilter.
-    // Das ist etwas tricky, da baseData oben schon gefiltert wurde.
-    // Wir müssen also neu filtern von allAccidentData.
+    // 6. Daten für Timeline (Alle Filter AUSSER Jahr - which is now all of them since year filter is gone)
+    // Since year filter is gone, timelineData is basically the same logic as other charts,
+    // but maybe we still want to show the context of "all years" vs "filtered by other things".
+    // Actually, normally timeline shows evolution over time. If we filter by specific criteria, timeline should reflect that subset.
     
     let timelineData = allAccidentData;
 
@@ -630,8 +529,7 @@ function applyFiltersAndRender() {
     if (selectedGender !== "all") {
         timelineData = timelineData.filter(d => d.geschlecht === selectedGender);
     }
-    // Apply Click Filters (Soft) - Timeline should reflect these too?
-    // Ja, Timeline zeigt den Kontext der aktuellen Auswahl.
+    // Apply Click Filters (Soft)
     if (clickedActivity) {
         timelineData = timelineData.filter(d => d.taetigkeit === clickedActivity);
     }
@@ -662,7 +560,7 @@ function applyFiltersAndRender() {
         }
     }
 
-    // Balkendiagramm updaten
+    // Balkendiagramm updaten (Donut)
     if (typeof renderBarChart === "function") {
         try {
             renderBarChart(barDataWithCanton);
@@ -674,12 +572,15 @@ function applyFiltersAndRender() {
     // Timeline updaten
     if (typeof renderTimeline === "function") {
         try {
-            renderTimeline(timelineData, yearRange);
+            // Pass full year range since functionality is removed from UI
+            renderTimeline(timelineData, { from: 2011, to: 2023 }); 
         } catch (e) {
             console.error("Fehler in renderTimeline:", e);
         }
     }
 }
+
+// updateYearRangeFromBrush removed
 
 /* ---------------------------------------------------------
    Callback aus chart_timeline.js (Brushing)
