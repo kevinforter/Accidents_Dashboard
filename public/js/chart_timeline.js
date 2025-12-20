@@ -66,7 +66,7 @@ function renderTimeline(data, currentYearRange) {
         .attr("d", area);
 
     // Achsen
-    svg.append("g")
+    const xAxisGroup = svg.append("g")
         .attr("transform", `translate(0,${height})`)
         .call(d3.axisBottom(x).tickFormat(d3.format("d")).ticks(accidentsByYear.length));
 
@@ -84,25 +84,114 @@ function renderTimeline(data, currentYearRange) {
 
     // Initial Brush Selection setzen (falls vorhanden)
     if (currentYearRange && currentYearRange.from && currentYearRange.to) {
-        // Nur wenn der Range NICHT dem vollen Umfang entspricht, zeigen wir den Brush an?
-        // Oder immer? Immer ist besser für Konsistenz.
-        const startX = x(currentYearRange.from);
-        const endX = x(currentYearRange.to);
+        let startX = x(currentYearRange.from);
+        let endX = x(currentYearRange.to);
+
+        if (currentYearRange.from === currentYearRange.to) {
+             const center = startX;
+             const widthPx = 10;
+             startX = center - widthPx / 2;
+             endX = center + widthPx / 2;
+        }
         
-        // Prüfen ob valide
         if (!isNaN(startX) && !isNaN(endX)) {
              brushGroup.call(brush.move, [startX, endX]);
         }
     }
 
+    // --- Tooltip Logic ---
+    let tooltip = document.querySelector(".timeline-tooltip");
+    if (!tooltip) {
+        tooltip = document.createElement("div");
+        tooltip.className = "timeline-tooltip";
+        tooltip.style.opacity = 0;
+        document.body.appendChild(tooltip);
+    }
+
+    const focus = svg.append("g")
+        .style("display", "none")
+        .style("pointer-events", "none");
+
+    focus.append("line")
+        .attr("y1", 0)
+        .attr("y2", height)
+        .attr("stroke", "#d3bda2")
+        .attr("stroke-width", 1)
+        .attr("stroke-dasharray", "4 2");
+
+    focus.append("circle")
+        .attr("r", 5)
+        .attr("fill", "#c98042")
+        .attr("stroke", "#fffaf3")
+        .attr("stroke-width", 2);
+
+    brushGroup.selectAll(".overlay")
+        .on("mouseover", () => focus.style("display", null))
+        .on("mouseout", () => {
+            focus.style("display", "none");
+            tooltip.style.opacity = 0;
+        })
+        .on("mousemove", function(event) {
+            const [mx] = d3.pointer(event);
+            const year = Math.round(x.invert(mx));
+            
+            const d = accidentsByYear.find(item => item.jahr === year);
+            if (d) {
+                const cx = x(d.jahr);
+                const cy = y(d.anzahl);
+
+                focus.attr("transform", `translate(${cx},0)`);
+                focus.select("circle").attr("cy", cy);
+                
+                tooltip.style.opacity = 1;
+                tooltip.innerHTML = `<strong>${d.jahr}</strong><br>${d.anzahl.toLocaleString("de-CH")} Unfälle`;
+                
+                let left = event.pageX + 15;
+                let top = event.pageY - 15;
+                if (left > window.innerWidth - 150) left = event.pageX - 160;
+
+                tooltip.style.left = left + "px";
+                tooltip.style.top = top + "px";
+            } else {
+                focus.style("display", "none");
+                tooltip.style.opacity = 0;
+            }
+        });
+
+    // --- Axis Tooltip Logic ---
+    xAxisGroup.selectAll(".tick text")
+        .style("cursor", "pointer")
+        .on("mouseover", (event, year) => {
+            focus.style("display", null);
+            const d = accidentsByYear.find(item => item.jahr === year);
+            if (d) {
+                const cx = x(d.jahr);
+                const cy = y(d.anzahl);
+                focus.attr("transform", `translate(${cx},0)`);
+                focus.select("circle").attr("cy", cy);
+                tooltip.style.opacity = 1;
+                tooltip.innerHTML = `<strong>${d.jahr}</strong><br>${d.anzahl.toLocaleString("de-CH")} Unfälle`;
+                let left = event.pageX + 15;
+                let top = event.pageY - 15;
+                if (left > window.innerWidth - 150) left = event.pageX - 160;
+                tooltip.style.left = left + "px";
+                tooltip.style.top = top + "px";
+            }
+        })
+        .on("mouseout", () => {
+            focus.style("display", "none");
+            tooltip.style.opacity = 0;
+        });
+
     function brushed(event) {
-        // Wenn die Auswahl durch Code gesetzt wurde (sourceEvent ist null), nichts tun
-        // um Endlosschleifen zu vermeiden
         if (!event.sourceEvent) return;
 
         if (!event.selection) {
-            // Wenn Brush gelöscht wurde -> Alles auswählen?
-            // Optional: Reset auf min/max
+            const [mx] = d3.pointer(event.sourceEvent, svg.select(".overlay").node());
+            const year = Math.round(x.invert(mx));
+            if (window.updateYearRangeFromBrush) {
+                window.updateYearRangeFromBrush(year, year);
+            }
             return; 
         }
 
@@ -110,7 +199,6 @@ function renderTimeline(data, currentYearRange) {
         const startYear = Math.round(x.invert(x0));
         const endYear = Math.round(x.invert(x1));
 
-        // Callback an main.js
         if (window.updateYearRangeFromBrush) {
             window.updateYearRangeFromBrush(startYear, endYear);
         }

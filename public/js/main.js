@@ -1,10 +1,10 @@
 // main.js
 
 let allAccidentData = [];      // alle Unfalldaten aus faelle.dsv
-// yearRange removed
+let yearRange = { min: 2011, max: 2023, from: 2011, to: 2023 };
 let selectedCantons = [];      // aktuell ausgewählte Kantone (Codes)
 let mapMode = "unfall";        // "unfall" = kanton_unfall, "wohnort" = kanton_wohnort
-// availableYears removed
+let availableYears = [];
 
 const cantonNames = {
     "ZH": "Zürich", "BE": "Bern", "LU": "Luzern", "UR": "Uri", "SZ": "Schwyz",
@@ -35,7 +35,23 @@ function initVisualizationPage() {
                 d.altersgruppe !== "NA"
             );
 
-            // Year selection removed
+            // Daten sortieren nach Jahr (optional)
+            allAccidentData.sort((a, b) => a.jahr - b.jahr);
+            
+            // Jahr-Range ermitteln
+            const years = allAccidentData.map(d => d.jahr);
+            const minYear = d3.min(years);
+            const maxYear = d3.max(years);
+            
+            availableYears = Array.from(new Set(years)).sort((a, b) => a - b);
+
+            yearRange.min = minYear;
+            yearRange.max = maxYear;
+            yearRange.from = minYear;
+            yearRange.to = maxYear;
+
+            // Dropdowns befüllen
+            populateYearOptions(minYear, maxYear);
 
             // Altersgruppen-Auswahl dynamisch aus den Daten befüllen
             populateAgeOptions(allAccidentData);
@@ -195,6 +211,64 @@ function populateGenderOptions(data) {
         else opt.textContent = g;
         selectGender.appendChild(opt);
     });
+}
+
+
+/* ---------------------------------------------------------
+   Jahr-Optionen befüllen
+--------------------------------------------------------- */
+function populateYearOptions(minYear, maxYear) {
+    const yearStartSelect = document.getElementById("year-start");
+    const yearEndSelect = document.getElementById("year-end");
+    
+    // Check if elements exist (modal might not interpret them if HTML missing, but I restored HTML)
+    if (!yearStartSelect || !yearEndSelect) return;
+
+    // Clear
+    yearStartSelect.innerHTML = "";
+    yearEndSelect.innerHTML = "";
+
+    // Populate
+    for (let y = minYear; y <= maxYear; y++) {
+        const optS = document.createElement("option");
+        optS.value = y;
+        optS.textContent = y;
+        yearStartSelect.appendChild(optS);
+
+        const optE = document.createElement("option");
+        optE.value = y;
+        optE.textContent = y;
+        yearEndSelect.appendChild(optE);
+    }
+
+    // Set initial values
+    yearStartSelect.value = yearRange.from;
+    yearEndSelect.value = yearRange.to;
+
+    // Update End Options logic
+    updateYearEndOptions(yearRange.from);
+}
+
+function updateYearEndOptions(startYear) {
+    const yearEndSelect = document.getElementById("year-end");
+    if (!yearEndSelect) return;
+
+    const currentEnd = parseInt(yearEndSelect.value, 10);
+    
+    // Disable options < startYear
+    Array.from(yearEndSelect.options).forEach(opt => {
+        const val = parseInt(opt.value, 10);
+        if (val < startYear) {
+            opt.disabled = true;
+        } else {
+            opt.disabled = false;
+        }
+    });
+
+    // If current selection is invalid, reset to startYear or max
+    if (currentEnd < startYear) {
+        yearEndSelect.value = startYear;
+    }
 }
 
 /* ---------------------------------------------------------
@@ -372,7 +446,42 @@ function wireFilterEvents() {
         });
     }
 
-    // Jahr-Slider: Start/End listeners removed
+
+    // Jahr-Optionen (Dropdowns)
+    if (yearStart && yearEnd) {
+        yearStart.addEventListener("change", () => {
+            const val = parseInt(yearStart.value, 10);
+            yearRange.from = val;
+
+            // Logik: Wenn Start > Ende, dann Ende = Start setzen
+            if (yearRange.from > yearRange.to) {
+                yearRange.to = yearRange.from;
+                yearEnd.value = yearRange.to;
+            }
+
+            updateYearEndOptions(yearRange.from);
+            
+            // Falls das ausgewählte Ende jetzt disabled ist (weil < Start), Reset im UI:
+            // updateYearEndOptions macht das schon (wenn currentEnd < startYear).
+            // Aber yearRange.to muss auch sync sein.
+            const newEndVal = parseInt(yearEnd.value, 10);
+            if (newEndVal !== yearRange.to) {
+                yearRange.to = newEndVal;
+            }
+            
+            if (yearLabel) yearLabel.textContent = `${yearRange.from} – ${yearRange.to}`;
+            applyFiltersAndRender();
+        });
+
+        yearEnd.addEventListener("change", () => {
+            yearRange.to = parseInt(yearEnd.value, 10);
+            if (yearLabel) yearLabel.textContent = `${yearRange.from} – ${yearRange.to}`;
+            applyFiltersAndRender();
+        });
+    }
+
+    // Jahr-Slider: Start/End listeners removed (Comment kept for reference or remove)
+
 
 }
 
@@ -448,7 +557,12 @@ function applyFiltersAndRender() {
     // Ideally we just don't filter by year range anymore unless we want to keep the full range "implicit"
 
     // 1. Basis-Daten filtern (Hard Filters: Zweig, Alter, Kanton, Dropdowns)
-    let baseData = allAccidentData; // No year filter
+    let baseData = allAccidentData; 
+
+    // Apply Year Filter
+    if (yearRange) {
+        baseData = baseData.filter(d => d.jahr >= yearRange.from && d.jahr <= yearRange.to);
+    }
 
     if (branch !== "all") {
         baseData = baseData.filter(d => d.zweig === branch);
@@ -573,7 +687,7 @@ function applyFiltersAndRender() {
     if (typeof renderTimeline === "function") {
         try {
             // Pass full year range since functionality is removed from UI
-            renderTimeline(timelineData, { from: 2011, to: 2023 }); 
+            renderTimeline(timelineData, yearRange); 
         } catch (e) {
             console.error("Fehler in renderTimeline:", e);
         }

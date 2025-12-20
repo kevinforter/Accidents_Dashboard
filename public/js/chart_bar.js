@@ -222,36 +222,58 @@ function renderTrendChart(data) {
     const wrapTickText = (selection, maxChars = 18) => {
         selection.each(function() {
             const textSel = d3.select(this);
-            const words = (textSel.text() || "").split(/\s+/).filter(Boolean);
-            if (words.join(" ").length <= maxChars) return;
+            const words = (textSel.text() || "").split(/\s+/).reverse();
+            const width = parseFloat(textSel.attr("width")) || 0; 
+            // Hier nutzen wir keine width, da axisLeft text manuell bricht?
+            // Wir nutzen maxChars.
 
-            const x = textSel.attr("x") || 0;
-            const y = textSel.attr("y") || 0;
-            const dy = parseFloat(textSel.attr("dy")) || 0;
-            const lineHeight = 0.95;
-
-            textSel.text(null);
             let line = [];
             let lineNumber = 0;
-            let tspan = textSel.append("tspan")
-                .attr("x", x)
-                .attr("y", y)
-                .attr("dy", dy + "em");
-
-            words.forEach(word => {
-                const candidate = [...line, word].join(" ");
-                if (candidate.length > maxChars && line.length > 0) {
-                    tspan.text(line.join(" "));
-                    line = [word];
-                    tspan = textSel.append("tspan")
-                        .attr("x", x)
-                        .attr("y", y)
-                        .attr("dy", (++lineNumber * lineHeight + dy) + "em")
-                        .text(word);
-                } else {
-                    line.push(word);
-                    tspan.text(line.join(" "));
+            const lineHeight = 1.1; // ems
+            const x = textSel.attr("x") || 0;
+            const y = textSel.attr("y") || 0;
+            const dy = parseFloat(textSel.attr("dy")) || 0.35;
+            
+            // Erstes Tspan (wird später überschrieben/entfernt oder als Container genutzt)
+            // Besser: Text leeren und neu aufbauen
+            
+            // Wort für Wort prüfen
+            let lines = [];
+            let currentLine = [];
+            
+            // (Reverse split oben, also pop())
+            while (words.length > 0) {
+                let word = words.pop();
+                currentLine.push(word);
+                if (currentLine.join(" ").length > maxChars && currentLine.length > 1) {
+                     // Zu lang -> letztes Wort zurück, aktuelle Zeile speichern
+                     currentLine.pop();
+                     lines.push(currentLine.join(" "));
+                     words.push(word);
+                     currentLine = [];
                 }
+            }
+            if (currentLine.length > 0) lines.push(currentLine.join(" "));
+
+            // Jetzt rendern
+            textSel.text(null);
+            
+            // Vertikale Zentrierung:
+            // Wir wollen, dass der ganze Block mittig um (y) liegt.
+            // dy ist der Offset vom y. 
+            // Start-Offset = -0.5 * (totalHeight) + 0.5 * lineHeight?
+            // Einfacher: dy für erste Zeile so setzen, dass Block zentriert ist.
+            // Standard dy=0.35em zentriert EINE Zeile.
+            // Für N Zeilen: StartDy = 0.35 - (N-1)*lineHeight/2
+            
+            const startDy = dy - ((lines.length - 1) * lineHeight) / 2;
+
+            lines.forEach((l, i) => {
+                textSel.append("tspan")
+                    .attr("x", x)
+                    .attr("y", y)
+                    .attr("dy", (startDy + i * lineHeight) + "em")
+                    .text(l);
             });
         });
     };
