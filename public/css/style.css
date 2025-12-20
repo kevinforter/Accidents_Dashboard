@@ -85,6 +85,12 @@ h3 {
     max-width: 1400px;
     margin: 0 auto;
     padding: 1.2rem 2rem 1.2rem;
+    flex: 1;
+    width: 100%;
+    /* Ensure it takes width in flex container */
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
 }
 
 /* ---------- Cards (für alle Seiten) ---------- */
