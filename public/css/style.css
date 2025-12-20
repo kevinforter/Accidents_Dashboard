@@ -447,7 +447,8 @@ body.page-viz .page-main {
 
 /* Tooltip für die Schweizerkarte */
 
-.map-tooltip {
+.map-tooltip,
+.timeline-tooltip {
     position: absolute;
     background: #fffaf3;
     border: 1px solid #e4d6c4;
