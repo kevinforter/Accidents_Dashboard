@@ -601,6 +601,30 @@ body.page-viz .page-main {
     border: 1px solid #d8c8b5;
 }
 
+.control-btn {
+    font-size: 0.75rem;
+    padding: 0 0.8rem;
+    height: 28px;
+    background-color: #c98042;
+    border: 1px solid #c98042;
+    color: #fffaf3;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    font-family: inherit;
+    border-radius: 4px;
+    /* Gentle rounding */
+    font-weight: 500;
+}
+
+.control-btn:hover {
+    background-color: #b66f34;
+    border-color: #b66f34;
+    color: #ffffff;
+}
+
 /* Original Map Mode Toggle restored (compact styles removed) */
 
 /* Inline Year Slider styles removed */
