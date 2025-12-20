@@ -47,6 +47,7 @@ function initVisualizationPage() {
             availableYears = d3.range(yearRange.min, yearRange.max + 1);
 
     // Start call removed
+            populateYearOptions(yearRange.min, yearRange.max);
 
             // Altersgruppen-Auswahl dynamisch aus den Daten befüllen
             populateAgeOptions(allAccidentData);
@@ -78,6 +79,26 @@ function initVisualizationPage() {
    Jahr-Slider in die card-controls der Karte einfügen
 --------------------------------------------------------- */
 // insertYearSlider removed
+
+/* ---------------------------------------------------------
+   Jahre-Dropdowns befüllen
+--------------------------------------------------------- */
+function populateYearOptions(min, max) {
+    const yearStart = document.getElementById("year-start");
+    const yearEnd = document.getElementById("year-end");
+    if (!yearStart || !yearEnd) return;
+
+    // Optionen generieren
+    // availableYears global nutzen oder neu generieren range(min, max)
+    const options = availableYears.map(y => `<option value="${y}">${y}</option>`).join("");
+    
+    yearStart.innerHTML = options;
+    yearEnd.innerHTML = options;
+
+    // Auswahl setzen
+    yearStart.value = yearRange.from;
+    yearEnd.value = yearRange.to;
+}
 
 function populateCantonOptions(data) {
     const select = document.getElementById("filter-canton");
@@ -388,7 +409,31 @@ function wireFilterEvents() {
         });
     }
 
-    // Year listeners removed
+    // Year selectors
+    if (yearStart) {
+        yearStart.addEventListener("change", () => {
+            let val = +yearStart.value;
+            if (val > yearRange.to) {
+                yearRange.to = val;
+                yearEnd.value = val;
+            }
+            yearRange.from = val;
+            updateYearEndOptions(val); 
+            applyFiltersAndRender();
+        });
+    }
+
+    if (yearEnd) {
+        yearEnd.addEventListener("change", () => {
+            let val = +yearEnd.value;
+            if (val < yearRange.from) {
+                yearRange.from = val;
+                yearStart.value = val;
+            }
+            yearRange.to = val;
+            applyFiltersAndRender();
+        });
+    }
 }
 
 /* ---------------------------------------------------------

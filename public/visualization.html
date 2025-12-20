@@ -101,22 +101,31 @@
                                     </select>
                                 </div>
                                 <div class="filter-group">
+                                    <span class="filter-label">Tätigkeit</span>
+                                    <select class="control-select" id="filter-activity">
+                                        <option value="all">Alle Tätigkeiten</option>
+                                    </select>
+                                </div>
+                                <div class="filter-group"></div> <!-- Spacer -->
+                                <div class="filter-group">
+                                    <span class="filter-label">Altersgruppe</span>
+                                    <select class="control-select" id="filter-age">
+                                        <option value="all">Alle Altersgruppen</option>
+                                    </select>
+                                </div>
+                                <div class="filter-group">
                                     <span class="filter-label">Geschlecht</span>
                                     <select class="control-select" id="filter-gender">
                                         <option value="all">Alle Geschlechter</option>
                                     </select>
                                 </div>
                                 <div class="filter-group">
-                                    <span class="filter-label">Tätigkeit</span>
-                                    <select class="control-select" id="filter-activity">
-                                        <option value="all">Alle Tätigkeiten</option>
-                                    </select>
-                                </div>
-                                <div class="filter-group">
-                                    <span class="filter-label">Altersgruppe</span>
-                                    <select class="control-select" id="filter-age">
-                                        <option value="all">Alle Altersgruppen</option>
-                                    </select>
+                                    <span class="filter-label">Jahrspanne</span>
+                                    <div class="filter-inline-controls" style="display: flex; gap: 0.5rem; width: 100%;">
+                                        <select class="control-select" id="year-start" style="flex: 1;"></select>
+                                        <span style="align-self: center;">bis</span>
+                                        <select class="control-select" id="year-end" style="flex: 1;"></select>
+                                    </div>
                                 </div>
                             </div>
                         </div>
