@@ -339,7 +339,7 @@ body.page-viz .page-main {
 .viz-grid {
     display: grid;
     grid-template-columns: 1.25fr 1fr;
-    grid-template-rows: minmax(280px, 1fr) minmax(220px, 1fr) 240px;
+    grid-template-rows: minmax(280px, 1fr) minmax(220px, 1fr) 210px;
     grid-template-areas:
         "map bar"
         "map donut"
