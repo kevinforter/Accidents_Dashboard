@@ -31,31 +31,39 @@
 
 <main class="page-main">
 
-    <section class="card hero-card">
-        <div class="hero-text">
-            <h2>Projektübersicht</h2>
-            <p>
-                Dieses Projekt ist im Modul I.DAVI an der HSLU entstanden. Ziel ist es,
-                Schweizer Versicherungsunfälle interaktiv zu visualisieren und Unterschiede
-                zwischen Kantonen, Tätigkeiten und Versicherungszweigen sichtbar zu machen.
-            </p>
-            <p>
-                Die Visualisierung unterstützt explorative Analysen nach Region, Zeitverlauf
-                und Tätigkeit und folgt der Informationssuche-Mantra
-                „Overview first, zoom &amp; filter, details on demand“.
-            </p>
-            <button class="btn-primary" onclick="location.href='visualization.html'">
-                Zur Visualisierung
-            </button>
+    <section class="hero-wrapper">
+        <div class="card hero-text">
+            <div>
+                <h2>Projektübersicht</h2>
+                <p>
+                    Dieses Projekt ist im Modul I.DAVI an der HSLU entstanden. Ziel ist es,
+                    Schweizer Versicherungsunfälle interaktiv zu visualisieren und Unterschiede
+                    zwischen Kantonen, Tätigkeiten und Versicherungszweigen sichtbar zu machen.
+                </p>
+                <p>
+                    Die Visualisierung unterstützt explorative Analysen nach Region, Zeitverlauf
+                    und Tätigkeit und folgt der Informationssuche-Mantra
+                    „Overview first, zoom &amp; filter, details on demand“.
+                </p>
+                <button class="btn-primary" onclick="location.href='visualization.html'">
+                    Zur Visualisierung
+                </button>
+            </div>
+            
+            <div class="hero-divider"></div>
+
+            <div class="hero-list-container">
+                <h3>Auf einen Blick</h3>
+                <ul class="hero-list">
+                    <li>Vergleich von Kantonen (normalisierte Unfallraten)</li>
+                    <li>Analyse nach Versicherungszweigen (BU / NBU)</li>
+                    <li>Unfälle nach Tätigkeit und über die Zeit</li>
+                </ul>
+            </div>
         </div>
 
-        <div class="hero-side">
-            <h3>Auf einen Blick</h3>
-            <ul class="hero-list">
-                <li>Vergleich von Kantonen (normalisierte Unfallraten)</li>
-                <li>Analyse nach Versicherungszweigen (BU / NBU)</li>
-                <li>Unfälle nach Tätigkeit und über die Zeit</li>
-            </ul>
+        <div class="card hero-image-card">
+            <img src="img/Unfall.jpg" alt="Symbolbild Unfallanalyse" class="hero-image-cover">
         </div>
     </section>
 
