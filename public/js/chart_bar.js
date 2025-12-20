@@ -313,8 +313,8 @@ function renderTrendChart(data) {
     const { width, height } = getContainerSize(container, 600, 280);
     const margin = { top: 15, right: 20, bottom: 15, left: 100 };
     
-    // Daten filtern (Top 6)
-    const topData = byActivity.slice(0, 6);
+    // Daten filtern (Top 5)
+    const topData = byActivity.slice(0, 5);
 
     const computedHeight = Math.max(
         height,

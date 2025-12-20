@@ -46,8 +46,7 @@ function initVisualizationPage() {
             yearRange.to = yearRange.max;
             availableYears = d3.range(yearRange.min, yearRange.max + 1);
 
-            // Slider in die Karten-Controls einfügen
-            insertYearSlider(yearRange.min, yearRange.max);
+    // Start call removed
 
             // Altersgruppen-Auswahl dynamisch aus den Daten befüllen
             populateAgeOptions(allAccidentData);
@@ -78,52 +77,7 @@ function initVisualizationPage() {
 /* ---------------------------------------------------------
    Jahr-Slider in die card-controls der Karte einfügen
 --------------------------------------------------------- */
-function insertYearSlider(minYear, maxYear) {
-    const controls =
-        document.querySelector("#filter-controls") ||
-        document.querySelector("#viz-map .card-controls");
-    if (!controls) {
-        console.warn("card-controls für #viz-map nicht gefunden.");
-        return;
-    }
-
-    const wrapper = document.createElement("div");
-    wrapper.className = "year-slider-box";
-
-    const years = availableYears.length > 0
-        ? availableYears
-        : Array.from({ length: maxYear - minYear + 1 }, (_, i) => minYear + i);
-
-    const yearOptionsStart = years
-        .map(y => `<option value="${y}"${y === minYear ? " selected" : ""}>${y}</option>`)
-        .join("");
-    const yearOptionsEnd = years
-        .map(y => `<option value="${y}"${y === maxYear ? " selected" : ""}>${y}</option>`)
-        .join("");
-
-    wrapper.innerHTML = `
-      <label class="year-slider-label">
-        Jahrspanne
-        <span id="year-label">${minYear} – ${maxYear}</span>
-      </label>
-      <div class="year-range-inputs">
-        <div class="year-input">
-          <span>Von</span>
-          <select id="year-start">
-            ${yearOptionsStart}
-          </select>
-        </div>
-        <div class="year-input">
-          <span>Bis</span>
-          <select id="year-end">
-            ${yearOptionsEnd}
-          </select>
-        </div>
-      </div>
-    `;
-
-    controls.appendChild(wrapper);
-}
+// insertYearSlider removed
 
 function populateCantonOptions(data) {
     const select = document.getElementById("filter-canton");
@@ -434,46 +388,7 @@ function wireFilterEvents() {
         });
     }
 
-    // Jahr-Slider: Start
-    if (yearStart && yearEnd && yearLabel) {
-        yearStart.addEventListener("change", () => {
-            resetClickState();
-            let startVal = +yearStart.value;
-            let endVal   = +yearEnd.value;
-
-            updateYearEndOptions(startVal);
-            endVal = +yearEnd.value; // might have been adjusted
-
-            if (startVal > endVal) {
-                startVal = endVal;
-                yearStart.value = startVal;
-            }
-
-            yearRange.from = startVal;
-            yearRange.to   = endVal;
-            yearLabel.textContent = `${yearRange.from} – ${yearRange.to}`;
-
-            applyFiltersAndRender();
-        });
-
-        // Jahr-Ende
-        yearEnd.addEventListener("change", () => {
-            resetClickState();
-            let startVal = +yearStart.value;
-            let endVal   = +yearEnd.value;
-
-            if (endVal < startVal) {
-                endVal = startVal;
-                yearEnd.value = endVal;
-            }
-
-            yearRange.from = startVal;
-            yearRange.to   = endVal;
-            yearLabel.textContent = `${yearRange.from} – ${yearRange.to}`;
-
-            applyFiltersAndRender();
-        });
-    }
+    // Year listeners removed
 }
 
 /* ---------------------------------------------------------

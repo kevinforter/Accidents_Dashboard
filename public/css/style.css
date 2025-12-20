@@ -339,7 +339,7 @@ body.page-viz .page-main {
 .viz-grid {
     display: grid;
     grid-template-columns: 1.25fr 1fr;
-    grid-template-rows: minmax(320px, 1fr) minmax(260px, 1fr) 180px;
+    grid-template-rows: minmax(280px, 1fr) minmax(220px, 1fr) 240px;
     grid-template-areas:
         "map bar"
         "map donut"
@@ -372,16 +372,18 @@ body.page-viz .page-main {
     overflow: visible;
 }
 
-/* Spezifische Anpassungen für die unteren Charts (Bar & Donut) */
+/* Spezifische Anpassungen für die unteren Charts (Bar & Donut & Timeline) */
 #viz-bar .card-header,
-#viz-donut .card-header {
+#viz-donut .card-header,
+#viz-timeline .card-header {
     border-bottom: none;
     padding-bottom: 0;
     margin-bottom: 0.5rem;
 }
 
 #viz-bar .card-header h2,
-#viz-donut .card-header h2 {
+#viz-donut .card-header h2,
+#viz-timeline .card-header h2 {
     font-size: 1.1rem;
     font-weight: normal;
 }
@@ -396,7 +398,7 @@ body.page-viz .page-main {
 
 /* Chart-Container-Größen so wählen, dass alles auf eine Seite passt */
 #map-container {
-    min-height: 480px !important;
+    min-height: 250px;
 }
 
 #trend-container,
