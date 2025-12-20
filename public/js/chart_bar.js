@@ -256,35 +256,77 @@ function renderTrendChart(data) {
         selection.each(function() {
             const textSel = d3.select(this);
             const words = (textSel.text() || "").split(/\s+/).filter(Boolean);
-            if (words.join(" ").length <= maxChars) return;
+            
+            // 1. Calculate lines (Simulation)
+            const lines = [];
+            let currentLine = [];
+            
+            words.forEach(word => {
+                // Try appending
+                if ([...currentLine, word].join(" ").length > maxChars && currentLine.length > 0) {
+                    // Start new line
+                    lines.push(currentLine.join(" "));
+                    currentLine = [word];
+                } else {
+                    currentLine.push(word);
+                }
+            });
+            if (currentLine.length > 0) lines.push(currentLine.join(" "));
+
+            // If only 1 line and short enough (already checked outside?), just keep it? 
+            // Actually the original check `words.join(" ").length <= maxChars` returns early.
+            // But if we are here, we might have multiple lines OR one long line (if force break not implemented, but above logic breaks by word).
+            // NOTE: The original logic returned early if total length <= maxChars. 
+            // If we are here, we proceed.
 
             const x = textSel.attr("x") || 0;
             const y = textSel.attr("y") || 0;
-            const dy = parseFloat(textSel.attr("dy")) || 0;
-            const lineHeight = 0.95;
+            const originalDy = parseFloat(textSel.attr("dy")) || 0;
+            const lineHeight = 0.95; // ems
 
+            // 2. Clear content
             textSel.text(null);
-            let line = [];
-            let lineNumber = 0;
-            let tspan = textSel.append("tspan")
-                .attr("x", x)
-                .attr("y", y)
-                .attr("dy", dy + "em");
 
-            words.forEach(word => {
-                const candidate = [...line, word].join(" ");
-                if (candidate.length > maxChars && line.length > 0) {
-                    tspan.text(line.join(" "));
-                    line = [word];
-                    tspan = textSel.append("tspan")
-                        .attr("x", x)
-                        .attr("y", y)
-                        .attr("dy", (++lineNumber * lineHeight + dy) + "em")
-                        .text(word);
-                } else {
-                    line.push(word);
-                    tspan.text(line.join(" "));
-                }
+            // 3. Calculate vertical start to center the block
+            // Formula: originalDy - ( (totalLines - 1) * lineHeight / 2 )
+            // Example: 2 lines -> shift up by 0.5 * lineHeight
+            const totalLines = lines.length;
+            const startDy = originalDy - ((totalLines - 1) * lineHeight / 2);
+
+            // 4. Render
+            lines.forEach((lineText, i) => {
+                textSel.append("tspan")
+                    .attr("x", x)
+                    .attr("y", y)
+                    .attr("dy", (i === 0 ? startDy : lineHeight) + "em") 
+                    // Note: d3 tspan dy is relative to previous sibling if not absolute? 
+                    // Wait, SVG dy is relative to previous position. 
+                    // For the FIRST tspan, it is relative to 'y'. 
+                    // For SUBSEQUENT tspans, 'dy' is relative to the previous line's baseline.
+                    // So subsequent tspans should have dy=lineHeight.
+                    // Ah, the original code used: (++lineNumber * lineHeight + dy) + "em"
+                    // But that was because it was setting dy relative to the STARTING text position for EVERY tspan?
+                    // No, "dy" attribute on tspan is additive relative to previous text content position.
+                    // Actually, if x is specified (absolute), dy is relative to y? 
+                    // SVG 1.1: "If a list of lengths is specified... relative to the previous text chunk".
+                    // Standard d3 pattern often uses:
+                    // tspan 0: dy = startDy
+                    // tspan 1: dy = lineHeight (relative to tspan 0)
+                    // tspan 2: dy = lineHeight (relative to tspan 1)
+                    
+                    // BUT, the original code used:
+                    // tspan 0: dy + "em"
+                    // tspan 1: (++line * lineHeight + dy) + "em"
+                    // This implies the previous developer might have been using absolute-ish calculation?
+                    // If 'y' attribute is set on each tspan (which it is: .attr("y", y)),
+                    // then 'dy' is relative to 'y'.
+                    // So we must use explicit offsets relative to y for ALL lines if we keep setting x and y.
+                    // Yes, we are setting .attr("y", y).
+                    
+                    // So:
+                    // Line i dy = startDy + (i * lineHeight)
+                    .attr("dy", (startDy + (i * lineHeight)) + "em")
+                    .text(lineText);
             });
         });
     };
