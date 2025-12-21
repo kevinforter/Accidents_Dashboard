@@ -6,13 +6,34 @@ function renderTimeline(data, currentYearRange) {
     if (!container) return;
 
     // Aggregation nach Jahr
-    const accidentsByYear = d3.rollups(
+    const rollup = d3.rollups(
         data,
         v => d3.sum(v, d => d.anzahl),
         d => d.jahr
-    )
-    .map(([jahr, anzahl]) => ({ jahr, anzahl }))
-    .sort((a, b) => a.jahr - b.jahr);
+    );
+    const dataMap = new Map(rollup);
+
+    // Range bestimmen (Global preferred)
+    let minYear, maxYear;
+    if (currentYearRange && currentYearRange.min && currentYearRange.max) {
+        minYear = currentYearRange.min;
+        maxYear = currentYearRange.max;
+    } else {
+        const years = data.map(d => d.jahr);
+        minYear = d3.min(years);
+        maxYear = d3.max(years);
+    }
+
+    // Zero-Filling für alle Jahre im Bereich
+    const accidentsByYear = [];
+    if (minYear !== undefined && maxYear !== undefined) {
+        for (let y = minYear; y <= maxYear; y++) {
+            accidentsByYear.push({
+                jahr: y,
+                anzahl: dataMap.get(y) || 0
+            });
+        }
+    }
 
     if (accidentsByYear.length === 0) {
         container.textContent = "Keine Daten für den Zeitverlauf.";
@@ -42,8 +63,14 @@ function renderTimeline(data, currentYearRange) {
         .attr("transform", `translate(${margin.left},${margin.top})`);
 
     // Skalen
+    // X-Domain fix: Use global min/max if available to keep axis stable for brushing
+    let xDomain = d3.extent(accidentsByYear, d => d.jahr);
+    if (currentYearRange && currentYearRange.min && currentYearRange.max) {
+        xDomain = [currentYearRange.min, currentYearRange.max];
+    }
+
     const x = d3.scaleLinear()
-        .domain(d3.extent(accidentsByYear, d => d.jahr))
+        .domain(xDomain)
         .range([0, width]);
 
     const y = d3.scaleLinear()
