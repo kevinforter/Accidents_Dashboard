@@ -54,30 +54,7 @@ function initVisualizationPage() {
             populateYearOptions(yearRange.min, yearRange.max);
 
     // Altersgruppen-Auswahl dynamisch aus den Daten befüllen
-    if (yearStart) {
-        yearStart.addEventListener("change", () => {
-            let val = +yearStart.value;
-            if (val > yearRange.to) {
-                yearRange.to = val;
-                yearEnd.value = val;
-            }
-            yearRange.from = val;
-            updateYearEndOptions(val); 
-            applyFiltersAndRender();
-        });
-    }
 
-    if (yearEnd) {
-        yearEnd.addEventListener("change", () => {
-            let val = +yearEnd.value;
-            if (val < yearRange.from) {
-                yearRange.from = val;
-                yearStart.value = val;
-            }
-            yearRange.to = val;
-            applyFiltersAndRender();
-        });
-    }
 
             // Altersgruppen-Auswahl dynamisch aus den Daten befüllen
             populateAgeOptions(allAccidentData);
@@ -444,6 +421,32 @@ function wireFilterEvents() {
     if (selectGender) {
         selectGender.addEventListener("change", () => {
             resetClickState();
+            applyFiltersAndRender();
+        });
+    }
+
+    // Jahr-Dropdowns Change-Listeners
+    if (yearStart) {
+        yearStart.addEventListener("change", () => {
+            let val = +yearStart.value;
+            if (val > yearRange.to) {
+                yearRange.to = val;
+                yearEnd.value = val;
+            }
+            yearRange.from = val;
+            updateYearEndOptions(val); 
+            applyFiltersAndRender();
+        });
+    }
+
+    if (yearEnd) {
+        yearEnd.addEventListener("change", () => {
+            let val = +yearEnd.value;
+            if (val < yearRange.from) {
+                yearRange.from = val;
+                yearStart.value = val;
+            }
+            yearRange.to = val;
             applyFiltersAndRender();
         });
     }

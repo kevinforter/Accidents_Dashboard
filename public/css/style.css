@@ -656,6 +656,16 @@ body.page-viz .page-main {
     gap: 0.5rem;
 }
 
+.filter-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+    width: 100%;
+    margin-bottom: 0.5rem;
+}
+
 .filter-inline-controls {
     display: flex;
     align-items: center;

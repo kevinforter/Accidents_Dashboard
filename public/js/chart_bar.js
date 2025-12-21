@@ -173,45 +173,25 @@ function renderBarChart(data) {
         .attr("stroke-width", 1)
         .attr("opacity", 0.9);
 
-    arcs.append("text")
+    const textGroups = arcs.append("text")
         .filter(d => d.endAngle - d.startAngle > 0.04)
         .attr("transform", d => `translate(${d.posText})`)
         .attr("text-anchor", d => midAngle(d) < Math.PI ? "start" : "end")
-        .attr("dy", "0.35em")
         .style("font-size", "12px")
-        .style("fill", "#3f3a33")
-        .text(d => {
-            const pct = (d.data.sum / total) * 100;
-            return `${labelGender(d.data.geschlecht)} – ${pct.toFixed(1)} %`;
-        });
+        .style("fill", "#3f3a33");
 
-    // Legend positioning
-    // Always top-right
-    const legendX = width - 110;
+    textGroups.append("tspan")
+        .attr("x", 0)
+        .attr("dy", "0em")
+        .text(d => labelGender(d.data.geschlecht));
 
-    const legend = svg.append("g")
-        .attr("transform", `translate(${legendX - 20}, -30)`);
+    textGroups.append("tspan")
+        .attr("x", 0)
+        .attr("dy", "1.2em")
+        .style("font-weight", "600")
+        .text(d => d.data.sum.toLocaleString("de-CH"));
 
-    const legendItems = legend.selectAll("g")
-        .data(byGender)
-        .enter()
-        .append("g")
-        .attr("transform", (_, i) => `translate(0, ${i * 20})`);
 
-    legendItems.append("rect")
-        .attr("width", 12)
-        .attr("height", 12)
-        .attr("rx", 2)
-        .attr("fill", d => colorGender(d.geschlecht));
-
-    legendItems.append("text")
-        .attr("x", 18)
-        .attr("y", 10)
-        .style("font-size", "12px")
-        .style("fill", "#3f3a33")
-        .text(d => {
-            return `${labelGender(d.geschlecht)} (${d.sum.toLocaleString("de-CH")})`;
-        });
 }
 
 function labelGender(code) {
