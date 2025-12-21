@@ -32,35 +32,90 @@
 <main class="page-main">
 
     <section class="card">
-        <h2>Motivation</h2>
+        <h2>Motivation & Zielsetzung</h2>
         <p>
-            Arbeits- und Freizeitunfälle verursachen hohe Kosten für Versicherungen, Arbeitgeber
-            und die Gesellschaft. Eine geeignete Visualisierung soll helfen,
-            Muster in den Unfalldaten zu erkennen und besonders betroffene Regionen oder
-            Tätigkeiten zu identifizieren.
+            Arbeits- und Freizeitunfälle verursachen nicht nur hohe Kosten für Versicherungen und Arbeitgeber,
+            sondern haben auch tiefgreifende gesellschaftliche Auswirkungen. Die schiere Menge an Versicherungsdaten
+            bleibt oft abstrakt und unzugänglich.
+        </p>
+        <p>
+            Unser Ziel war es, diese trockenen Zahlen zum Leben zu erwecken. Durch eine interaktive Visualisierung
+            sollen komplexe Zusammenhänge intuitiv erfassbar werden. Anstatt statischer Tabellen ermöglichen wir
+            das explorative Eintauchen in die Daten: Wo passieren die meisten Unfälle? Welches Geschlecht ist bei
+            riskanten Tätigkeiten stärker vertreten? Und wie haben sich diese Muster über das letzte Jahrzehnt verändert?
         </p>
     </section>
 
     <section class="card">
-        <h2>Fragestellungen</h2>
+        <h2>Zentrale Fragestellungen</h2>
+        <p>Unsere Analyse wird von folgenden Leitfragen getrieben, die wir durch die Visualisierung beantworten möchten:</p>
         <ul>
-            <li>Welche Kantone weisen – relativ zur kantonalen Struktur – hohe Unfallraten auf?</li>
-            <li>Unterscheiden sich BU- und NBU-Unfälle in Bezug auf Tätigkeiten und Kantone?</li>
-            <li>Wie entwickeln sich die Unfallzahlen über die Jahre?</li>
+            <li><strong>Geografische Verteilung:</strong> Welche Kantone weisen – relativ zur kantonalen Struktur – überdurchschnittlich hohe Unfallraten auf?</li>
+            <li><strong>Versicherungszweig:</strong> Unterscheiden sich Berufs- (BU) und Nichtberufsunfälle (NBU) signifikant in Bezug auf Tätigkeiten und betroffene Regionen?</li>
+            <li><strong>Zeitliche Dynamik:</strong> Wie haben sich die Unfallzahlen über die Jahre entwickelt? Gibt es erkennbare Trends oder Ausreisser?</li>
+            <li><strong>Demografie:</strong> Welche Geschlechter weisen bei bestimmten Tätigkeiten relativ mehr Unfälle auf?</li>
         </ul>
     </section>
 
     <section class="card">
-        <h2>Hintergrund – Sketch</h2>
+        <h2>Konzept & Sketch</h2>
         <p>
-            Die Daten stammen aus dem Bundesamt für Statistik und der Suva-Datenbank.
-            Die Bevölkerungs- bzw. Strukturzahlen wurden mit den Unfallzahlen zusammengeführt,
-            um Unfallraten pro 1'000 Einheiten zu berechnen.
+            Zu Beginn stand die Idee, alle relevanten Dimensionen – <strong>Kanton, Versicherungszweig, Tätigkeit, Geschlecht und Zeit</strong> –
+            in einem einzigen, kohärenten Dashboard zu vereinen. Der Nutzer soll nicht durch Menüs navigieren müssen,
+            sondern alle Filter direkt im Griff haben.
         </p>
-        <p>
+        <div class="sketch-container" style="text-align: center; margin: 2rem 0;">
             <img src="img/Sketch.png" alt="Mockup / Sketch des Dashboards"
-                 style="max-width:100%; border-radius:0.5rem; border:1px solid #e5e7eb;">
+                 style="max-width: 80%; border-radius: 0.5rem; border: 1px solid #e5e7eb; box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
+            <p style="font-size: 0.9rem; color: #7b7164; margin-top: 0.5rem; font-style: italic;">
+                Ursprüngliche Skizze des Layouts mit Fokus auf Filterbarkeit und geografische Übersicht.
+            </p>
+        </div>
+    </section>
+
+    <section class="card">
+        <h2>Vom Konzept zur Realität: Unser Entwicklungsprozess</h2>
+        <p>
+            Der Weg zum fertigen Dashboard war geprägt von iterativem Design und technischem Feinschliff.
+            Wir mussten lernen, welche Darstellungen in der Theorie gut klingen, aber in der Praxis scheitern.
         </p>
+        
+        <div class="progress-grid">
+            <div class="progress-item">
+                <div class="progress-image-wrapper">
+                    <img src="img/First_Implementation.png" alt="Erste Implementierung">
+                    <span class="progress-badge badge-early">Erster Entwurf</span>
+                </div>
+                <h3>Die Herausforderungen</h3>
+                <p>
+                    In unserer ersten Implementierung versuchten wir, <strong>alle Informationen gleichzeitig</strong> anzuzeigen.
+                    Das Ergebnis war ernüchternd:
+                </p>
+                <ul>
+                    <li>Die <strong>Karten-Labels</strong> überlagerten sich massiv und machten die geographische Analyse unmöglich.</li>
+                    <li>Die Liste der <strong>Tätigkeiten</strong> war ungefiltert und sprengte das Layout ("Overflow"), wodurch wichtige Steuerelemente aus dem Bild geschoben wurden.</li>
+                    <li>Es fehlte eine klare visuelle Hierarchie.</li>
+                </ul>
+            </div>
+
+            <div class="progress-divider"></div>
+
+            <div class="progress-item">
+                <div class="progress-image-wrapper">
+                    <img src="img/Second_Implementation.png" alt="Zweite Implementierung">
+                    <span class="progress-badge badge-final">Finale Version</span>
+                </div>
+                <h3>Der Durchbruch</h3>
+                <p>
+                    Für die finale Version haben wir "weniger ist mehr" als Prinzip angewandt:
+                </p>
+                <ul>
+                    <li><strong>Smart Labels:</strong> Statt statischem Text nutzen wir nun interaktive Hover-Effekte für die Kartenbeschriftung.</li>
+                    <li><strong>Top-5 Fokus:</strong> Statt einer endlosen Liste zeigen wir nur die relevantesten Tätigkeiten, was das Layout stabilisiert und die Kernaussagen schärft.</li>
+                    <li><strong>Zeitdimension:</strong> Die Integration der Timeline erlaubt nun das intuitive Filtern von Jahrspannen.</li>
+                </ul>
+            </div>
+        </div>
     </section>
 
 </main>
