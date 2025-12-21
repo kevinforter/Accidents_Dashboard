@@ -542,9 +542,9 @@ body.page-viz .page-main {
 .site-footer {
     border-top: 1px solid #e3d6c5;
     background: #fffaf3;
-    padding: 0.9rem 2rem;
+    padding: 0.5rem 2rem;
     text-align: center;
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     color: #8a7d6c;
 }
 
