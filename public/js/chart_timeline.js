@@ -1,11 +1,11 @@
 // chart_timeline.js
-// Zeigt den zeitlichen Verlauf der Unfälle (Area Chart) mit Brushing-Funktion
+// Shows the temporal progression of accidents (Area Chart) with brushing function
 
 function renderTimeline(data, currentYearRange) {
     const container = document.getElementById("timeline-container");
     if (!container) return;
 
-    // Aggregation nach Jahr
+    // Aggregation by year
     const rollup = d3.rollups(
         data,
         v => d3.sum(v, d => d.anzahl),
@@ -13,7 +13,7 @@ function renderTimeline(data, currentYearRange) {
     );
     const dataMap = new Map(rollup);
 
-    // Range bestimmen (Global preferred)
+    // Determine range (Global preferred)
     let minYear, maxYear;
     if (currentYearRange && currentYearRange.min && currentYearRange.max) {
         minYear = currentYearRange.min;
@@ -24,7 +24,7 @@ function renderTimeline(data, currentYearRange) {
         maxYear = d3.max(years);
     }
 
-    // Zero-Filling für alle Jahre im Bereich
+    // Zero-filling for all years in range
     const accidentsByYear = [];
     if (minYear !== undefined && maxYear !== undefined) {
         for (let y = minYear; y <= maxYear; y++) {
@@ -44,7 +44,7 @@ function renderTimeline(data, currentYearRange) {
     container.classList.remove("chart-placeholder");
     container.classList.add("chart-surface");
 
-    // Dimensionen
+    // Dimensions
     const rect = container.getBoundingClientRect();
     const margin = { top: 10, right: 30, bottom: 30, left: 50 };
     
@@ -62,7 +62,7 @@ function renderTimeline(data, currentYearRange) {
         .append("g")
         .attr("transform", `translate(${margin.left},${margin.top})`);
 
-    // Skalen
+    // Scales
     // X-Domain fix: Use global min/max if available to keep axis stable for brushing
     let xDomain = d3.extent(accidentsByYear, d => d.jahr);
     if (currentYearRange && currentYearRange.min && currentYearRange.max) {
@@ -84,7 +84,7 @@ function renderTimeline(data, currentYearRange) {
         .y1(d => y(d.anzahl))
         .curve(d3.curveMonotoneX);
 
-    // Area zeichnen
+    // Draw area
     svg.append("path")
         .datum(accidentsByYear)
         .attr("fill", "#e8c8a4")
@@ -92,7 +92,7 @@ function renderTimeline(data, currentYearRange) {
         .attr("stroke-width", 2)
         .attr("d", area);
 
-    // Achsen
+    // Axes
     const xAxisGroup = svg.append("g")
         .attr("transform", `translate(0,${height})`)
         .call(d3.axisBottom(x).tickFormat(d3.format("d")).ticks(accidentsByYear.length));
@@ -109,16 +109,15 @@ function renderTimeline(data, currentYearRange) {
         .attr("class", "brush")
         .call(brush);
 
-    // Initial Brush Selection setzen (falls vorhanden)
+    // Set initial brush selection (if available)
     if (currentYearRange && currentYearRange.from && currentYearRange.to) {
         let startX = x(currentYearRange.from);
         let endX = x(currentYearRange.to);
 
-        // Falls Start == Ende (Einzeljahr), machen wir den Brush künstlich etwas breiter
-        // damit man ihn sieht (z.B. +/- 0.3 Jahre)
+        // If Start == End (Single Year), artificially widen the brush so it is visible (e.g. +/- 0.3 years)
         if (currentYearRange.from === currentYearRange.to) {
              const center = startX;
-             const widthPx = 10; // Pixel Breite des Handles
+             const widthPx = 10; // Pixel width of the handle
              startX = center - widthPx / 2;
              endX = center + widthPx / 2;
         }
@@ -156,7 +155,6 @@ function renderTimeline(data, currentYearRange) {
         .attr("stroke-width", 2);
 
     // Attach listeners to the brush overlay (captured events)
-    // Use setTimeout to ensure the overlay rect exists after brush creation
     brushGroup.selectAll(".overlay")
         .on("mouseover", () => focus.style("display", null))
         .on("mouseout", () => {
@@ -226,18 +224,17 @@ function renderTimeline(data, currentYearRange) {
         });
 
     function brushed(event) {
-        // Wenn die Auswahl durch Code gesetzt wurde (sourceEvent ist null), nichts tun
-        // um Endlosschleifen zu vermeiden
+        // If selection was set by code (sourceEvent is null), do nothing to avoid infinite loops
         if (!event.sourceEvent) return;
 
         if (!event.selection) {
-            // Wenn Brush gelöscht wurde (Klick ohne Drag?) -> Einzeljahr selektieren
-            // Wir prüfen, wo geklickt wurde
-            // event.sourceEvent ist das MouseEvent (mouseup/click)
+            // If brush was cleared (click without drag?) -> Select single year.
+            // Check where clicked.
+            // event.sourceEvent is the MouseEvent (mouseup/click)
             const [mx] = d3.pointer(event.sourceEvent, svg.select(".overlay").node());
             const year = Math.round(x.invert(mx));
             
-            // Callback an main.js (Start = Ende = clicked Year)
+            // Callback to main.js (Start = End = clicked Year)
             if (window.updateYearRangeFromBrush) {
                 window.updateYearRangeFromBrush(year, year);
             }
@@ -248,7 +245,7 @@ function renderTimeline(data, currentYearRange) {
         const startYear = Math.round(x.invert(x0));
         const endYear = Math.round(x.invert(x1));
 
-        // Callback an main.js
+        // Callback to main.js
         if (window.updateYearRangeFromBrush) {
             window.updateYearRangeFromBrush(startYear, endYear);
         }

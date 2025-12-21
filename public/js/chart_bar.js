@@ -1,4 +1,4 @@
-// Hilfsfunktion: Breite des Containers bestimmen
+// Helper function: Determine container width
 function getContainerSize(container, defaultWidth = 600, defaultHeight = 260) {
     const rect = container.getBoundingClientRect();
     const width = rect.width && rect.width > 0 ? rect.width : defaultWidth;
@@ -6,7 +6,7 @@ function getContainerSize(container, defaultWidth = 600, defaultHeight = 260) {
     return { width, height };
 }
 
-// Geschlechterverteilung: relative Anteile (Donut)
+// Gender Distribution: Relative Proportions (Donut)
 function renderBarChart(data) {
     const container = document.getElementById("donut-container");
     if (!container) return;
@@ -31,9 +31,9 @@ function renderBarChart(data) {
         return;
     }
 
-    container.innerHTML = ""; // Platzhalter entfernen
+    container.innerHTML = ""; // Remove placeholder
 
-    // Wenn die Karte geladen wurde, soll das Diagramm bündig ohne Padding sitzen
+    // When the map is loaded, the chart should sit flush without padding
     container.classList.remove("chart-placeholder");
     container.classList.add("chart-surface");
 
@@ -119,7 +119,7 @@ function renderBarChart(data) {
         (clickedGender === null || clickedGender === d.data.geschlecht) ? 1 : 0.6
     );
 
-    // Labels ausserhalb mit Polylines
+    // Labels outside with polylines
     const labelArc = d3.arc()
         .innerRadius(radius * 0.95)
         .outerRadius(radius * 0.95);
@@ -227,7 +227,7 @@ function getChartTooltip() {
     return chartTooltip;
 }
 
-// Tätigkeiten: Häufigkeit der Unfälle (Top-N) in der Schweiz
+// Activities: Frequency of accidents (Top-N) in Switzerland
 function renderTrendChart(data) {
     const container = document.getElementById("bar-container");
     if (!container) return;
@@ -319,23 +319,23 @@ function renderTrendChart(data) {
         .map(([taetigkeit, sum]) => ({ taetigkeit, sum }))
         .filter(d => d.sum > 0)
         .sort((a, b) => d3.descending(a.sum, b.sum))
-        .sort((a, b) => d3.descending(a.sum, b.sum)); // Alle Tätigkeiten anzeigen
+        .sort((a, b) => d3.descending(a.sum, b.sum)); // Show all activities
 
     if (byActivity.length === 0) {
         container.textContent = "Keine Daten vorhanden.";
         return;
     }
 
-    container.innerHTML = ""; // Platzhalter entfernen
+    container.innerHTML = ""; // Remove placeholder
 
-    // Bündiges SVG ohne Platzhalter-Padding
+    // Flush SVG without placeholder padding
     container.classList.remove("chart-placeholder");
     container.classList.add("chart-surface");
 
     const { width, height } = getContainerSize(container, 600, 280);
     const margin = { top: 15, right: 20, bottom: 15, left: 100 };
     
-    // Daten filtern (Top 5)
+    // Filter data (Top 5)
     const topData = byActivity.slice(0, 5);
 
     const computedHeight = Math.max(

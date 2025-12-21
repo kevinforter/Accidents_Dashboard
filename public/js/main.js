@@ -1,8 +1,8 @@
 // main.js
 
-let allAccidentData = [];      // alle Unfalldaten aus faelle.dsv
+let allAccidentData = [];      // all accident data from faelle.dsv
 let yearRange = { min: 2011, max: 2023, from: 2011, to: 2023 };
-let selectedCantons = [];      // aktuell ausgewählte Kantone (Codes)
+let selectedCantons = [];      // currently selected cantons (codes)
 let mapMode = "unfall";        // "unfall" = kanton_unfall, "wohnort" = kanton_wohnort
 let availableYears = [];
 
@@ -29,16 +29,16 @@ function initVisualizationPage() {
 
     loadAccidentData()
         .then(data => {
-            // "Unbekannte oder übrige Tätigkeit" und "NA" (Altersgruppe) global herausfiltern
+            // Filter out "Unknown or other activity" and "NA" age group globally
             allAccidentData = data.filter(d => 
                 d.taetigkeit !== "Unbekannte oder übrige Tätigkeit" && 
                 d.altersgruppe !== "NA"
             );
 
-            // Daten sortieren nach Jahr (optional)
+            // Sort data by year (optional)
             allAccidentData.sort((a, b) => a.jahr - b.jahr);
             
-            // Jahr-Range ermitteln
+            // Determine Year Range
             const years = allAccidentData.map(d => d.jahr);
             const minYear = d3.min(years);
             const maxYear = d3.max(years);
@@ -50,51 +50,44 @@ function initVisualizationPage() {
             yearRange.from = minYear;
             yearRange.to = maxYear;
 
-            // Dropdowns befüllen
+            // Populate Dropdowns
             populateYearOptions(yearRange.min, yearRange.max);
 
-    // Altersgruppen-Auswahl dynamisch aus den Daten befüllen
-
-
-            // Altersgruppen-Auswahl dynamisch aus den Daten befüllen
+            // Populate Age Group Selection dynamically from data
             populateAgeOptions(allAccidentData);
 
-            // Kantons-Auswahl befüllen (initial)
+            // Populate Canton Selection (initial)
             updateCantonOptionsBasedOnActivity();
 
-            // Geschlecht-Auswahl befüllen
+            // Populate Gender Selection
             populateGenderOptions(allAccidentData);
 
-            // Tätigkeit-Auswahl befüllen (initial basierend auf "alle Kantone")
+            // Populate Activity Selection (initial based on "all cantons")
             updateActivityOptionsBasedOnCanton();
 
-            // Event-Listener für Filter & Modal setzen
+            // Set Event Listeners for filters
             wireFilterEvents();
-            // wireFilterModal removed
 
-            // Erstmalige Darstellung
+            // Initial Rendering
             applyFiltersAndRender();
         })
         .catch(err => {
-            console.error("Fehler beim Initialisieren der Visualisierung:", err);
+            console.error("Error initializing visualization:", err);
         });
 }
 
-/* ---------------------------------------------------------
-   Jahr-Slider in die card-controls der Karte einfügen
---------------------------------------------------------- */
-// insertYearSlider removed
+
 
 /* ---------------------------------------------------------
-   Jahre-Dropdowns befüllen
+   Populate Year Dropdowns
 --------------------------------------------------------- */
 function populateYearOptions(min, max) {
     const yearStart = document.getElementById("year-start");
     const yearEnd = document.getElementById("year-end");
     if (!yearStart || !yearEnd) return;
 
-    // Optionen generieren
-    // availableYears global nutzen oder neu generieren range(min, max)
+    // Generate Options
+    // use availableYears global or new generate range(min, max)
     const options = availableYears.map(y => `<option value="${y}">${y}</option>`).join("");
     
     yearStart.innerHTML = options;
@@ -109,12 +102,12 @@ function populateCantonOptions(data) {
     const select = document.getElementById("filter-canton");
     if (!select) return;
 
-    // Aktuellen Wert merken, um ihn nach Möglichkeit wiederherzustellen
+    // Remember current value to restore if possible
     const currentValue = select.value;
 
-    select.innerHTML = '<option value="all">Alle Kantone</option>';
+    select.innerHTML = '<option value="all">All Cantons</option>';
 
-    // Wenn Daten übergeben wurden, nur Kantone anzeigen, die darin vorkommen
+    // If data provided, only show cantons present in data
     let relevantCodes = Object.keys(cantonNames);
     if (data) {
         const cantonField = mapMode === "wohnort" ? "kanton_wohnort" : "kanton_unfall";
@@ -122,7 +115,7 @@ function populateCantonOptions(data) {
         relevantCodes = relevantCodes.filter(c => codesInDataset.has(c));
     }
 
-    // Sortiert nach Namen
+    // Sort by name
     relevantCodes.sort((a, b) =>
         cantonNames[a].localeCompare(cantonNames[b])
     );
@@ -134,12 +127,12 @@ function populateCantonOptions(data) {
         select.appendChild(opt);
     });
 
-    // Wert wiederherstellen, falls noch vorhanden
+    // Restore value if still valid
     if (currentValue && (currentValue === "all" || relevantCodes.includes(currentValue))) {
         select.value = currentValue;
     } else {
         select.value = "all";
-        // Falls der Wert weggefallen ist, müssen wir auch die globale Auswahl resetten
+        // If value dropped out, reset global selection too
         if (currentValue !== "all") {
              selectedCantons = [];
              window.selectedCantons = [];
@@ -148,7 +141,7 @@ function populateCantonOptions(data) {
 }
 
 /* ---------------------------------------------------------
-   Hilfsfunktion: Kanton-Optionen basierend auf Tätigkeit filtern
+   Helper: Filter Canton Options based on Activity
 --------------------------------------------------------- */
 function updateCantonOptionsBasedOnActivity() {
     const selectActivity = document.getElementById("filter-activity");
@@ -157,17 +150,17 @@ function updateCantonOptionsBasedOnActivity() {
     const currentActivity = selectActivity.value;
     
     if (currentActivity === "all") {
-        // Alle Kantone anzeigen (basierend auf allen Daten)
+        // Show all cantons (based on all data)
         populateCantonOptions(allAccidentData);
     } else {
-        // Nur Kantone anzeigen, die diese Tätigkeit haben
+        // Show only cantons having this activity
         const relevantData = allAccidentData.filter(d => d.taetigkeit === currentActivity);
         populateCantonOptions(relevantData);
     }
 }
 
 /* ---------------------------------------------------------
-   Altersgruppen-Select befüllen
+   Populate Age Group Select
 --------------------------------------------------------- */
 function populateAgeOptions(data) {
     const selectAge = document.getElementById("filter-age");
@@ -195,7 +188,7 @@ function populateAgeOptions(data) {
 
     const optionAll = document.createElement("option");
     optionAll.value = "all";
-    optionAll.textContent = "Alle Altersgruppen";
+    optionAll.textContent = "All Age Groups";
     selectAge.appendChild(optionAll);
 
     uniqueAges.forEach(age => {
@@ -207,7 +200,7 @@ function populateAgeOptions(data) {
 }
 
 /* ---------------------------------------------------------
-   Geschlecht-Select befüllen
+   Populate Gender Select
 --------------------------------------------------------- */
 function populateGenderOptions(data) {
     const selectGender = document.getElementById("filter-gender");
@@ -225,15 +218,15 @@ function populateGenderOptions(data) {
     selectGender.innerHTML = "";
     const optionAll = document.createElement("option");
     optionAll.value = "all";
-    optionAll.textContent = "Alle Geschlechter";
+    optionAll.textContent = "All Genders";
     selectGender.appendChild(optionAll);
 
     uniqueGenders.forEach(g => {
         const opt = document.createElement("option");
         opt.value = g;
-        // Label etwas schöner machen
-        if (g === "m") opt.textContent = "Männlich";
-        else if (g === "f") opt.textContent = "Weiblich";
+        // Prettify label
+        if (g === "m") opt.textContent = "Male";
+        else if (g === "f") opt.textContent = "Female";
         else opt.textContent = g;
         selectGender.appendChild(opt);
     });
@@ -298,7 +291,7 @@ function updateYearEndOptions(startYear) {
 }
 
 /* ---------------------------------------------------------
-   Tätigkeit-Select befüllen
+   Populate Activity Select
 --------------------------------------------------------- */
 function populateActivityOptions(data) {
     const selectActivity = document.getElementById("filter-activity");
@@ -311,13 +304,13 @@ function populateActivityOptions(data) {
                 .filter(Boolean)
         )
     );
-    // Alphabetisch sortieren
+    // Sort alphabetically
     uniqueActivities.sort((a, b) => a.localeCompare(b));
 
     selectActivity.innerHTML = "";
     const optionAll = document.createElement("option");
     optionAll.value = "all";
-    optionAll.textContent = "Alle Tätigkeiten";
+    optionAll.textContent = "All Activities";
     selectActivity.appendChild(optionAll);
 
     uniqueActivities.forEach(act => {
@@ -329,7 +322,7 @@ function populateActivityOptions(data) {
 }
 
 /* ---------------------------------------------------------
-   Helper: Click-State zurücksetzen
+   Helper: Reset Click State
 --------------------------------------------------------- */
 function resetClickState() {
     clickedActivity = null;
@@ -337,7 +330,7 @@ function resetClickState() {
 }
 
 /* ---------------------------------------------------------
-   Filter-Events (Reset, Dropdowns, Jahr-Slider)
+   Filter Events (Reset, Dropdowns, Year Slider)
 --------------------------------------------------------- */
 function wireFilterEvents() {
     const btnReset    = document.getElementById("btn-reset");
@@ -349,7 +342,7 @@ function wireFilterEvents() {
     const yearLabel   = document.getElementById("year-label");
     const modeRadios  = document.querySelectorAll('input[name="map-mode"]');
 
-    // Reset-Button
+    // Reset Button
     if (btnReset) {
         btnReset.addEventListener("click", () => {
             // Click-State resetten
@@ -378,7 +371,7 @@ function wireFilterEvents() {
             if (selectGender) selectGender.value = "all";
             if (selectActivity) selectActivity.value = "all";
 
-            // Kantonsauswahl zurücksetzen (global und für Karte)
+            // Reset Canton Selection (global and for map)
             selectedCantons = [];
             if (window.selectedCantons) {
                 window.selectedCantons.length = 0; // gleiche Array-Referenz leeren
@@ -471,7 +464,7 @@ function wireFilterEvents() {
             } else {
                 selectedCantons = [val];
             }
-            // Sync mit globaler Variable für chart_map (falls nötig)
+            // Sync with global variable for chart_map (if needed)
             window.selectedCantons = selectedCantons;
             
             // Tätigkeit-Optionen aktualisieren
@@ -551,7 +544,7 @@ window.getSelectedGender = function() {
 };
 
 /* ---------------------------------------------------------
-   Zentrale Filterlogik + Rendering
+   Central Filter Logic + Rendering
 --------------------------------------------------------- */
 function applyFiltersAndRender() {
     if (!allAccidentData || allAccidentData.length === 0) return;
@@ -568,10 +561,9 @@ function applyFiltersAndRender() {
     const cantonField = mapMode === "wohnort" ? "kanton_wohnort" : "kanton_unfall";
 
     let fromYear = 2011; // Default min
-    let toYear   = 2023; // Default max (Hardcoded or potentially derived if needed, but year filter is gone)
-    // Ideally we just don't filter by year range anymore unless we want to keep the full range "implicit"
+    let toYear   = 2023; // Default max
 
-    // 1. Basis-Daten filtern (Hard Filters: Zweig, Alter, Kanton, Dropdowns)
+    // 1. Filter Base Data (Hard Filters: Branch, Age, Canton, Dropdowns)
     let baseData = allAccidentData; 
 
     // Apply Year Filter
@@ -605,7 +597,7 @@ function applyFiltersAndRender() {
     // 2. Click Filters (Soft Filters)
     // These apply on top of baseData for specific charts
     
-    // 3. Daten für die Karte (Voll gefiltert: Hard + Soft)
+    // 3. Data for Map (Fully Filtered: Hard + Soft)
     let mapData = baseData;
     if (clickedActivity) {
         mapData = mapData.filter(d => d.taetigkeit === clickedActivity);
@@ -614,7 +606,7 @@ function applyFiltersAndRender() {
         mapData = mapData.filter(d => d.geschlecht === clickedGender);
     }
 
-    // 4. Daten für Trend-Chart (Activity)
+    // 4. Data for Trend Chart (Activity)
     // Hard Filters applied.
     // Soft Filters: Apply Gender click, IGNORE Activity click (Context)
     let trendData = baseData;
@@ -622,7 +614,7 @@ function applyFiltersAndRender() {
         trendData = trendData.filter(d => d.geschlecht === clickedGender);
     }
 
-    // 5. Daten für Donut-Chart (Gender)
+    // 5. Data for Donut Chart (Gender)
     // Hard Filters applied.
     // Soft Filters: Apply Activity click, IGNORE Gender click (Context)
     let barData = baseData;
@@ -632,10 +624,8 @@ function applyFiltersAndRender() {
 
 
 
-    // 6. Daten für Timeline (Alle Filter AUSSER Jahr - which is now all of them since year filter is gone)
-    // Since year filter is gone, timelineData is basically the same logic as other charts,
-    // but maybe we still want to show the context of "all years" vs "filtered by other things".
-    // Actually, normally timeline shows evolution over time. If we filter by specific criteria, timeline should reflect that subset.
+    // 6. Data for Timeline
+    // Shows evolution over time. If we filter by specific criteria, timeline should reflect that subset.
     
     let timelineData = allAccidentData;
 
@@ -666,12 +656,12 @@ function applyFiltersAndRender() {
         timelineData = timelineData.filter(d => d.geschlecht === clickedGender);
     }
 
-    // Helper: Kantonscode anfügen für Map
+    // Helper: Append Canton Code for Map
     const mapDataWithCanton = mapData.map(d => ({ ...d, kanton: d[cantonField] || "" }));
     const trendDataWithCanton = trendData.map(d => ({ ...d, kanton: d[cantonField] || "" }));
     const barDataWithCanton = barData.map(d => ({ ...d, kanton: d[cantonField] || "" }));
 
-    // Karte updaten
+    // Update Map
     if (typeof renderMap === "function") {
         try {
             renderMap(mapDataWithCanton);
@@ -680,7 +670,7 @@ function applyFiltersAndRender() {
         }
     }
 
-    // Trend-Chart updaten
+    // Update Trend Chart
     if (typeof renderTrendChart === "function") {
         try {
             renderTrendChart(trendDataWithCanton);
@@ -689,7 +679,7 @@ function applyFiltersAndRender() {
         }
     }
 
-    // Balkendiagramm updaten (Donut)
+    // Update Bar Chart (Donut)
     if (typeof renderBarChart === "function") {
         try {
             renderBarChart(barDataWithCanton);
@@ -698,7 +688,7 @@ function applyFiltersAndRender() {
         }
     }
 
-    // Timeline updaten
+    // Update Timeline
     if (typeof renderTimeline === "function") {
         try {
             // Pass full year range since functionality is removed from UI
@@ -712,10 +702,10 @@ function applyFiltersAndRender() {
 // updateYearRangeFromBrush removed
 
 /* ---------------------------------------------------------
-   Callback aus chart_timeline.js (Brushing)
+   Callback from chart_timeline.js (Brushing)
 --------------------------------------------------------- */
 window.updateYearRangeFromBrush = function(startYear, endYear) {
-    // Validierung
+    // Validation
     if (startYear < yearRange.min) startYear = yearRange.min;
     if (endYear > yearRange.max) endYear = yearRange.max;
     if (startYear > endYear) startYear = endYear;
@@ -731,27 +721,25 @@ window.updateYearRangeFromBrush = function(startYear, endYear) {
 
     if (yearStart) yearStart.value = startYear;
     if (yearEnd) {
-        updateYearEndOptions(startYear); // Optionen anpassen
+        updateYearEndOptions(startYear); // Adjust options
         yearEnd.value = endYear;
     }
     if (yearLabel) {
         yearLabel.textContent = `${startYear} – ${endYear}`;
     }
 
-    // Render (aber Timeline nicht komplett neu zeichnen, sonst flackert der Brush? 
-    // D3 Brush handles move events well, but if we re-render the whole chart, the brush might reset or jump.
-    // renderTimeline checks if selection is provided.
+    // Render (do not re-render timeline completely to avoid brush flicker)
     applyFiltersAndRender();
 };
 
 /* ---------------------------------------------------------
-   Callback aus chart_map.js, wenn Kantone angeklickt wurden
+   Callback from chart_map.js, when cantons are clicked
 --------------------------------------------------------- */
 window.updateChartsFromMap = function(cantons) {
-    selectedCantons = cantons.slice();  // lokale Kopie
+    selectedCantons = cantons.slice();  // local copy
     window.selectedCantons = selectedCantons; // Global sync
 
-    // Dropdown updaten
+    // Update Dropdown
     const selectCanton = document.getElementById("filter-canton");
     if (selectCanton) {
         if (selectedCantons.length === 0) {
@@ -759,20 +747,19 @@ window.updateChartsFromMap = function(cantons) {
         } else if (selectedCantons.length === 1) {
             selectCanton.value = selectedCantons[0];
         } else {
-            // Bei Mehrfachauswahl: Dropdown kann das nicht nativ anzeigen -> "all" oder so lassen
-            // Optional: Man könnte eine "Multiple" Option einfügen, aber "all" ist weniger verwirrend als ein falscher Einzelwert.
+            // For multi-selection: Dropdown cannot natively show this -> keep "all"
             selectCanton.value = "all";
         }
     }
 
-    // Tätigkeit-Optionen aktualisieren
+    // Update Activity Options
     updateActivityOptionsBasedOnCanton();
 
     applyFiltersAndRender();
 };
 
 /* ---------------------------------------------------------
-   Hilfsfunktion: Tätigkeit-Optionen basierend auf Kanton filtern
+   Helper: Filter Activity Options based on Canton
 --------------------------------------------------------- */
 function updateActivityOptionsBasedOnCanton() {
     const selectActivity = document.getElementById("filter-activity");
@@ -788,14 +775,14 @@ function updateActivityOptionsBasedOnCanton() {
 
     populateActivityOptions(relevantData);
 
-    // Versuchen, die alte Auswahl wiederherzustellen
-    // Wenn der Wert nicht existiert, fällt der Browser oft auf den ersten zurück ("all")
-    // Sicherheitshalber prüfen wir, ob wir ihn setzen können.
-    // Da populateActivityOptions den DOM neu baut, ist der alte Value weg.
-    // Wir setzen ihn neu. Wenn er nicht in den options ist, wird er ignoriert (oder leer).
-    // Wir wollen "all" als Fallback.
+    // Attempt to restore the old selection.
+    // If the value doesn't exist, the browser often falls back to the first one ("all").
+    // To be safe, we check if we can set it.
+    // Since populateActivityOptions rebuilds the DOM, the old value is lost.
+    // We set it anew. If it's not in the options, it will be ignored (or empty).
+    // We want "all" as fallback.
     
-    // Prüfen ob currentActivity in relevantData vorkommt (außer es ist "all")
+    // Check if currentActivity exists in relevantData (unless it is "all")
     let exists = true;
     if (currentActivity !== "all") {
         exists = relevantData.some(d => d.taetigkeit === currentActivity);
@@ -808,43 +795,10 @@ function updateActivityOptionsBasedOnCanton() {
     }
 }
 
-/* ---------------------------------------------------------
-   Filter-Modal öffnen/schließen
---------------------------------------------------------- */
-function wireFilterModal() {
-    const openBtn = document.getElementById("btn-open-filters");
-    const closeBtn = document.getElementById("filter-close");
-    const modal = document.getElementById("filter-modal");
-    const backdrop = document.getElementById("filter-backdrop");
 
-    const open = () => {
-        modal?.classList.add("open");
-        backdrop?.classList.add("open");
-        document.body.classList.add("modal-open");
-    };
-    const close = () => {
-        modal?.classList.remove("open");
-        backdrop?.classList.remove("open");
-        document.body.classList.remove("modal-open");
-    };
-
-    if (openBtn && modal && backdrop) {
-        openBtn.addEventListener("click", open);
-    }
-    if (closeBtn) {
-        closeBtn.addEventListener("click", close);
-    }
-    if (backdrop) {
-        backdrop.addEventListener("click", close);
-    }
-
-    document.addEventListener("keydown", e => {
-        if (e.key === "Escape") close();
-    });
-}
 
 /* ---------------------------------------------------------
-   Jahr-Selects synchronisieren (Ende >= Start)
+   Synchronize Year Selects (End >= Start)
 --------------------------------------------------------- */
 function updateYearEndOptions(minYearForEnd) {
     const selectEnd = document.getElementById("year-end");

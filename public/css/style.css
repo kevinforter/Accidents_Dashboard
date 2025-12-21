@@ -8,12 +8,12 @@ body {
     margin: 0;
     font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     background: #f7f1e7;
-    /* cremiger Hintergrund */
+    /* creamy background */
     color: #3f3a33;
-    /* warmes Dunkelbraun */
+    /* warm dark brown */
 }
 
-/* Sticky Footer für alle Seiten AUSSER Visualisierung */
+/* Sticky Footer for all pages EXCEPT visualization */
 body:not(.page-viz) {
     min-height: 100vh;
     display: flex;
@@ -25,7 +25,7 @@ body {
     height: 100%;
 }
 
-/* Alle Titel überall gleich (orange) */
+/* All titles everywhere the same (orange) */
 h1,
 h2,
 h3 {
@@ -85,7 +85,7 @@ h3 {
     color: #c98042;
 }
 
-/* ---------- Seitenlayout allgemein ---------- */
+/* ---------- Page Layout General ---------- */
 
 .page-main {
     max-width: 1400px;
@@ -99,7 +99,7 @@ h3 {
     gap: 1.5rem;
 }
 
-/* ---------- Cards (für alle Seiten) ---------- */
+/* ---------- Cards (for all pages) ---------- */
 
 .card {
     background: #fffaf3;
@@ -107,7 +107,7 @@ h3 {
     border: 1px solid #e4d6c4;
     box-shadow: 0 6px 14px rgba(57, 38, 16, 0.06);
     padding: 1.2rem 1.6rem 1.4rem 1.6rem;
-    /* Abstand zwischen Cards */
+    /* Spacing between cards */
 }
 
 .card-header {
@@ -129,7 +129,7 @@ h3 {
     align-items: center;
     gap: 0.4rem;
     position: relative;
-    /* Basis für absolut platzierte Hinweise */
+    /* Basis for absolutely positioned hints */
 }
 
 .card-actions {
@@ -410,8 +410,8 @@ body.page-viz .page-main {
 }
 
 /* Grid:
-   Links: Karte über zwei Zeilen
-   Rechts: oben Trend, unten Balken */
+   Left: Map over two rows
+   Right: Top Trend, Bottom Bar */
 .viz-grid {
     display: grid;
     grid-template-columns: 1.25fr 1fr;
@@ -448,7 +448,7 @@ body.page-viz .page-main {
     overflow: visible;
 }
 
-/* Spezifische Anpassungen für die unteren Charts (Bar & Donut & Timeline) */
+/* Specific adjustments for lower charts (Bar & Donut & Timeline) */
 #viz-bar .card-header,
 #viz-donut .card-header,
 #viz-timeline .card-header {
@@ -464,7 +464,7 @@ body.page-viz .page-main {
     font-weight: normal;
 }
 
-/* Panels innerhalb des Grids nutzen einfach Card-Styling */
+/* Panels within the grid simply use card styling */
 .viz-panel {
     display: flex;
     flex-direction: column;
@@ -472,7 +472,7 @@ body.page-viz .page-main {
     /* allow shrinking inside 100vh layout */
 }
 
-/* Chart-Container-Größen so wählen, dass alles auf eine Seite passt */
+/* Choose chart container sizes so everything fits on one page */
 #map-container {
     min-height: 250px;
 }
@@ -491,7 +491,7 @@ body.page-viz .page-main {
     overflow: visible;
 }
 
-/* Platzhalter-Styles für Charts (falls noch nicht gezeichnet) */
+/* Placeholder styles for charts (if not yet drawn) */
 .chart-placeholder {
     background: #f5ede2;
     border-radius: 0.5rem;
@@ -505,7 +505,7 @@ body.page-viz .page-main {
     min-height: 200px;
 }
 
-/* Aktiver Chart-Container ohne Padding, damit das SVG bündig sitzt */
+/* Active chart container without padding so SVG sits flush */
 .chart-surface {
     padding: 0;
     background: transparent;
@@ -520,7 +520,7 @@ body.page-viz .page-main {
     display: block;
 }
 
-/* Tooltip für die Schweizerkarte */
+/* Tooltip for the Swiss map */
 
 .map-tooltip,
 .timeline-tooltip {
@@ -595,7 +595,6 @@ body.page-viz .page-main {
     color: #5a5248;
 }
 
-/* ---------- Scrollable Trend Chart (Reverted to static) ---------- */
 #trend-container {
     height: auto;
     display: block;

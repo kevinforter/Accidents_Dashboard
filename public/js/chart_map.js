@@ -1,14 +1,14 @@
 // chart_map.js
-// Interaktive Schweizerkarte für Versicherungsunfälle
-// - Daten: loadAccidentData() -> { jahr, kanton, zweig, altersgruppe, taetigkeit, anzahl }
-// - Bevölkerung: data/bevoelkerung.csv
+// Interactive Swiss Map for Insurance Accidents
+// - Data: loadAccidentData() -> { jahr, kanton, zweig, altersgruppe, taetigkeit, anzahl }
+// - Population: data/bevoelkerung.csv
 // - TopoJSON: data/swiss-maps.json
-// - Färbung: Unfälle pro 1'000 Einwohner und Jahr
-// - Klick: bis zu 5 Kantone auswählen, updateChartsFromMap(selectedCantons)
+// - Coloring: Accidents per 1,000 inhabitants per year
+// - Click: Select up to 5 cantons, updateChartsFromMap(selectedCantons)
 
 window.updateChartsFromMap = window.updateChartsFromMap || function () {};
 
-// Mapping von Namen im TopoJSON -> Kantonskürzel
+// Mapping from TopoJSON names -> Canton Codes
 const cantonMapping = {
     "Zürich": "ZH",
     "Bern / Berne": "BE",
@@ -46,7 +46,7 @@ const cantonMapping = {
     "Jura": "JU"
 };
 
-// Menge aller Kantonskürzel (für Erkennung in CSV)
+// Set of all Canton Codes (for detection in CSV)
 const cantonCodes = new Set([
     "ZH","BE","LU","UR","SZ","OW","NW","GL","ZG",
     "FR","SO","BS","BL","SH","AR","AI","SG","GR",
@@ -72,7 +72,7 @@ function getMapTooltip() {
     return mapTooltip;
 }
 
-/* ------------------ Geo- & Pop-Daten laden ------------------ */
+/* ------------------ Load Geo & Pop Data ------------------ */
 
 // TopoJSON -> GeoJSON
 function loadMapGeoData() {
@@ -84,7 +84,7 @@ function loadMapGeoData() {
         } else {
             mapGeoData = raw;
         }
-        console.log("Karten-GeoData geladen:", mapGeoData.features.length, "Kantone");
+        console.log("Map GeoData loaded:", mapGeoData.features.length, "Cantons");
         return mapGeoData;
     });
 }
@@ -93,12 +93,12 @@ function nameToKantonCode(name) {
     if (!name) return null;
     const trimmed = name.trim();
 
-    // 1) direkter Treffer im Mapping
+    // 1) Direct match in mapping
     if (cantonMapping[trimmed]) {
         return cantonMapping[trimmed];
     }
 
-    // 2) CSV-Name entspricht einem Teil eines Mapping-Namens
+    // 2) CSV Name corresponds to a part of a mapping name
     for (const [key, code] of Object.entries(cantonMapping)) {
         const parts = key.split("/").map(s => s.trim());
         if (parts.includes(trimmed)) {
@@ -106,7 +106,7 @@ function nameToKantonCode(name) {
         }
     }
 
-    // 3) Vergleich in lowercase
+    // 3) Comparison in lowercase
     const lower = trimmed.toLowerCase();
     for (const [key, code] of Object.entries(cantonMapping)) {
         const parts = key.split("/").map(s => s.trim().toLowerCase());
@@ -115,12 +115,12 @@ function nameToKantonCode(name) {
         }
     }
 
-    console.warn("⚠️ Bevölkerung-Kanton ohne Mapping:", name);
+    console.warn("⚠️ Population canton without mapping:", name);
     return null;
 }
 
-// Bevölkerung laden & auf Kantonskürzel mappen
-// -> alle Jahre behalten, damit später Durchschnitt pro Zeitraum berechnet werden kann
+// Load Population & Map to Canton Code
+// -> Keep all years so average per period can be calculated later
 function loadPopulationData() {
     if (populationData) return Promise.resolve(populationData);
 
@@ -140,12 +140,12 @@ function loadPopulationData() {
         return { kanton: code, jahr, bev };
     }).then(rows => {
         populationData = rows.filter(Boolean);
-        console.log("Bevölkerungsdaten (alle Jahre) geladen:", populationData.length);
+        console.log("Population data (all years) loaded:", populationData.length);
         return populationData;
     });
 }
 
-/* ------------------ Canton-Helfer ------------------ */
+/* ------------------ Canton Helpers ------------------ */
 
 function getCantonCodeFromFeature(f) {
     const props = f.properties || {};
@@ -153,12 +153,12 @@ function getCantonCodeFromFeature(f) {
 
     if (!name) return null;
 
-    // direkter Treffer
+    // Direct match
     if (cantonMapping[name]) {
         return cantonMapping[name];
     }
 
-    // Name z. B. "Fribourg / Freiburg"
+    // Name e.g. "Fribourg / Freiburg"
     const nameParts = name.split("/").map(n => n.trim());
 
     for (const part of nameParts) {
@@ -167,7 +167,7 @@ function getCantonCodeFromFeature(f) {
         }
     }
 
-    // Letzter Versuch: Grossbuchstaben-Codes im GeoJSON
+    // Last attempt: Uppercase codes in GeoJSON
     const raw =
         props.KANTON ||
         props.kanton ||
@@ -179,7 +179,7 @@ function getCantonCodeFromFeature(f) {
         if (cantonCodes.has(code)) return code;
     }
 
-    console.warn("⚠️ Kein Mapping für Kanton:", name);
+    console.warn("⚠️ No mapping for canton:", name);
     return null;
 }
 
@@ -188,47 +188,47 @@ function getCantonNameFromFeature(f) {
     return props.name || props.NAME || getCantonCodeFromFeature(f) || "Unbekannt";
 }
 
-/* ------------------ Hauptfunktion: Karte rendern ------------------ */
+/* ------------------ Main Function: Render Map ------------------ */
 
 function renderMap(accidentData) {
     const container = d3.select("#map-container");
     if (container.empty()) return;
 
-    // Container leeren - WICHTIG: Erst leeren, wenn Daten da sind (siehe unten),
-    // oder hier lassen, aber Gefahr von Race Conditions.
-    // Besser: Wir leeren ihn erst im Promise-Callback.
-    // container.html(""); // <-- Verschoben nach unten
+    // Clear container - IMPORTANT: Only clear when data is ready (see below),
+    // or leave here, but risk of race conditions.
+    // Better: We clear it in the Promise callback.
+    // container.html(""); // <-- Moved down
 
     const tooltip = getMapTooltip();
 
     Promise.all([loadMapGeoData(), loadPopulationData()]).then(
         ([geo, pop]) => {
-            // Container jetzt leeren und Klassen anpassen
+            // Clear container now and adjust classes
             container.html("");
             container.classed("chart-placeholder", false);
             container.classed("chart-surface", true);
 
-            // Jetzt erst messen, nachdem die Klassen (Padding/Border) entfernt sind
+            // Measure only now, after classes (padding/border) are removed
             const node = container.node();
             const rect = node.getBoundingClientRect();
             const width = rect.width || 900;
             const height = rect.height || 420;
 
-            // Unfälle pro Kanton aggregieren (absolute Zahlen im gewählten Zeitraum)
+            // Aggregate accidents per canton (absolute numbers in selected period)
             const accidentsByCanton = d3.rollups(
                 accidentData,
                 v => d3.sum(v, d => d.anzahl || 0),
                 d => d.kanton
             );
             const accidentMap = new Map(accidentsByCanton);
-            console.log("Unfälle pro Kanton:", accidentsByCanton);
+            console.log("Accidents per canton:", accidentsByCanton);
 
-            // Jahre im aktuellen Unfall-Datensatz bestimmen
+            // Determine years in current accident dataset
             const yearSet = new Set(accidentData.map(d => d.jahr));
             const years = Array.from(yearSet).sort();
             const yearCount = years.length > 0 ? years.length : 1;
 
-            // Bevölkerung pro Kanton über die ausgewählten Jahre aufsummieren
+            // Sum population per canton over selected years
             // pop: [{ kanton, jahr, bev }]
             const popSumByCanton = d3.rollups(
                 pop.filter(row => yearSet.has(row.jahr)),
@@ -236,9 +236,9 @@ function renderMap(accidentData) {
                 d => d.kanton
             );
             const popSumMap = new Map(popSumByCanton);
-            console.log("Bevölkerungssummen im Zeitraum:", popSumByCanton);
+            console.log("Population sums in period:", popSumByCanton);
 
-            // Absolute & relative Werte in GeoJSON-Features schreiben
+            // Write absolute & relative values into GeoJSON Features
             geo.features.forEach(f => {
                 const code = getCantonCodeFromFeature(f); // z.B. "ZH"
                 const absTotal = code ? (accidentMap.get(code) || 0) : 0;
@@ -247,7 +247,7 @@ function renderMap(accidentData) {
                 const avgPop =
                     popSum && yearCount > 0 ? popSum / yearCount : null;
 
-                // Rate: Unfälle pro 1'000 Einwohner und Jahr
+                // Rate: Accidents per 1,000 inhabitants per year
                 const ratePerYear =
                     avgPop && yearCount > 0
                         ? (absTotal / (avgPop * yearCount)) * 1000
@@ -256,11 +256,11 @@ function renderMap(accidentData) {
                 f.properties._code = code;
                 f.properties._name = getCantonNameFromFeature(f);
 
-                // für Tooltip
-                f.properties._abs = absTotal;             // Summe Unfälle im Zeitraum
-                f.properties._populationAvg = avgPop;     // Ø-Bevölkerung im Zeitraum
-                f.properties._years = yearCount;          // Anzahl Jahre
-                f.properties._rate = ratePerYear;         // Unfälle pro 1'000 Einw. und Jahr
+                // for Tooltip
+                f.properties._abs = absTotal;             // Total accidents in period
+                f.properties._populationAvg = avgPop;     // Avg population in period
+                f.properties._years = yearCount;          // Number of years
+                f.properties._rate = ratePerYear;         // Accidents per 1,000 inh. per year
             });
 
             const maxRate =
@@ -280,7 +280,7 @@ function renderMap(accidentData) {
                 .attr("viewBox", `0 0 ${width} ${height}`)
                 .style("overflow", "visible");
 
-            // Karte etwas kleiner (85%) und nach oben verschoben (-30px)
+            // Map slightly smaller (85%) and shifted up (-30px)
             const padX = width * 0.075;
             const padY = height * 0.075;
             const shiftY = 30;
@@ -304,21 +304,21 @@ function renderMap(accidentData) {
                     const isActivityFiltered = activityFilter && activityFilter.value !== "all";
                     const hasAccidents = d.properties._abs > 0;
 
-                    // 1. Fall: Aktivität gefiltert & Kanton hat diese Aktivität nicht -> Dunkel
+                    // Case 1: Activity filtered & Canton does not have this activity -> Dark
                     if (isActivityFiltered && !hasAccidents) {
                         return "#5a5248";
                     }
 
-                    // 2. Fall: Auswahl aktiv
+                    // Case 2: Selection active
                     if (sel.length > 0) {
                         if (code && sel.includes(code)) {
-                            return "rgb(201, 128, 66)"; // Ausgewählt
+                            return "rgb(201, 128, 66)"; // Selected
                         } else {
-                            return "#5a5248"; // Nicht ausgewählt (Hintergrund)
+                            return "#5a5248"; // Not selected (Background)
                         }
                     }
 
-                    // 3. Fall: Normaler Farbverlauf
+                    // Case 3: Normal Color Gradient
                     const r = d.properties._rate;
                     return r != null ? colorScale(r) : "#eee";
                 })
@@ -339,14 +339,14 @@ function renderMap(accidentData) {
 
                     const el = d3.select(this);
 
-                    // ursprünglichen transform merken
+                    // Remember original transform
                     const originalTransform = el.attr("transform") || "";
                     el.attr("data-original-transform", originalTransform);
 
-                    // Mittelpunkt des Kantons berechnen
+                    // Calculate centroid of canton
                     const [cx, cy] = mapPath.centroid(d);
 
-                    // Kanton hervorheben
+                    // Highlight Canton
                     const currentFill = el.attr("fill");
                     const hoverStroke = d3.color(currentFill).darker(1.5);
 
@@ -361,7 +361,7 @@ function renderMap(accidentData) {
                         )
                         .attr("filter", "drop-shadow(0px 0px 4px rgba(0,0,0,0.35))");
 
-                    // Tooltip anzeigen
+                    // Show Tooltip
                     tooltip
                         .style("opacity", 1)
                         .html(
@@ -434,31 +434,31 @@ function renderMap(accidentData) {
                     const code = d.properties._code;
                     if (!code) return;
 
-                    // Prüfen, ob eine Aktivität gefiltert ist und der Kanton diese nicht hat
+                    // Check if an activity is filtered and the canton does not have it
                     const activityFilter = document.getElementById("filter-activity");
                     const isActivityFiltered = activityFilter && activityFilter.value !== "all";
                     const hasAccidents = d.properties._abs > 0;
 
                     if (isActivityFiltered && !hasAccidents) {
-                        return; // Klick ignorieren
+                        return; // Ignore click
                     }
 
                     if (selectedCantons.includes(code)) {
-                        // Falls bereits ausgewählt: abwählen (Toggle off)
+                        // If already selected: Deselect (Toggle off)
                         selectedCantons = [];
                     } else {
-                        // Falls nicht ausgewählt: Auswahl ersetzen (Single Select)
+                        // If not selected: Replace selection (Single Select)
                         selectedCantons = [code];
                     }
 
-                    // Karte neu zeichnen (für Highlight der Auswahl)
-                    // renderMap(accidentData); // <--- ENTFERNT: Das macht updateChartsFromMap via main.js -> applyFiltersAndRender -> renderMap
+                    // Redraw map (for selection highlight)
+                    // renderMap(accidentData); // <--- REMOVED: updateChartsFromMap handles this via main.js -> applyFiltersAndRender -> renderMap
 
-                    // Charts (Trend + Balken) filtern – falls du das nutzt
+                    // Filter Charts (Trend + Bar) - if used
                     try {
                         window.updateChartsFromMap(selectedCantons);
                     } catch (e) {
-                        console.warn("updateChartsFromMap nicht implementiert:", e);
+                        console.warn("updateChartsFromMap not implemented:", e);
                     }
                 });
 
@@ -469,7 +469,7 @@ function renderMap(accidentData) {
     );
 }
 
-/* ------------------ Legende ------------------ */
+/* ------------------ Legend ------------------ */
 
 function addMapLegend(svg, colorScale, maxRate, width, height) {
     svg.selectAll(".legend-group").remove();
@@ -496,7 +496,7 @@ function addMapLegend(svg, colorScale, maxRate, width, height) {
         .attr("y1", "0%")
         .attr("y2", "0%");
 
-    // Mehrere Stops für den Gradienten generieren, um die Farbskala korrekt abzubilden
+    // Generate multiple stops for the gradient to correctly represent the color scale
     const stops = d3.range(0, 1.1, 0.1); // 0, 0.1, ..., 1.0
     stops.forEach(offset => {
         gradient
