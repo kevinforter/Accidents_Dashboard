@@ -33,18 +33,74 @@
 
     <section class="card">
         <h2>Datengrundlage</h2>
-        <ul>
-            <li>BFS – Bevölkerungszahlen und Arbeitsmarktstatistiken</li>
-            <li>Suva / Versicherungsstatistiken</li>
+        <p>
+            Die in diesem Projekt verwendeten Daten basieren auf offiziellen Statistiken der Schweizerischen Eidgenossenschaft sowie aggregierten Daten der Suva.
+        </p>
+        <ul class="ref-list">
+            <li>
+                <strong>Bundesamt für Statistik (BFS)</strong><br>
+                Aktuelle statistische Grundlagen zu Unfallzahlen und Arbeitssicherheit.<br>
+                <a href="https://www.bfs.admin.ch/news/de/2024-0538" target="_blank">
+                    Medienmitteilung: Arbeitsunfälle in der Schweiz (2024-0538)
+                </a>
+            </li>
+            <li>
+                <strong>Suva Sammelstelle für die Statistik der Unfallversicherung (SSUV)</strong><br>
+                Detaillierte Unfallstatistiken nach versichertem Verdienst, Tätigkeit und Wirtschaftszweig.<br>
+                <span style="color: #887c6d; font-size: 0.9rem; font-style: italic;">(Interne Datenquelle)</span>
+            </li>
         </ul>
     </section>
 
     <section class="card">
-        <h2>Theoretische Grundlagen</h2>
-        <ul>
-            <li>Edward Tufte – Visual Display of Quantitative Information</li>
-            <li>Colin Ware – Information Visualization</li>
-            <li>D3.js Dokumentation</li>
+        <h2>Technische Ressourcen & Quellcode</h2>
+        <p>
+            Die Visualisierungen wurden mit modernen Web-Technologien und der D3.js Bibliothek realisiert.
+            Folgende Ressourcen und Beispiele dienten als technische Grundlage:
+        </p>
+        <ul class="ref-list">
+            <li>
+                <strong>D3.js (Data-Driven Documents)</strong><br>
+                Die Kernbibliothek für alle interaktiven Grafiken.<br>
+                <a href="https://d3js.org/" target="_blank">d3js.org Offizielle Dokumentation</a>
+            </li>
+            <li>
+                <strong>Choropleth Map (Schweizer Karte)</strong><br>
+                Basierend auf TopoJSON-Daten der Schweiz, implementiert mit <code>d3-geo</code>.<br>
+                <a href="https://observablehq.com/@d3/choropleth" target="_blank">D3 Choropleth Example</a>
+            </li>
+            <li>
+                <strong>Stacked Area Chart (Zeitverlauf)</strong><br>
+                Nutzung von <code>d3-shape</code> für die Flächenberechnung und <code>d3-brush</code> für die Zeitauswahl.<br>
+                <a href="https://observablehq.com/@d3/area-chart" target="_blank">D3 Area Chart Example</a>
+            </li>
+            <li>
+                <strong>Donut Chart (Geschlechterverteilung)</strong><br>
+                Implementierung mittels <code>d3-arc</code> und <code>d3-pie</code> Layout-Generator.<br>
+                <a href="https://observablehq.com/@d3/donut-chart" target="_blank">D3 Donut Chart Example</a>
+            </li>
+        </ul>
+    </section>
+
+    <section class="card">
+        <h2>Theoretische Grundlagen & Design</h2>
+        <p>
+            Das Gestaltungskonzept orientiert sich an etablierten Prinzipien der Informationsvisualisierung,
+            um eine effiziente und wahrnehmungsgerechte Darstellung zu gewährleisten.
+        </p>
+        <ul class="ref-list">
+            <li>
+                <strong>Edward Tufte</strong> – <em>The Visual Display of Quantitative Information</em><br>
+                Anwendung des "Data-Ink Ratio" Prinzips: Verzicht auf unnötige Dekoration ("Chart Junk") zugunsten der Daten.
+            </li>
+            <li>
+                <strong>Ben Shneiderman</strong> – <em>The Information Seeking Mantra</em><br>
+                "Overview first, zoom and filter, details on demand" – Dieses Prinzip strukturiert unsere Interaktionslogik (Karte als Übersicht -> Zeitfilter -> Detaildaten).
+            </li>
+            <li>
+                <strong>Colin Ware</strong> – <em>Information Visualization: Perception for Design</em><br>
+                Berücksichtigung von präattentiven Merkmalen (Farbe, Position) zur schnellen Mustererkennung.
+            </li>
         </ul>
     </section>
 
