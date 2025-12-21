@@ -89,13 +89,8 @@
                 <h3>Die Herausforderungen</h3>
                 <p>
                     In unserer ersten Implementierung versuchten wir, <strong>alle Informationen gleichzeitig</strong> anzuzeigen.
-                    Das Ergebnis war ernüchternd:
+                    Das Ergebnis war ernüchternd: Überlappende Labels, ein explodierendes Layout ohne Hierarchie und eine Benutzerführung, die mehr verwirrte als aufklärte.
                 </p>
-                <ul>
-                    <li>Die <strong>Karten-Labels</strong> überlagerten sich massiv und machten die geographische Analyse unmöglich.</li>
-                    <li>Die Liste der <strong>Tätigkeiten</strong> war ungefiltert und sprengte das Layout ("Overflow"), wodurch wichtige Steuerelemente aus dem Bild geschoben wurden.</li>
-                    <li>Es fehlte eine klare visuelle Hierarchie.</li>
-                </ul>
             </div>
 
             <div class="progress-divider"></div>
@@ -103,17 +98,26 @@
             <div class="progress-item">
                 <div class="progress-image-wrapper">
                     <img src="img/Second_Implementation.png" alt="Zweite Implementierung">
+                    <span class="progress-badge badge-mid">Zwischenschritt</span>
+                </div>
+                <h3>Konsolidierung</h3>
+                <p>
+                    Wir reduzierten die Komplexität radikal ("Weniger ist mehr"). Die Einführung von <strong>Smart Labels</strong> und die Beschränkung auf die Top-5 Tätigkeiten brachten erste Stabilität. Die Funktionalität stand nun, doch optisch wirkte das Dashboard noch steril und technisch.
+                </p>
+            </div>
+
+            <div class="progress-divider"></div>
+
+            <div class="progress-item">
+                <div class="progress-image-wrapper">
+                    <img src="img/Third_Implementation.png" alt="Dritte Implementierung / Finale Version">
                     <span class="progress-badge badge-final">Finale Version</span>
                 </div>
-                <h3>Der Durchbruch</h3>
+                <h3>Visual Excellence</h3>
                 <p>
-                    Für die finale Version haben wir "weniger ist mehr" als Prinzip angewandt:
+                    Der letzte Schliff verwandelte das Tool in ein Erlebnis. Eine warme, abgestimmte Farbpalette ersetzt das klinische Weiss. Die Filter wanderten direkt ins Interface für nahtlose Interaktion ("Flow"). Das Layout atmet nun, und subtile Interaktionen (Hover, Brushing) machen die Daten greifbar. 
+                    <strong>Form und Funktion sind endlich im Einklang.</strong>
                 </p>
-                <ul>
-                    <li><strong>Smart Labels:</strong> Statt statischem Text nutzen wir nun interaktive Hover-Effekte für die Kartenbeschriftung.</li>
-                    <li><strong>Top-5 Fokus:</strong> Statt einer endlosen Liste zeigen wir nur die relevantesten Tätigkeiten, was das Layout stabilisiert und die Kernaussagen schärft.</li>
-                    <li><strong>Zeitdimension:</strong> Die Integration der Timeline erlaubt nun das intuitive Filtern von Jahrspannen.</li>
-                </ul>
             </div>
         </div>
     </section>
