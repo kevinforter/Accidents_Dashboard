@@ -51,7 +51,33 @@ function initVisualizationPage() {
             yearRange.to = maxYear;
 
             // Dropdowns befüllen
-            populateYearOptions(minYear, maxYear);
+            populateYearOptions(yearRange.min, yearRange.max);
+
+    // Altersgruppen-Auswahl dynamisch aus den Daten befüllen
+    if (yearStart) {
+        yearStart.addEventListener("change", () => {
+            let val = +yearStart.value;
+            if (val > yearRange.to) {
+                yearRange.to = val;
+                yearEnd.value = val;
+            }
+            yearRange.from = val;
+            updateYearEndOptions(val); 
+            applyFiltersAndRender();
+        });
+    }
+
+    if (yearEnd) {
+        yearEnd.addEventListener("change", () => {
+            let val = +yearEnd.value;
+            if (val < yearRange.from) {
+                yearRange.from = val;
+                yearStart.value = val;
+            }
+            yearRange.to = val;
+            applyFiltersAndRender();
+        });
+    }
 
             // Altersgruppen-Auswahl dynamisch aus den Daten befüllen
             populateAgeOptions(allAccidentData);
@@ -77,7 +103,30 @@ function initVisualizationPage() {
         });
 }
 
+/* ---------------------------------------------------------
+   Jahr-Slider in die card-controls der Karte einfügen
+--------------------------------------------------------- */
 // insertYearSlider removed
+
+/* ---------------------------------------------------------
+   Jahre-Dropdowns befüllen
+--------------------------------------------------------- */
+function populateYearOptions(min, max) {
+    const yearStart = document.getElementById("year-start");
+    const yearEnd = document.getElementById("year-end");
+    if (!yearStart || !yearEnd) return;
+
+    // Optionen generieren
+    // availableYears global nutzen oder neu generieren range(min, max)
+    const options = availableYears.map(y => `<option value="${y}">${y}</option>`).join("");
+    
+    yearStart.innerHTML = options;
+    yearEnd.innerHTML = options;
+
+    // Auswahl setzen
+    yearStart.value = yearRange.from;
+    yearEnd.value = yearRange.to;
+}
 
 function populateCantonOptions(data) {
     const select = document.getElementById("filter-canton");
@@ -445,43 +494,6 @@ function wireFilterEvents() {
             });
         });
     }
-
-
-    // Jahr-Optionen (Dropdowns)
-    if (yearStart && yearEnd) {
-        yearStart.addEventListener("change", () => {
-            const val = parseInt(yearStart.value, 10);
-            yearRange.from = val;
-
-            // Logik: Wenn Start > Ende, dann Ende = Start setzen
-            if (yearRange.from > yearRange.to) {
-                yearRange.to = yearRange.from;
-                yearEnd.value = yearRange.to;
-            }
-
-            updateYearEndOptions(yearRange.from);
-            
-            // Falls das ausgewählte Ende jetzt disabled ist (weil < Start), Reset im UI:
-            // updateYearEndOptions macht das schon (wenn currentEnd < startYear).
-            // Aber yearRange.to muss auch sync sein.
-            const newEndVal = parseInt(yearEnd.value, 10);
-            if (newEndVal !== yearRange.to) {
-                yearRange.to = newEndVal;
-            }
-            
-            if (yearLabel) yearLabel.textContent = `${yearRange.from} – ${yearRange.to}`;
-            applyFiltersAndRender();
-        });
-
-        yearEnd.addEventListener("change", () => {
-            yearRange.to = parseInt(yearEnd.value, 10);
-            if (yearLabel) yearLabel.textContent = `${yearRange.from} – ${yearRange.to}`;
-            applyFiltersAndRender();
-        });
-    }
-
-    // Jahr-Slider: Start/End listeners removed (Comment kept for reference or remove)
-
 
 }
 

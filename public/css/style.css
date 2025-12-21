@@ -11,7 +11,13 @@ body {
     /* cremiger Hintergrund */
     color: #3f3a33;
     /* warmes Dunkelbraun */
-    height: auto;
+}
+
+/* Sticky Footer für alle Seiten AUSSER Visualisierung */
+body:not(.page-viz) {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
 }
 
 html,
@@ -85,6 +91,12 @@ h3 {
     max-width: 1400px;
     margin: 0 auto;
     padding: 1.2rem 2rem 1.2rem;
+    flex: 1;
+    width: 100%;
+    /* Ensure it takes width in flex container */
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
 }
 
 /* ---------- Cards (für alle Seiten) ---------- */
@@ -286,20 +298,81 @@ h3 {
 
 /* ---------- Hero (Startseite) ---------- */
 
-.hero-card {
+/* ---------- Hero (Startseite) ---------- */
+
+.hero-wrapper {
     display: flex;
-    gap: 2rem;
-    margin-bottom: 1.5rem;
+    gap: 1.5rem;
+    margin-bottom: 0;
+    align-items: stretch;
+    flex: 1;
+    /* Stretch to fill available space */
+}
+
+@media (max-width: 900px) {
+    .hero-wrapper {
+        flex-direction: column;
+    }
 }
 
 .hero-text {
-    flex: 2;
+    flex: 3;
+    display: flex;
+    gap: 2rem;
+    /* Restore internal splits */
 }
 
-.hero-side {
+@media (max-width: 700px) {
+    .hero-text {
+        flex-direction: column;
+    }
+
+    .hero-list-container {
+        border-left: none !important;
+        border-top: 1px dashed #e0d1bd;
+        padding-left: 0 !important;
+        padding-top: 1.5rem;
+    }
+}
+
+.hero-text>div:first-child {
+    flex: 1.5;
+}
+
+.hero-divider {
+    display: none;
+}
+
+.hero-list-container {
     flex: 1;
     border-left: 1px dashed #e0d1bd;
-    padding-left: 1.25rem;
+    padding-left: 1.5rem;
+    display: flex;
+    flex-direction: column;
+}
+
+.hero-list-container h3,
+.hero-text h2 {
+    margin-top: 0;
+}
+
+.hero-image-card {
+    flex: 1.5;
+    padding: 0;
+    /* Full bleed image */
+    overflow: hidden;
+    min-width: 280px;
+    display: flex;
+    /* alignment */
+    /* Reuse card styles but override padding */
+}
+
+.hero-image-cover {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    border-radius: 0.6rem;
 }
 
 .hero-list {
@@ -312,6 +385,8 @@ h3 {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
     gap: 1rem;
+    margin-top: 2rem;
+    /* Separation from full-height hero */
 }
 
 /* =========================================================
@@ -340,7 +415,7 @@ body.page-viz .page-main {
 .viz-grid {
     display: grid;
     grid-template-columns: 1.25fr 1fr;
-    grid-template-rows: minmax(280px, 1fr) minmax(220px, 1fr) 220px;
+    grid-template-rows: minmax(280px, 1fr) minmax(220px, 1fr) 210px;
     grid-template-areas:
         "map bar"
         "map donut"
@@ -373,7 +448,7 @@ body.page-viz .page-main {
     overflow: visible;
 }
 
-/* Spezifische Anpassungen für die unteren Charts (Bar & Donut) */
+/* Spezifische Anpassungen für die unteren Charts (Bar & Donut & Timeline) */
 #viz-bar .card-header,
 #viz-donut .card-header,
 #viz-timeline .card-header {
@@ -399,7 +474,7 @@ body.page-viz .page-main {
 
 /* Chart-Container-Größen so wählen, dass alles auf eine Seite passt */
 #map-container {
-    min-height: 250px !important;
+    min-height: 250px;
 }
 
 #trend-container,
@@ -467,9 +542,9 @@ body.page-viz .page-main {
 .site-footer {
     border-top: 1px solid #e3d6c5;
     background: #fffaf3;
-    padding: 0.9rem 2rem;
+    padding: 0.5rem 2rem;
     text-align: center;
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     color: #8a7d6c;
 }
 
@@ -625,6 +700,337 @@ body.page-viz .page-main {
     color: #ffffff;
 }
 
-/* Original Map Mode Toggle restored (compact styles removed) */
+.ref-list a {
+    color: #c98042;
+    text-decoration: none;
+    font-size: 0.95rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    margin-top: 0.35rem;
+    padding: 0.2rem 0.5rem;
+    background: rgba(201, 128, 66, 0.08);
+    /* Light orange bg */
+    border-radius: 4px;
+}
 
-/* Inline Year Slider styles removed */
+.ref-list a:hover {
+    background: rgba(201, 128, 66, 0.15);
+    transform: translateX(3px);
+}
+
+.ref-list a::after {
+    content: " →";
+    font-size: 1.1em;
+    margin-left: 0.4rem;
+    transition: transform 0.2s ease;
+}
+
+.ref-list a:hover::after {
+    transform: translateX(2px);
+}
+
+/* ---------- Contact Page (100vh Layout) ---------- */
+
+.page-contact {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    /* Prevent scrolling */
+}
+
+.page-contact .page-main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 1rem 2rem;
+    /* Reduced padding for compact layout */
+    overflow: hidden;
+}
+
+.contact-wrapper {
+    width: 100%;
+    max-width: 1200px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2rem;
+    height: 100%;
+    justify-content: center;
+}
+
+.contact-header {
+    text-align: center;
+    max-width: 700px;
+}
+
+.contact-header h2 {
+    margin-bottom: 0.5rem;
+    color: #4a4238;
+}
+
+.contact-header p {
+    color: #6b5f54;
+    line-height: 1.5;
+}
+
+.team-grid {
+    display: flex;
+    gap: 2rem;
+    width: 100%;
+    justify-content: center;
+    align-items: stretch;
+    /* Cards same height */
+}
+
+/* Individual Card Styling */
+.team-member.card {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 1.5rem;
+    background: #fffaf3;
+    /* Maintain card look */
+    border: 1px solid #e4d6c4;
+    border-radius: 0.6rem;
+    box-shadow: 0 6px 14px rgba(57, 38, 16, 0.06);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.team-member.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 24px rgba(57, 38, 16, 0.12);
+}
+
+.member-photo {
+    width: 130px;
+    height: 130px;
+    margin: 0 auto 1.2rem auto;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 3px solid #fff;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    flex-shrink: 0;
+}
+
+.member-photo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.team-member h3 {
+    margin: 0.5rem 0 0.2rem 0;
+    color: #4a4238;
+}
+
+.member-role {
+    display: block;
+    font-size: 0.8rem;
+    color: #c98042;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 1rem;
+}
+
+.member-bio {
+    font-size: 0.9rem;
+    color: #6b5f54;
+    line-height: 1.5;
+    margin: 0;
+}
+
+.contact-footer-info {
+    font-size: 0.9rem;
+    color: #887c6d;
+    margin-top: 1rem;
+}
+
+.contact-footer-info code {
+    background: rgba(255, 255, 255, 0.5);
+    padding: 0.1rem 0.3rem;
+    border-radius: 4px;
+    border: 1px solid #e4d6c4;
+    color: #c98042;
+}
+
+/* Responsive adjustment for small screens despite 100vh request */
+@media (max-width: 800px) {
+    .page-contact {
+        height: auto;
+        overflow: auto;
+    }
+
+    .team-grid {
+        flex-direction: column;
+    }
+}
+
+.filter-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.filter-top-section {
+    display: flex;
+    gap: 2rem;
+    width: 100%;
+    align-items: flex-start;
+}
+
+.filter-selection-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.65rem;
+    flex: 1;
+}
+
+.filter-controls .map-mode-toggle {
+    align-self: flex-start;
+}
+
+.filter-controls .year-slider-box {
+    width: 100%;
+}
+
+.filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.filter-label {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: #7a5a33;
+    letter-spacing: 0.01em;
+}
+
+.modal-open {
+    overflow: hidden;
+}
+
+/* ---------- Progress Grid (Background Page) ---------- */
+
+.progress-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    margin-top: 1.5rem;
+    align-items: start;
+    position: relative;
+}
+
+.progress-divider {
+    display: none;
+    /* Only needed for complex arrow layouts, using grid gap for now */
+}
+
+@media (max-width: 900px) {
+    .progress-grid {
+        grid-template-columns: 1fr;
+        gap: 3rem;
+    }
+}
+
+.progress-item h3 {
+    margin-top: 1rem;
+    font-size: 1.2rem;
+    color: #4a4238;
+}
+
+.progress-image-wrapper {
+    position: relative;
+    border-radius: 0.6rem;
+    overflow: hidden;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    border: 1px solid #e4d6c4;
+    transition: transform 0.3s ease;
+}
+
+.progress-image-wrapper:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.15);
+}
+
+.progress-image-wrapper img {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+.progress-badge {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    padding: 0.3rem 0.8rem;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(4px);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.badge-early {
+    color: #c98042;
+    border: 1px solid #c98042;
+}
+
+/* ---------- Data Tables (Data Page) ---------- */
+
+.table-wrapper {
+    overflow-x: auto;
+    margin-top: 1rem;
+    border: 1px solid #e4d6c4;
+    border-radius: 0.5rem;
+}
+
+.data-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+    background: #fff;
+}
+
+.data-table th,
+.data-table td {
+    padding: 0.75rem 1rem;
+    text-align: left;
+    border-bottom: 1px solid #eee;
+}
+
+.data-table th {
+    background: #fbf5ec;
+    color: #c98042;
+    font-weight: 600;
+    border-bottom: 2px solid #e4d6c4;
+    white-space: nowrap;
+}
+
+.data-table tr:last-child td {
+    border-bottom: none;
+}
+
+.data-table tr:nth-child(even) {
+    background: #fcfcfc;
+}
+
+.data-table tr:hover {
+    background: #fffaf3;
+}
+
+.badge-final {
+    color: #27ae60;
+    border: 1px solid #27ae60;
+}

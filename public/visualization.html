@@ -69,20 +69,48 @@
                         </label>
                     </div>
 
-                    <!-- Filters: Canton & Branch -->
-                    <select class="control-select compact" id="filter-canton" title="Kanton">
-                        <option value="all">Kanton: Alle</option>
-                    </select>
+                    <div class="filter-row">
+                        <!-- Map Toggle -->
+                        <div class="map-mode-toggle compact">
+                             <label class="toggle-option">
+                                 <input type="radio" name="map-mode" value="unfall" checked>
+                                 <span>Unfallort</span>
+                             </label>
+                             <label class="toggle-option">
+                                 <input type="radio" name="map-mode" value="wohnort">
+                                 <span>Wohnort</span>
+                             </label>
+                        </div>
 
-                    <select class="control-select compact" id="filter-branch" title="Versicherungszweig">
-                        <option value="all">Zweig: Alle</option>
-                        <option value="BU">Beruf</option>
-                        <option value="NBU">Nichtberuf</option>
-                    </select>
-                    
-                    <button id="btn-reset" class="control-btn" title="Alle Filter zurücksetzen">
-                        ↺ Reset
-                    </button>
+                        <!-- Main Filters -->
+                        <div class="filter-group-inline">
+                            <select class="control-select compact" id="filter-canton" title="Kanton">
+                                <option value="all">Kanton: Alle</option>
+                            </select>
+
+                            <select class="control-select compact" id="filter-branch" title="Versicherungszweig">
+                                <option value="all">Zweig: Alle</option>
+                                <option value="BU">BU (Beruf)</option>
+                                <option value="NBU">NBU (Nichtberuf)</option>
+                            </select>
+
+                            <select class="control-select compact" id="filter-activity" title="Tätigkeit">
+                                <option value="all">Tätigkeit: Alle</option>
+                            </select>
+                            
+                             <select class="control-select compact" id="filter-age" title="Altersgruppe">
+                                <option value="all">Alter: Alle</option>
+                            </select>
+
+                             <select class="control-select compact" id="filter-gender" title="Geschlecht">
+                                <option value="all">Geschl.: Alle</option>
+                            </select>
+                        </div>
+
+                        <button id="btn-reset" class="control-btn" title="Alle Filter zurücksetzen">
+                            ↺ Reset
+                        </button>
+                    </div>
                 </div>
             </div>
 
@@ -103,11 +131,10 @@
                         </span>
                     </span>
                 </div>
+                <!-- Removed duplicate inline filters if they exist here in HEAD, sticking to main's structure or simplifying -->
                 <div class="filter-inline-controls">
-                    <select class="control-select compact" id="filter-activity" title="Tätigkeit">
-                        <option value="all">Tätigkeit: Alle</option>
-                    </select>
-                </div>
+                     <!-- Keeping main's local filters if they don't conflict, but for now just merging the top block -->
+                 </div>
             </div>
             <div id="bar-container" class="chart-surface">
                 <!-- SVG injected by JS -->
@@ -125,14 +152,7 @@
                         </span>
                     </span>
                 </div>
-                <div class="filter-inline-controls">
-                    <select class="control-select compact" id="filter-gender" title="Geschlecht">
-                        <option value="all">Geschl.: Alle</option>
-                    </select>
-                    <select class="control-select compact" id="filter-age" title="Alter">
-                        <option value="all">Alter: Alle</option>
-                    </select>
-                </div>
+                 <!-- Leaving Donut filters as is (outside conflict) -->
             </div>
             <div id="donut-container" class="chart-placeholder">
                 <span>Relative Verteilung nach Geschlecht – Visualisierung folgt.</span>
@@ -141,7 +161,7 @@
 
         <!-- Ganz unten: Timeline mit Brush -->
         <section class="card viz-panel" id="viz-timeline">
-            <div class="card-header header-with-filters">
+            <div class="card-header">
                 <div class="card-title">
                     <h2>Zeitverlauf</h2>
                     <span class="card-hint inline popover">

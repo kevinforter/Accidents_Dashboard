@@ -130,6 +130,11 @@ function renderBarChart(data) {
 
     const midAngle = d => (d.startAngle + d.endAngle) / 2;
 
+    // Pre-calculate positions to check for legend overlap
+    // Legend is at top-left (0,0).
+    const legendHeight = byGender.length * 20 + 20;
+    let legendCollision = false;
+
     slices.forEach(d => {
         const mid = midAngle(d);
         const isRight = mid < Math.PI;
@@ -141,6 +146,19 @@ function renderBarChart(data) {
         const posText = outerArc.centroid(d);
         posText[0] = radius * 1.26 * (isRight ? 1 : -1);
 
+        // Check collision with legend (Top-Left)
+        // Only relevant if label is on the left side
+        if (!isRight) {
+            // const absX = centerX + posText[0]; // Not needed if we just check Y and side
+            const absY = centerY + posText[1];
+            
+            // If the text label (approx) falls into the legend box height
+            // and is on the left side, we assume collision or near-collision.
+            if (absY < legendHeight && absY > -20) {
+                legendCollision = true;
+            }
+        }
+        
         d.posLine = posLine;
         d.posText = posText;
     });
@@ -155,30 +173,45 @@ function renderBarChart(data) {
         .attr("stroke-width", 1)
         .attr("opacity", 0.9);
 
-    const labels = arcs.append("text")
+    arcs.append("text")
         .filter(d => d.endAngle - d.startAngle > 0.04)
         .attr("transform", d => `translate(${d.posText})`)
         .attr("text-anchor", d => midAngle(d) < Math.PI ? "start" : "end")
         .attr("dy", "0.35em")
         .style("font-size", "12px")
-        .style("fill", "#3f3a33");
-
-    labels.append("tspan")
-        .attr("x", 0)
-        .attr("dy", "-0.6em")
-        .style("font-weight", "bold")
+        .style("fill", "#3f3a33")
         .text(d => {
             const pct = (d.data.sum / total) * 100;
-            return `${labelGender(d.data.geschlecht)} (${pct.toFixed(1)} %)`;
+            return `${labelGender(d.data.geschlecht)} – ${pct.toFixed(1)} %`;
         });
 
-    labels.append("tspan")
-        .attr("x", 0)
-        .attr("dy", "1.2em")
-        .style("font-weight", "normal")
-        .text(d => `${d.data.sum.toLocaleString("de-CH")} Fälle`);
+    // Legend positioning
+    // Always top-right
+    const legendX = width - 110;
 
-    // Legend removed per request
+    const legend = svg.append("g")
+        .attr("transform", `translate(${legendX - 20}, -30)`);
+
+    const legendItems = legend.selectAll("g")
+        .data(byGender)
+        .enter()
+        .append("g")
+        .attr("transform", (_, i) => `translate(0, ${i * 20})`);
+
+    legendItems.append("rect")
+        .attr("width", 12)
+        .attr("height", 12)
+        .attr("rx", 2)
+        .attr("fill", d => colorGender(d.geschlecht));
+
+    legendItems.append("text")
+        .attr("x", 18)
+        .attr("y", 10)
+        .style("font-size", "12px")
+        .style("fill", "#3f3a33")
+        .text(d => {
+            return `${labelGender(d.geschlecht)} (${d.sum.toLocaleString("de-CH")})`;
+        });
 }
 
 function labelGender(code) {
@@ -222,58 +255,78 @@ function renderTrendChart(data) {
     const wrapTickText = (selection, maxChars = 18) => {
         selection.each(function() {
             const textSel = d3.select(this);
-            const words = (textSel.text() || "").split(/\s+/).reverse();
-            const width = parseFloat(textSel.attr("width")) || 0; 
-            // Hier nutzen wir keine width, da axisLeft text manuell bricht?
-            // Wir nutzen maxChars.
-
-            let line = [];
-            let lineNumber = 0;
-            const lineHeight = 1.1; // ems
-            const x = textSel.attr("x") || 0;
-            const y = textSel.attr("y") || 0;
-            const dy = parseFloat(textSel.attr("dy")) || 0.35;
+            const words = (textSel.text() || "").split(/\s+/).filter(Boolean);
             
-            // Erstes Tspan (wird später überschrieben/entfernt oder als Container genutzt)
-            // Besser: Text leeren und neu aufbauen
-            
-            // Wort für Wort prüfen
-            let lines = [];
+            // 1. Calculate lines (Simulation)
+            const lines = [];
             let currentLine = [];
             
-            // (Reverse split oben, also pop())
-            while (words.length > 0) {
-                let word = words.pop();
-                currentLine.push(word);
-                if (currentLine.join(" ").length > maxChars && currentLine.length > 1) {
-                     // Zu lang -> letztes Wort zurück, aktuelle Zeile speichern
-                     currentLine.pop();
-                     lines.push(currentLine.join(" "));
-                     words.push(word);
-                     currentLine = [];
+            words.forEach(word => {
+                // Try appending
+                if ([...currentLine, word].join(" ").length > maxChars && currentLine.length > 0) {
+                    // Start new line
+                    lines.push(currentLine.join(" "));
+                    currentLine = [word];
+                } else {
+                    currentLine.push(word);
                 }
-            }
+            });
             if (currentLine.length > 0) lines.push(currentLine.join(" "));
 
-            // Jetzt rendern
-            textSel.text(null);
-            
-            // Vertikale Zentrierung:
-            // Wir wollen, dass der ganze Block mittig um (y) liegt.
-            // dy ist der Offset vom y. 
-            // Start-Offset = -0.5 * (totalHeight) + 0.5 * lineHeight?
-            // Einfacher: dy für erste Zeile so setzen, dass Block zentriert ist.
-            // Standard dy=0.35em zentriert EINE Zeile.
-            // Für N Zeilen: StartDy = 0.35 - (N-1)*lineHeight/2
-            
-            const startDy = dy - ((lines.length - 1) * lineHeight) / 2;
+            // If only 1 line and short enough (already checked outside?), just keep it? 
+            // Actually the original check `words.join(" ").length <= maxChars` returns early.
+            // But if we are here, we might have multiple lines OR one long line (if force break not implemented, but above logic breaks by word).
+            // NOTE: The original logic returned early if total length <= maxChars. 
+            // If we are here, we proceed.
 
-            lines.forEach((l, i) => {
+            const x = textSel.attr("x") || 0;
+            const y = textSel.attr("y") || 0;
+            const originalDy = parseFloat(textSel.attr("dy")) || 0;
+            const lineHeight = 0.95; // ems
+
+            // 2. Clear content
+            textSel.text(null);
+
+            // 3. Calculate vertical start to center the block
+            // Formula: originalDy - ( (totalLines - 1) * lineHeight / 2 )
+            // Example: 2 lines -> shift up by 0.5 * lineHeight
+            const totalLines = lines.length;
+            const startDy = originalDy - ((totalLines - 1) * lineHeight / 2);
+
+            // 4. Render
+            lines.forEach((lineText, i) => {
                 textSel.append("tspan")
                     .attr("x", x)
                     .attr("y", y)
-                    .attr("dy", (startDy + i * lineHeight) + "em")
-                    .text(l);
+                    .attr("dy", (i === 0 ? startDy : lineHeight) + "em") 
+                    // Note: d3 tspan dy is relative to previous sibling if not absolute? 
+                    // Wait, SVG dy is relative to previous position. 
+                    // For the FIRST tspan, it is relative to 'y'. 
+                    // For SUBSEQUENT tspans, 'dy' is relative to the previous line's baseline.
+                    // So subsequent tspans should have dy=lineHeight.
+                    // Ah, the original code used: (++lineNumber * lineHeight + dy) + "em"
+                    // But that was because it was setting dy relative to the STARTING text position for EVERY tspan?
+                    // No, "dy" attribute on tspan is additive relative to previous text content position.
+                    // Actually, if x is specified (absolute), dy is relative to y? 
+                    // SVG 1.1: "If a list of lengths is specified... relative to the previous text chunk".
+                    // Standard d3 pattern often uses:
+                    // tspan 0: dy = startDy
+                    // tspan 1: dy = lineHeight (relative to tspan 0)
+                    // tspan 2: dy = lineHeight (relative to tspan 1)
+                    
+                    // BUT, the original code used:
+                    // tspan 0: dy + "em"
+                    // tspan 1: (++line * lineHeight + dy) + "em"
+                    // This implies the previous developer might have been using absolute-ish calculation?
+                    // If 'y' attribute is set on each tspan (which it is: .attr("y", y)),
+                    // then 'dy' is relative to 'y'.
+                    // So we must use explicit offsets relative to y for ALL lines if we keep setting x and y.
+                    // Yes, we are setting .attr("y", y).
+                    
+                    // So:
+                    // Line i dy = startDy + (i * lineHeight)
+                    .attr("dy", (startDy + (i * lineHeight)) + "em")
+                    .text(lineText);
             });
         });
     };
@@ -302,7 +355,6 @@ function renderTrendChart(data) {
     const { width, height } = getContainerSize(container, 600, 280);
     const margin = { top: 15, right: 20, bottom: 15, left: 100 };
     
-    // Daten filtern (Top 6)
     // Daten filtern (Top 5)
     const topData = byActivity.slice(0, 5);
 
