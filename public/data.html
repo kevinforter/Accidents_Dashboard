@@ -32,35 +32,134 @@
 <main class="page-main">
 
     <section class="card">
-        <h2>Datenquellen</h2>
+        <h2>Unsere Datenbasis</h2>
         <p>
-            Für dieses Projekt wurden aggregierte Versicherungsunfalldaten sowie kantonale
-            Bevölkerungs- bzw. Strukturgrössen herangezogen. Die Datei
-            <code>faelle.dsv</code> enthält alle Unfälle nach Kanton, Alter, Tätigkeit, Jahr
-            und Versicherungszweig.
+            Daten sind das Fundament jeder Erkenntnis. Für dieses Projekt haben wir umfangreiche
+            Versicherungsstatistiken der Schweiz aggregiert, bereinigt und mit demografischen Kontextfaktoren angereichert.
+            Das Ziel war es, aus rohen Zahlen ein klares Bild der schweizerischen Unfalllandschaft zu zeichnen.
         </p>
     </section>
 
     <section class="card">
-        <h2>Strukturdaten</h2>
+        <h2>Der Kern: Unfalldaten (faelle.dsv)</h2>
         <p>
-            Zusätzlich werden kantonale Strukturgrössen wie Bevölkerungszahlen oder Arbeitsplätze
-            verwendet, um die Karte später zu normalisieren. Dadurch zeigt die Karte nicht absolute
-            Unfallzahlen, sondern <strong>Unfallraten pro 1'000 Personen/Arbeitsplätze</strong>.
+            Unsere primäre Quelle ist ein detaillierter Datensatz der Suva, der alle gemeldeten Unfälle
+            umfasst. Jede Zeile repräsentiert eine Gruppe von Unfällen mit identischen Merkmalen.
+            Diese Granularität ermöglicht es uns, präzise Aussagen über Risiken in verschiedenen
+            Lebensbereichen zu treffen.
         </p>
+        <p>
+            <strong>Beispiel-Auszug aus den Rohdaten:</strong>
+        </p>
+        <div class="table-wrapper">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Jahr</th>
+                        <th>Kanton</th>
+                        <th>Zweig</th>
+                        <th>Alter</th>
+                        <th>Sex</th>
+                        <th>Tätigkeit</th>
+                        <th>Anzahl</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>2014</td>
+                        <td>LU</td>
+                        <td>BU</td>
+                        <td>45-59</td>
+                        <td>m</td>
+                        <td>Heben und Bewegen von Hand</td>
+                        <td>320</td>
+                    </tr>
+                    <tr>
+                        <td>2014</td>
+                        <td>VD</td>
+                        <td>NBU</td>
+                        <td>15-29</td>
+                        <td>f</td>
+                        <td>Haushaltarbeiten</td>
+                        <td>200</td>
+                    </tr>
+                    <tr>
+                        <td>2022</td>
+                        <td>TI</td>
+                        <td>BU</td>
+                        <td>15-29</td>
+                        <td>m</td>
+                        <td>Arbeiten mit Werkzeugen</td>
+                        <td>120</td>
+                    </tr>
+                    <tr>
+                        <td>...</td>
+                        <td>...</td>
+                        <td>...</td>
+                        <td>...</td>
+                        <td>...</td>
+                        <td>...</td>
+                        <td>...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
     </section>
 
     <section class="card">
-        <h2>Datenfelder</h2>
-        <ul>
-            <li><strong>REGISTRIERUNGSJAHR</strong></li>
-            <li><strong>KANTON_UNFALL</strong></li>
-            <li><strong>VERSICHERUNGSZWEIG</strong> (BU/NBU)</li>
-            <li><strong>ALTERSGRUPPE</strong></li>
-            <li><strong>GESCHLECHT</strong></li>
-            <li><strong>TAETIGKEIT</strong></li>
-            <li><strong>ANZAHL_UNFAELLE</strong></li>
-        </ul>
+        <h2>Der Kontext: Strukturdaten (bevoelkerung.csv)</h2>
+        <p>
+            Unfallzahlen allein können irreführen. Ein grosser Kanton wie Zürich hat natürlich mehr Unfälle
+            als Uri – einfach weil dort mehr Menschen leben und arbeiten. Um faire Vergleiche zu ermöglichen,
+            verwenden wir Bevölkerungsdaten zur Normalisierung.
+        </p>
+        <p>
+            So berechnen wir keine absoluten Zahlen, sondern die <strong>Unfallrate pro 1'000 Personen</strong>.
+            Dies enthüllt die wahren Risikogebiete.
+        </p>
+        <div class="table-wrapper">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Kanton</th>
+                        <th>Jahr</th>
+                        <th>Bevölkerung</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Schweiz</td>
+                        <td>2022</td>
+                        <td>8'738'791</td>
+                    </tr>
+                    <tr>
+                        <td>Zürich</td>
+                        <td>2017</td>
+                        <td>1'487'969</td>
+                    </tr>
+                    <tr>
+                        <td>Uri</td>
+                        <td>2004</td>
+                        <td>34'973</td>
+                    </tr>
+                    <tr>
+                        <td>...</td>
+                        <td>...</td>
+                        <td>...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <section class="card">
+        <h2>Vom Rohdaten zum Insight</h2>
+        <p>
+            Die Herausforderung lag nicht nur im Sammeln, sondern im Verknüpfen. 
+            Durch das "Joining" dieser beiden Datensätze (Unfälle + Bevölkerung) auf der Basis von 
+            <strong>Kanton</strong> und <strong>Jahr</strong> konnten wir die relative Betroffenheit berechnen.
+            Erst dieser Schritt macht sichtbar, ob ein Anstieg der Unfälle real ist oder nur dem Bevölkerungswachstum folgt.
+        </p>
     </section>
 
 </main>
