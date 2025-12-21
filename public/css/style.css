@@ -724,6 +724,37 @@ body.page-viz .page-main {
     color: #c98042;
 }
 
+.ref-list a {
+    color: #c98042;
+    text-decoration: none;
+    font-size: 0.95rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    margin-top: 0.35rem;
+    padding: 0.2rem 0.5rem;
+    background: rgba(201, 128, 66, 0.08);
+    /* Light orange bg */
+    border-radius: 4px;
+}
+
+.ref-list a:hover {
+    background: rgba(201, 128, 66, 0.15);
+    transform: translateX(3px);
+}
+
+.ref-list a::after {
+    content: " →";
+    font-size: 1.1em;
+    margin-left: 0.4rem;
+    transition: transform 0.2s ease;
+}
+
+.ref-list a:hover::after {
+    transform: translateX(2px);
+}
+
 .filter-controls {
     display: flex;
     flex-direction: column;
