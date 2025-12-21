@@ -33,70 +33,38 @@
 
     <section class="card">
         <h2>Foundations Visual Design</h2>
-        <p>
-            Das visuelle Design von DAVI basiert auf einer reduzierten, erdigen Farbpalette, die Seriosität und Ruhe ausstrahlt. 
-            Der Hintergrund in einem warmen Beige-Ton (<code>#f4f1ea</code>) sorgt für eine angenehme Lesbarkeit und reduziert die Bildschirmblendung im Vergleich zu reinem Weiss. 
-            Als Akzentfarbe dient ein kräftiges Orange (<code>#c98042</code>), das gezielt für die Datendarstellung (Balken, aktive Elemente) eingesetzt wird, um die Aufmerksamkeit des Nutzers sofort auf die relevanten Informationen zu lenken.
-            Das Layout folgt einem klaren Grid-System, das die Inhalte logisch strukturiert: Filter oben, Karte als zentrales Element links, und detaillierte Diagramme rechts. 
-            Diese Anordnung entspricht dem natürlichen Lesefluss und ermöglicht eine intuitive Orientierung.
-        </p>
+            Das visuelle Design von DAVI nutzt eine warme, erdige Farbpalette (<code>#f7f1e7</code>), die eine ruhige, sachliche Atmosphäre schafft und die Schweizer Ästhetik widerspiegelt. Die Typografie setzt auf klare Systemschriften für maximale Lesbarkeit. Ein striktes Grid-System strukturiert den Viewport logisch: Filter oben für den Kontext, die Karte als Anker links und Detail-Charts rechts. Diese Hierarchie führt den Blick intuitiv vom Groben (Karte) zum Detail (Diagramme) und unterstützt so effizient die Informationsaufnahme ohne visuelles Rauschen.
     </section>
 
     <section class="card">
         <h2>Fundamental Principles of Analytical Design</h2>
-        <p>
-            Unser Dashboard orientiert sich an Edward Tufte's Prinzipien des analytischen Designs, insbesondere am Prinzip der <strong>Comparisons</strong> (Vergleiche). 
-            Nutzer können Unfallzahlen zwischen verschiedenen Kantonen, Geschlechtern und Tätigkeiten direkt vergleichen. 
-            Durch die interaktive Filterung wird zudem das Prinzip der <strong>Multivariate Analysis</strong> unterstützt: Es ist möglich, die Abhängigkeiten zwischen Ort (Kanton), Demografie (Geschlecht/Alter) und Unfallursache (Tätigkeit) zu explorieren.
-            Die Integration von Karte und Diagrammen in einer Ansicht fördert zudem die <strong>Integration of Evidence</strong>, indem räumliche und statistische Daten kombiniert präsentiert werden.
-        </p>
+            Orientiert an Tufte, ermöglicht das Dashboard direkte <strong>Comparisons</strong> zwischen Kantonen und Zeiträumen. Die interaktive Filterung erlaubt eine tiefgehende <strong>Multivariate Analysis</strong>, indem Nutzer Zusammenhänge zwischen vier Variablen (Ort, Zeit, Sparte, Tätigkeit) explorieren können. Die visuelle <strong>Integration of Evidence</strong> kombiniert Karten, Kurven und Zahlen in einer Ansicht, statt sie auf Seiten zu verteilen. Dies fördert das Verständnis von <strong>Causality</strong>, indem zeitliche Trends und regionale Ausreisser im Kontext sichtbar werden.
     </section>
 
     <section class="card">
         <h2>Data-Ink Ratio</h2>
-        <p>
-            Ein zentrales Ziel war die Maximierung der <strong>Data-Ink Ratio</strong>. 
-            Wir haben bewusst auf dekorative Elemente, unnötige Rahmen, 3D-Effekte oder schwere Hintergrundraster in den Diagrammen verzichtet. 
-            Jeder Pixel Farbe in den Visualisierungen dient der Darstellung von Daten. 
-            Die Achsen sind dezent gehalten, und Gitterlinien wurden auf ein Minimum reduziert oder ganz weggelassen, wo sie nicht zur Lesbarkeit beitragen. 
-            Dies lenkt den Fokus des Betrachters ohne Ablenkung auf die wesentlichen Muster und Trends in den Unfallstatistiken.
-        </p>
+            Wir maximierten die <strong>Data-Ink Ratio</strong>, indem wir jeglichen "Chart Junk" eliminierten. Dekorative Rahmen, Hintergründe oder 3D-Effekte fehlen komplett. Die Donut-Chart-Legende wurde durch direkte Labels ersetzt, um unnötige Blicksprünge zu vermeiden. In der Choropleth-Karte trägt jeder Pixel Information (Unfallrate). Die Achsen beschränken sich auf essentielle Ticks. Diese Reduktion lenkt den Fokus kompromisslos auf die Datenmuster und verhindert visuelle Ablenkung durch das Interface selbst.
     </section>
 
     <section class="card">
         <h2>Human Perception</h2>
-        <p>
-            Bei der Wahl der Visualisierungsformen haben wir Erkenntnisse der Wahrnehmungspsychologie berücksichtigt. 
-            Für die Darstellung von Mengenverhältnissen (Unfallursachen) nutzen wir <strong>Balkendiagramme</strong>, da die Länge von Balken vom menschlichen Auge präziser verglichen werden kann als Winkel oder Flächen (wie bei Tortendiagrammen). 
-            Das Donut-Chart für die Geschlechterverteilung wird nur für eine sehr kleine Anzahl von Kategorien (3) verwendet, wo die Anteile schnell erfassbar sind.
-            Die <strong>Choropleth-Karte</strong> nutzt Helligkeitsabstufungen (Sequential Color Scale) als prä-attentives Merkmal, um Regionen mit hoher Unfalldichte sofort erkennbar zu machen, ohne dass der Nutzer explizit Zahlen lesen muss.
-        </p>
+            Das Design nutzt <strong>Gestalt-Prinzipien</strong> (Nähe, Ähnlichkeit) zur Gruppierung von Filtern. <strong>Preattentive Attribute</strong> wie die Farbintensität (sequenzielle Orange-Skala) in der Karte ermöglichen das Erkennen von Hotspots in Millisekunden. Für das Ranking der Unfallursachen wurde ein <strong>Balkendiagramm</strong> gewählt, da das menschliche Auge Längenunterschiede weitaus präziser vergleichen kann als Winkel oder Flächen. Dies minimiert Interpretationsfehler und beschleunigt das Erfassen der häufigsten Unfallgründe signifikant.
     </section>
 
     <section class="card">
         <h2>Tasks in Data Visualization</h2>
-        <p>
-            Das Dashboard unterstützt primär folgende analytische Tasks:
-        </p>
-        <ul style="list-style-type: disc; margin-left: 20px; margin-top: 10px;">
-            <li><strong>Identify:</strong> Der Nutzer kann spezifische Werte für einzelne Kantone oder Unfallursachen durch Tooltips exakt ablesen.</li>
-            <li><strong>Compare:</strong> Die Visualisierungen ermöglichen den schnellen Vergleich zwischen Kantonen (Karte) und Unfallursachen (Balkendiagramm).</li>
-            <li><strong>Filter:</strong> Durch die globalen Filter (Jahr, Branche, Alter) kann der Datensatz auf relevante Teilmengen reduziert werden (Drill-Down).</li>
-            <li><strong>Summarize:</strong> Die KPIs (Key Performance Indicators) bieten eine sofortige Zusammenfassung der Gesamtsituation.</li>
+        Das Dashboard unterstützt zentrale analytische Tasks:
+        <ul>
+            <li><strong>Identify</strong>: Tooltips liefern exakte Werte für jeden Datenpunkt "on demand".</li>
+            <li><strong>Compare</strong>: Die Anordnung lädt zum Vergleich ein – Balken sortieren Ursachen, die Karte kontrastiert Regionen.</li>
+            <li><strong>Summarize</strong>: Der Zeitstrahl kondensiert 12 Jahre Geschichte in eine Trendlinie.</li>
+            <li><strong>Filter</strong>: Die globalen Controls ermöglichen effizientes "Drill-Down" von der nationalen Übersicht zu spezifischen Kanton-Sparte-Clustern, was gezielte Hypothesenprüfung erlaubt.</li>
         </ul>
     </section>
 
     <section class="card">
         <h2>Interaction Concept</h2>
-        <p>
-            Das Interaktionskonzept folgt dem Mantra von Ben Shneiderman: <em>"Overview first, zoom and filter, then details-on-demand"</em>.
-        </p>
-        <ul style="list-style-type: disc; margin-left: 20px; margin-top: 10px;">
-            <li><strong>Overview:</strong> Beim Start zeigt das Dashboard die aggregierten Daten für die gesamte Schweiz.</li>
-            <li><strong>Filter:</strong> Über die Dropdowns und die Karte kann der Nutzer den Fokus auf bestimmte Regionen oder Demografien einschränken. Die Karte fungiert dabei als intuitiver räumlicher Filter.</li>
-            <li><strong>Details-on-Demand:</strong> Mouseover-Effekte (Tooltips) liefern exakte Zahlen und Kontextinformationen, ohne die Übersicht zu überladen.</li>
-            <li><strong>Linking & Brushing:</strong> Interaktionen in einem Diagramm (z.B. Klick auf einen Balken) heben korrespondierende Daten in anderen Ansichten hervor, um Zusammenhänge sichtbar zu machen.</li>
-        </ul>
+            Das Konzept folgt Shneidermans Mantra: "Overview first, zoom and filter, then details-on-demand". Der Startbildschirm bietet die Gesamtübersicht. Inline-Filter erlauben "hartes" Einschränken des Datensatzes, während Interaktionen in Charts (Brushing, Klick) als "weiche" Filter wirken. Durch <strong>Linking & Brushing</strong> werden Zusammenhänge sofort sichtbar: Ein Zeitauswahl-Update im Brush aktualisiert alle anderen Views instantan, was ein exploratives, reaktives Nutzererlebnis schafft.
     </section>
 
 </main>
