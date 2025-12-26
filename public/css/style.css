@@ -183,6 +183,7 @@ h3 {
     transform: translateY(4px);
     transition: opacity 0.15s ease, transform 0.15s ease;
     color: #6a5b4a;
+    width: max-content;
 }
 
 .card-hint:hover .hint-text {
@@ -206,7 +207,7 @@ h3 {
     left: 0;
     z-index: 100;
     margin-top: 0.5rem;
-    max-width: 300px;
+    max-width: 450px;
 }
 
 /* Popover-Hinweis rechts neben dem Titel (z. B. bei Linien- und Balkendiagramm) */
@@ -220,7 +221,7 @@ h3 {
 }
 
 .card-hint.popover .hint-text {
-    max-width: 420px;
+    max-width: 500px;
 }
 
 @media (max-width: 800px) {
