@@ -105,7 +105,7 @@ function populateCantonOptions(data) {
     // Remember current value to restore if possible
     const currentValue = select.value;
 
-    select.innerHTML = '<option value="all">All Cantons</option>';
+    select.innerHTML = '<option value="all">Alle Kantone</option>';
 
     // If data provided, only show cantons present in data
     let relevantCodes = Object.keys(cantonNames);
@@ -188,7 +188,7 @@ function populateAgeOptions(data) {
 
     const optionAll = document.createElement("option");
     optionAll.value = "all";
-    optionAll.textContent = "All Age Groups";
+    optionAll.textContent = "Alle Altersgruppen";
     selectAge.appendChild(optionAll);
 
     uniqueAges.forEach(age => {
@@ -218,7 +218,7 @@ function populateGenderOptions(data) {
     selectGender.innerHTML = "";
     const optionAll = document.createElement("option");
     optionAll.value = "all";
-    optionAll.textContent = "All Genders";
+    optionAll.textContent = "Alle Geschlechter";
     selectGender.appendChild(optionAll);
 
     uniqueGenders.forEach(g => {
@@ -310,7 +310,7 @@ function populateActivityOptions(data) {
     selectActivity.innerHTML = "";
     const optionAll = document.createElement("option");
     optionAll.value = "all";
-    optionAll.textContent = "All Activities";
+    optionAll.textContent = "Alle Unfalltypen";
     selectActivity.appendChild(optionAll);
 
     uniqueActivities.forEach(act => {
