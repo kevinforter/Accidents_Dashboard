@@ -354,15 +354,22 @@ function wireFilterEvents() {
             if (selectCanton) selectCanton.value = "all";
 
             // Jahr-Slider zurück auf min/max
+            // Jahr-Slider zurück auf min/max (Reset Logic)
+            yearRange.from = yearRange.min;
+            yearRange.to   = yearRange.max;
+
+            // UI-Elemente updaten, falls vorhanden
             if (yearStart && yearEnd) {
                 yearStart.value = yearRange.min;
                 updateYearEndOptions(yearRange.min);
                 yearEnd.value   = yearRange.max;
-                yearRange.from  = yearRange.min;
-                yearRange.to    = yearRange.max;
+                
                 if (yearLabel) {
                     yearLabel.textContent = `${yearRange.min} – ${yearRange.max}`;
                 }
+            } else {
+                 // Fallback if dropdows are missing: likely only Timeline exists. 
+                 // chart_timeline will handle the display based on yearRange.
             }
 
             // Neue Filter zurücksetzen

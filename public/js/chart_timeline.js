@@ -129,15 +129,15 @@ function renderTimeline(data, currentYearRange) {
         .style("pointer-events", "none") // Let default overlay handle events
         .style("display", "none"); // Hidden initially until updated
 
-    // Set initial brush selection (if available)
+    // Set initial brush selection
     if (currentYearRange && currentYearRange.from && currentYearRange.to) {
         let startX = x(currentYearRange.from);
         let endX = x(currentYearRange.to);
 
-        // If Start == End (Single Year), artificially widen the brush so it is visible (e.g. +/- 0.3 years)
+        // If Start == End (Single Year), artificially widen the brush so it is visible (e.g. +/- 5px)
         if (currentYearRange.from === currentYearRange.to) {
              const center = startX;
-             const widthPx = 10; // Pixel width of the handle
+             const widthPx = 10; 
              startX = center - widthPx / 2;
              endX = center + widthPx / 2;
         }
