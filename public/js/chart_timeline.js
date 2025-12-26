@@ -103,11 +103,31 @@ function renderTimeline(data, currentYearRange) {
     // Brush
     const brush = d3.brushX()
         .extent([[0, 0], [width, height]])
-        .on("end", brushed);
+        .on("start brush end", brushed);
 
     const brushGroup = svg.append("g")
         .attr("class", "brush")
         .call(brush);
+
+    // Custom Brush Handles (visible hooks)
+    const handleWidth = 9;
+    const handleHeight = 24;
+
+    const brushHandles = brushGroup.selectAll(".handle-custom")
+        .data([{type: "w"}, {type: "e"}])
+        .enter().append("rect")
+        .attr("class", "handle-custom")
+        .attr("width", handleWidth)
+        .attr("height", handleHeight)
+        .attr("rx", 3)
+        .attr("ry", 3)
+        .attr("fill", "#c98042")
+        .attr("stroke", "#fff")
+        .attr("stroke-width", 1.5)
+        .attr("x", -handleWidth / 2) 
+        .attr("y", (height - handleHeight) / 2) 
+        .style("pointer-events", "none") // Let default overlay handle events
+        .style("display", "none"); // Hidden initially until updated
 
     // Set initial brush selection (if available)
     if (currentYearRange && currentYearRange.from && currentYearRange.to) {
@@ -224,8 +244,22 @@ function renderTimeline(data, currentYearRange) {
         });
 
     function brushed(event) {
-        // If selection was set by code (sourceEvent is null), do nothing to avoid infinite loops
+        const selection = event.selection;
+
+        // 1. Update Custom Handles Position
+        if (selection) {
+            brushGroup.selectAll(".handle-custom")
+                .style("display", null)
+                .attr("transform", (d, i) => `translate(${selection[i]}, 0)`);
+        } else {
+            brushGroup.selectAll(".handle-custom").style("display", "none");
+        }
+
+        // 2. Logic: If selection was set by code (sourceEvent is null), do nothing to avoid infinite loops
         if (!event.sourceEvent) return;
+
+        // 3. Only trigger main update on 'end' to avoid performance issues
+        if (event.type !== "end") return;
 
         if (!event.selection) {
             // If brush was cleared (click without drag?) -> Select single year.
